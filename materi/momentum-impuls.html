@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 3: Momentum dan Impuls</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+    }
+
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+
+    /* HEADER */
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    /* KONTEN */
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+
+    /* RUMUS BOX */
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.1rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* KARTU JENIS TUMBUKAN */
+    .tumbukan-card {
+        background: #f8fafc; border: 1px solid var(--border); border-radius: 8px;
+        padding: 15px; margin-bottom: 15px; border-left: 4px solid var(--blue-link);
+    }
+    .tumbukan-card h4 { color: var(--dark-green); margin-bottom: 8px; font-size: 1rem; }
+    .tumbukan-card p { margin-bottom: 8px; font-size: 0.9rem; }
+    .tumbukan-card ul { font-size: 0.9rem; margin-bottom: 0; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-left: 5px; }
+    .badge-ya { background: #d1fae5; color: #065f46; }
+    .badge-tidak { background: #fee2e2; color: #991b1b; }
+    .badge-e { background: #fef3c7; color: #92400e; }
+
+    /* SIMULASI MOMENTUM (TATA LETAK BARU) */
+    .simulasi-container { background: #0f172a; border-radius: 12px; padding: 15px; color: white; margin-top: 15px; }
+    
+    /* Panel Atas: Animasi + Grafik + Tombol */
+    .panel-atas {
+        display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;
+        background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155;
+    }
+
+    .lintasan {
+        position: relative; height: 100px; background: #0f172a; border-radius: 8px;
+        border-bottom: 4px solid #334155; overflow: hidden;
+    }
+    
+    .bola {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        border-radius: 50%; display: flex; justify-content: center; align-items: center;
+        font-weight: bold; color: #0f172a; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3);
+    }
+    .bola-a { background: var(--blue-link); left: 20px; }
+    .bola-b { background: var(--teal); right: 20px; }
+
+    /* Grafik Batang (Momentum) */
+    .grafik-momentum {
+        display: flex; justify-content: space-around; align-items: flex-end;
+        height: 80px; background: #0f172a; border-radius: 8px; padding: 10px;
+        border: 1px solid #334155;
+    }
+    .bar-container { display: flex; flex-direction: column; align-items: center; width: 30%; }
+    .bar {
+        width: 100%; background: var(--teal); transition: height 0.1s;
+        border-radius: 4px 4px 0 0; position: relative; display: flex; justify-content: center;
+    }
+    .bar::before {
+        content: attr(data-value); position: absolute; top: -18px;
+        font-size: 10px; font-weight: bold; color: var(--accent-yellow); white-space: nowrap;
+    }
+    .bar-label { font-size: 0.7rem; color: #cbd5e1; margin-top: 5px; text-align: center;}
+    .bar.negatif { background: #ef4444; }
+
+    /* Tombol Mulai & Hasil */
+    .btn-mulai {
+        background: var(--teal); color: #0f172a; border: none; padding: 12px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem;
+        transition: 0.2s;
+    }
+    .btn-mulai:hover { background: #14b8a6; }
+    .btn-mulai:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+
+    .hasil-hitung { 
+        padding: 10px; background: rgba(45, 212, 191, 0.1); border: 1px solid var(--teal); 
+        border-radius: 8px; font-family: monospace; text-align: center; color: var(--teal); 
+        font-size: 1rem; font-weight: bold;
+    }
+
+    /* Panel Bawah: Slider Kontrol */
+    .panel-bawah { display: flex; flex-direction: column; gap: 12px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
+    .kontrol-simulasi label { display: flex; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px;}
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); margin-bottom: 5px;}
+    select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; outline: none; }
+
+    /* KUIS */
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); font-size: 0.95rem;}
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    .pembahasan { display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid var(--green-success); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #065f46; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Materi 3: <span>Momentum & Impuls</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- PENGANTAR -->
+        <div class="card">
+            <h2>A. Konsep Momentum dan Impuls</h2>
+            <p><strong>Momentum (p)</strong> adalah ukuran kesukaran menghentikan benda yang sedang bergerak. Momentum bergantung pada massa dan kecepatan.</p>
+            <div class="rumus-box">p = m × v</div>
+            <p><strong>Impuls (I)</strong> adalah perubahan momentum yang disebabkan oleh gaya yang bekerja dalam selang waktu tertentu.</p>
+            <div class="rumus-box">I = F × Δt = Δp</div>
+            <h3>Hukum Kekekalan Momentum</h3>
+            <div class="rumus-box">m1.v1 + m2.v2 = m1.v1' + m2.v2'</div>
+        </div>
+
+        <!-- JENIS TUMBUKAN -->
+        <div class="card">
+            <h2>B. Jenis-Jenis Tumbukan & Syaratnya</h2>
+            <div class="tumbukan-card">
+                <h4>1. Lenting Sempurna <span class="badge badge-e">e = 1</span></h4>
+                <ul>
+                    <li>Hukum Kekekalan Momentum: <span class="badge badge-ya">Berlaku</span></li>
+                    <li>Hukum Kekekalan Energi Kinetik: <span class="badge badge-ya">Berlaku</span></li>
+                </ul>
+            </div>
+            <div class="tumbukan-card" style="border-left-color: var(--accent-yellow);">
+                <h4>2. Lenting Sebagian <span class="badge badge-e">0 < e < 1</span></h4>
+                <ul>
+                    <li>Hukum Kekekalan Momentum: <span class="badge badge-ya">Berlaku</span></li>
+                    <li>Hukum Kekekalan Energi Kinetik: <span class="badge badge-tidak">Tidak Berlaku</span></li>
+                </ul>
+            </div>
+            <div class="tumbukan-card" style="border-left-color: var(--red-alert);">
+                <h4>3. Tidak Lenting Sama Sekali <span class="badge badge-e">e = 0</span></h4>
+                <ul>
+                    <li>Hukum Kekekalan Momentum: <span class="badge badge-ya">Berlaku</span></li>
+                    <li>Hukum Kekekalan Energi Kinetik: <span class="badge badge-tidak">Tidak Berlaku</span></li>
+                </ul>
+            </div>
+            <div class="rumus-box">e = - (v1' - v2') / (v1 - v2)</div>
+        </div>
+
+        <!-- SIMULASI TUMBUKAN (TATA LETAK BARU) -->
+        <div class="card">
+            <h2>C. Simulasi Tumbukan</h2>
+            
+            <div class="simulasi-container">
+                <!-- PANEL ATAS: Animasi & Tombol (Terlihat Bersamaan) -->
+                <div class="panel-atas">
+                    <div class="lintasan" id="lintasan">
+                        <div class="bola bola-a" id="bola-a">A</div>
+                        <div class="bola bola-b" id="bola-b">B</div>
+                    </div>
+
+                    <!-- Grafik Batang Momentum -->
+                    <div class="grafik-momentum">
+                        <div class="bar-container">
+                            <div class="bar" id="bar-a" style="height: 0px;" data-value="0"></div>
+                            <div class="bar-label">p Bola A</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar" id="bar-total" style="height: 0px;" data-value="0"></div>
+                            <div class="bar-label">p Total</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar" id="bar-b" style="height: 0px;" data-value="0"></div>
+                            <div class="bar-label">p Bola B</div>
+                        </div>
+                    </div>
+
+                    <div class="hasil-hitung" id="hasil-momentum">
+                        Momentum Total = 2.0 kg.m/s
+                    </div>
+
+                    <button id="btn-mulai" class="btn-mulai" onclick="mulaiTumbukan()">▶ Mulai Tumbukan</button>
+                </div>
+
+                <!-- PANEL BAWAH: Slider Kontrol -->
+                <div class="panel-bawah kontrol-simulasi">
+                    <div>
+                        <label>Jenis Tumbukan</label>
+                        <select id="select-tumbukan" onchange="updateDataAwal()">
+                            <option value="sempurna">Lenting Sempurna (e = 1)</option>
+                            <option value="sebagian">Lenting Sebagian (e = 0.5)</option>
+                            <option value="tidak">Tidak Lenting (e = 0)</option>
+                        </select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Massa A <span id="label-mA">2 kg</span></label>
+                            <input type="range" id="slider-mA" min="1" max="10" value="2" oninput="updateDataAwal()">
+                        </div>
+                        <div>
+                            <label>Kecepatan A <span id="label-vA">4 m/s</span></label>
+                            <input type="range" id="slider-vA" min="-10" max="10" value="4" oninput="updateDataAwal()">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Massa B <span id="label-mB">3 kg</span></label>
+                            <input type="range" id="slider-mB" min="1" max="10" value="3" oninput="updateDataAwal()">
+                        </div>
+                        <div>
+                            <label>Kecepatan B <span id="label-vB">-2 m/s</span></label>
+                            <input type="range" id="slider-vB" min="-10" max="10" value="-2" oninput="updateDataAwal()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KUIS INTERAKTIF HOTS -->
+        <div class="card">
+            <h2>D. Uji Pemahaman Interaktif (HOTS)</h2>
+            <div class="kuis-box">
+                
+                <div class="soal" id="soal1">
+                    <div class="soal-teks">1. Sebuah bola bermassa 0,5 kg dilempar dengan kecepatan 10 m/s, lalu dipukul balik dengan kecepatan 20 m/s. Jika kontak dengan pemukul terjadi selama 0,01 sekon, berapakah gaya rata-rata pemukul tersebut?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'C')">A. 500 N</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'C')">B. 1000 N</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'C')">C. 1500 N</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'C')">D. 2000 N</button>
+                    <div class="pembahasan" id="pembahasan-soal1">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Kecepatan awal (v1) = 10 m/s (ke kanan). Kecepatan akhir (v2) = -20 m/s (ke kiri).<br>
+                        Δp = m(v2 - v1) = 0,5 (-20 - 10) = -15 N.s.<br>
+                        F = Δp / Δt = -15 / 0,01 = -1500 N (besarnya 1500 N).
+                    </div>
+                </div>
+
+                <div class="soal" id="soal2">
+                    <div class="soal-teks">2. Dua benda A dan B bergerak berlawanan arah. A (m=2 kg) bergerak ke kanan dengan v=5 m/s. B (m=3 kg) bergerak ke kiri dengan v=4 m/s. Jika keduanya bertumbukan lenting sempurna, dan setelah tumbukan B bergerak ke kanan dengan v=2 m/s, maka kecepatan A setelah tumbukan adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'B')">A. 2 m/s ke kanan</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'B')">B. 4 m/s ke kiri</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'B')">C. 4 m/s ke kanan</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'B')">D. 6 m/s ke kiri</button>
+                    <div class="pembahasan" id="pembahasan-soal2">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Gunakan Hukum Kekekalan Momentum:<br>
+                        (2)(5) + (3)(-4) = (2)(vA') + (3)(2)<br>
+                        10 - 12 = 2vA' + 6<br>
+                        -2 = 2vA' + 6 -> -8 = 2vA' -> vA' = -4 m/s (ke kiri).
+                    </div>
+                </div>
+
+                <div class="soal" id="soal3">
+                    <div class="soal-teks">3. Sebuah peluru bermassa 10 gram ditembakkan ke dalam balok kayu bermassa 2 kg yang diam. Jika peluru bersarang di dalam balok dan kecepatan peluru sebelum menembus balok adalah 200 m/s, maka kecepatan balok dan peluru setelah tumbukan adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'D')">A. 1 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'D')">B. 5 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'D')">C. 0,5 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'D')">D. 1,5 m/s</button>
+                    <div class="pembahasan" id="pembahasan-soal3">
+                        <strong>Benar! Jawaban: A.</strong><br>
+                        Ini adalah tumbukan tidak lenting sama sekali (peluru bersarang). Massa peluru (m1) = 0,01 kg, m2 = 2 kg.<br>
+                        (0,01)(200) + (2)(0) = (0,01 + 2) v'<br>
+                        2 = 2,01 v' -> v' ≈ 1 m/s.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal4">
+                    <div class="soal-teks">4. Perhatikan ciri-ciri tumbukan berikut: (1) Berlaku hukum kekekalan momentum, (2) Tidak berlaku hukum kekekalan energi kinetik, (3) Benda menempel setelah tumbukan. Ciri-ciri tersebut merupakan ciri dari...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'A', 'C')">A. Tumbukan Lenting Sempurna</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'B', 'C')">B. Tumbukan Lenting Sebagian</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'C', 'C')">C. Tumbukan Tidak Lenting Sama Sekali</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'D', 'C')">D. Tumbukan Elastis</button>
+                    <div class="pembahasan" id="pembahasan-soal4">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Ciri utama tumbukan tidak lenting sama sekali adalah benda menyatu/menempel, energi kinetik tidak kekal, namun momentum total selalu kekal.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal5">
+                    <div class="soal-teks">5. Mengapa ketika kita jatuh dari ketinggian, kita disarankan untuk menekuk lutut saat mendarat?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'A', 'D')">A. Untuk mengurangi impuls yang diterima tubuh</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'B', 'D')">B. Untuk memperbesar momentum tubuh</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'C', 'D')">C. Untuk mempercepat waktu kontak dengan tanah</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'D', 'D')">D. Untuk memperlama waktu kontak sehingga gaya yang diterima tubuh mengecil</button>
+                    <div class="pembahasan" id="pembahasan-soal5">
+                        <strong>Benar! Jawaban: D.</strong><br>
+                        Impuls (I = F × Δt) nilainya sama dengan perubahan momentum (Δp) yang konstan. Jika waktu kontak (Δt) diperlama, maka gaya (F) yang dirasakan tubuh akan mengecil.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================= LOGIKA KUIS =================
+        function cekKuis(idSoal, jawabanDipilih, jawabanBenar) {
+            const soalContainer = document.getElementById(idSoal);
+            const buttons = soalContainer.querySelectorAll('.opsi-btn');
+            const pembahasan = document.getElementById('pembahasan-' + idSoal);
+
+            buttons.forEach(btn => {
+                if (btn.innerText.startsWith(jawabanDipilih)) {
+                    if (jawabanDipilih === jawabanBenar) btn.classList.add('benar');
+                    else btn.classList.add('salah');
+                }
+                if (btn.innerText.startsWith(jawabanBenar)) btn.classList.add('benar');
+                btn.disabled = true;
+                btn.style.cursor = 'default';
+            });
+            pembahasan.style.display = 'block';
+        }
+
+        // ================= LOGIKA SIMULASI TUMBUKAN =================
+        let mA, vA, mB, vB;
+        let posA, posB;
+        let vA_akhir, vB_akhir;
+        let sedangAnimasi = false;
+        let animasiId = null;
+
+        const lintasan = document.getElementById('lintasan');
+        const bolaA = document.getElementById('bola-a');
+        const bolaB = document.getElementById('bola-b');
+        const btnMulai = document.getElementById('btn-mulai');
+
+        function updateDataAwal() {
+            if(sedangAnimasi) return;
+
+            mA = parseInt(document.getElementById('slider-mA').value);
+            vA = parseInt(document.getElementById('slider-vA').value);
+            mB = parseInt(document.getElementById('slider-mB').value);
+            vB = parseInt(document.getElementById('slider-vB').value);
+
+            document.getElementById('label-mA').innerText = mA + " kg";
+            document.getElementById('label-vA').innerText = vA + " m/s";
+            document.getElementById('label-mB').innerText = mB + " kg";
+            document.getElementById('label-vB').innerText = vB + " m/s";
+
+            const ukuranA = 20 + (mA * 3);
+            const ukuranB = 20 + (mB * 3);
+            bolaA.style.width = ukuranA + 'px'; bolaA.style.height = ukuranA + 'px';
+            bolaB.style.width = ukuranB + 'px'; bolaB.style.height = ukuranB + 'px';
+
+            posA = 20;
+            posB = lintasan.clientWidth - ukuranB - 20;
+            
+            bolaA.style.left = posA + 'px';
+            bolaB.style.left = posB + 'px';
+
+            updateGrafikMomentum(mA*vA, mB*vB);
+            
+            document.getElementById('hasil-momentum').innerHTML = `Momentum Total = ${(mA*vA + mB*vB).toFixed(1)} kg.m/s`;
+            btnMulai.innerText = "▶ Mulai Tumbukan";
+            btnMulai.disabled = false;
+            sedangAnimasi = false;
+        }
+
+        function updateGrafikMomentum(pA, pB) {
+            const pTotal = pA + pB;
+            const maxP = Math.max(Math.abs(pA), Math.abs(pB), Math.abs(pTotal), 10);
+            
+            const tinggiA = (Math.abs(pA) / maxP) * 50;
+            const tinggiB = (Math.abs(pB) / maxP) * 50;
+            const tinggiTotal = (Math.abs(pTotal) / maxP) * 50;
+
+            const barA = document.getElementById('bar-a');
+            const barB = document.getElementById('bar-b');
+            const barTotal = document.getElementById('bar-total');
+
+            barA.style.height = tinggiA + 'px';
+            barA.setAttribute('data-value', pA.toFixed(1));
+            barA.className = 'bar' + (pA < 0 ? ' negatif' : '');
+
+            barB.style.height = tinggiB + 'px';
+            barB.setAttribute('data-value', pB.toFixed(1));
+            barB.className = 'bar' + (pB < 0 ? ' negatif' : '');
+
+            barTotal.style.height = tinggiTotal + 'px';
+            barTotal.setAttribute('data-value', pTotal.toFixed(1));
+            barTotal.className = 'bar' + (pTotal < 0 ? ' negatif' : '');
+        }
+
+        function mulaiTumbukan() {
+            if (sedangAnimasi) return;
+            sedangAnimasi = true;
+            btnMulai.innerText = "⏳ Sedang Bergerak...";
+            btnMulai.disabled = true;
+
+            let kecepatanVisualA = vA * 5; 
+            let kecepatanVisualB = vB * 5;
+            const jenisTumbukan = document.getElementById('select-tumbukan').value;
+
+            if (vA <= 0 && vB >= 0) {
+                alert("Atur kecepatan agar kedua bola saling mendekat!");
+                btnMulai.innerText = "▶ Mulai Tumbukan";
+                btnMulai.disabled = false;
+                sedangAnimasi = false;
+                return;
+            }
+
+            function loop() {
+                posA += kecepatanVisualA * 0.05;
+                posB += kecepatanVisualB * 0.05;
+
+                bolaA.style.left = posA + 'px';
+                bolaB.style.left = posB + 'px';
+
+                const jarak = posB - (posA + bolaA.clientWidth);
+                if (jarak <= 5) {
+                    let e = 1; 
+                    if (jenisTumbukan === 'sebagian') e = 0.5;
+                    if (jenisTumbukan === 'tidak') e = 0;
+
+                    vA_akhir = ((mA*vA + mB*vB + mB*e*(vB - vA)) / (mA + mB));
+                    vB_akhir = ((mA*vA + mB*vB + mA*e*(vA - vB)) / (mA + mB));
+
+                    if (jenisTumbukan === 'tidak') {
+                        vA_akhir = (mA*vA + mB*vB) / (mA + mB);
+                        vB_akhir = vA_akhir;
+                    }
+
+                    function loopSetelahTumbukan() {
+                        let vA_visual = vA_akhir * 5;
+                        let vB_visual = vB_akhir * 5;
+
+                        posA += vA_visual * 0.05;
+                        posB += vB_visual * 0.05;
+
+                        bolaA.style.left = posA + 'px';
+                        bolaB.style.left = posB + 'px';
+
+                        updateGrafikMomentum(mA * vA_akhir, mB * vB_akhir);
+
+                        if (posA < -100 || posA > lintasan.clientWidth + 100 || posB < -100 || posB > lintasan.clientWidth + 100) {
+                            cancelAnimationFrame(animasiId);
+                            sedangAnimasi = false;
+                            btnMulai.innerText = "▶ Mulai Tumbukan";
+                            btnMulai.disabled = false;
+                            return;
+                        }
+                        animasiId = requestAnimationFrame(loopSetelahTumbukan);
+                    }
+                    loopSetelahTumbukan();
+                    return; 
+                }
+                animasiId = requestAnimationFrame(loop);
+            }
+            loop();
+        }
+
+        window.onload = updateDataAwal;
+    </script>
+</body>
+</html>

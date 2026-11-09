@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD Rotasi - Interaktif (Full Features)</title>
+    <style>
+        :root {
+            --dark-green: #1a3c34;
+            --accent-yellow: #f2c94c;
+            --bg-light: #f8faf9;
+            --border-color: #d1d5db;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --light-green: #e6f4ea;
+            --red: #dc2626;
+            --green-text: #15803d;
+            --red-text: #b91c1c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
+
+        .header { background-color: var(--dark-green); color: white; padding: 30px 15px; text-align: left; position: relative; }
+        .header-content { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600; }
+        .header-left, .header-right { display: flex; flex-direction: column; }
+        .header-right { text-align: right; }
+        .gold-text { color: var(--accent-yellow); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.9); text-underline-offset: 4px; text-decoration-thickness: 2px; }
+        .cyan-text { color: #38bdf8; margin-top: 4px; font-size: 0.85rem; font-weight: 500; }
+        .header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+        .header h1 span { color: var(--accent-yellow); }
+        .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
+
+        /* Tambahan: tagline emas di bawah Physics XI - Phase F */
+        .header .tagline-gold {
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--accent-yellow);
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+        }
+
+        .nav-tabs { display: flex; justify-content: flex-start; background-color: white; border-bottom: 1px solid var(--border-color); padding: 10px 15px; overflow-x: auto; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { background: none; border: 2px solid transparent; padding: 8px 16px; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 20px; margin-right: 8px; transition: all 0.3s; text-decoration: none; flex-shrink: 0; }
+        .tab-btn:hover, .tab-btn.active { background-color: var(--light-green); color: var(--dark-green); border-color: #34d399; }
+
+        .container { max-width: 800px; margin: 20px auto 40px auto; padding: 0 15px; }
+        .section-target { scroll-margin-top: 80px; padding-top: 5px; margin-bottom: 25px; }
+        .card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); word-wrap: break-word; }
+        .card h2 { font-size: 1.3rem; margin-bottom: 12px; color: var(--text-dark); }
+        .card p { margin-bottom: 12px; color: #4b5563; font-size: 0.95rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #93c5fd; border-radius: 6px; font-size: 0.95rem; outline: none; background-color: white; }
+        .rekap-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin-top: 5px; width: 100%; }
+        .rekap-box h3 { font-size: 1rem; color: var(--dark-green); margin-bottom: 8px; }
+        #daftar-teman-kelompok { list-style-type: decimal; padding-left: 20px; color: var(--text-dark); font-size: 0.95rem; }
+        #daftar-teman-kelompok li { padding: 3px 0; font-weight: 500; }
+
+        .badge { display: inline-block; background-color: var(--light-green); color: #047857; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 12px; }
+        .options { display: flex; gap: 8px; flex-direction: column; margin-bottom: 15px; }
+        .option-btn { background: white; border: 2px solid var(--text-dark); padding: 10px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; font-size: 0.9rem; width: 100%; }
+        .option-btn:hover { background-color: #f3f4f6; }
+        .option-btn.selected-correct { border-color: var(--green-text); background-color: var(--light-green); color: var(--green-text); }
+        .option-btn.selected-wrong { border-color: var(--red); background-color: #fee2e2; color: var(--red-text); }
+
+        .feedback-box { display: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px; }
+        .feedback-box.correct { background-color: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
+        .feedback-box.wrong { background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }
+        .feedback-box.error { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+        .info-box { background-color: var(--light-green); border-left: 4px solid #10b981; padding: 12px; border-radius: 4px; font-size: 0.9rem; color: #065f46; margin-bottom: 15px; }
+
+        .guide-box { background-color: #f0f9ff; border: 1px solid #bae6fd; border-left: 5px solid #3b82f6; border-radius: 6px; padding: 15px; margin-bottom: 20px; }
+        .guide-box h4 { color: #1e3a8a; margin-bottom: 8px; font-size: 1rem; }
+        .guide-box ol, .guide-box ul { margin-left: 20px; font-size: 0.9rem; color: #334155; }
+        .guide-box li { margin-bottom: 6px; }
+
+        /* ---- SIM TABS ---- */
+        .sim-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .sim-tab-btn { flex: 1; min-width: 120px; background: white; border: 2px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; color: #475569; }
+        .sim-tab-btn.active { background: var(--dark-green); color: white; border-color: var(--dark-green); }
+        .sim-panel { display: none; }
+        .sim-panel.active { display: block; }
+
+        /* ---- DARK WRAPPER UNTUK SEMUA SIM ---- */
+        .sim-dark-wrap { background: #0f172a; border-radius: 12px; padding: 15px; margin-bottom: 15px; color: #f8fafc; }
+        .sim-canvas-box { position: relative; width: 100%; height: 320px; background: #090d16; border-radius: 10px; overflow: hidden; border: 2px solid #334155; }
+        .sim-canvas-box canvas { display: block; width: 100%; height: 100%; }
+        .sim-controls-dark { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .sim-controls-dark button { flex: 1; min-width: 100px; padding: 9px 12px; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: 0.2s; color: white; }
+        .sim-btn-blue { background: #0284c7; } .sim-btn-blue:hover { background: #0369a1; }
+        .sim-btn-green { background: #10b981; } .sim-btn-green:hover { background: #059669; }
+        .sim-btn-red { background: #ef4444; } .sim-btn-red:hover { background: #dc2626; }
+
+        .sim-dark-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 700px) { .sim-dark-grid { grid-template-columns: 1fr 1fr; } }
+
+        .sim-panel-dark { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 12px; }
+        .sim-panel-dark h3 { font-size: 0.95rem; color: #38bdf8; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+        .sim-panel-dark label { font-size: 0.78rem; color: #cbd5e1; display: block; margin-bottom: 4px; }
+        .sim-panel-dark .val-row { display: flex; justify-content: space-between; font-size: 0.78rem; color: #f59e0b; font-weight: 700; margin-bottom: 3px; }
+        .sim-panel-dark input[type="range"] { width: 100%; accent-color: #0284c7; cursor: pointer; height: 5px; margin-bottom: 8px; }
+        .sim-panel-dark select { width: 100%; background-color: #0f172a; color: #f8fafc; border: 1px solid #475569; padding: 6px; font-size: 0.8rem; border-radius: 5px; margin-bottom: 8px; }
+        .sim-panel-dark .data-panel-mini { background: #1e293b; border-left: 3px solid #38bdf8; border-radius: 6px; padding: 8px; font-size: 0.75rem; color: #cbd5e1; margin-top: 8px; }
+        .sim-panel-dark .data-panel-mini .row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .sim-panel-dark .data-panel-mini .row span:last-child { color: #38bdf8; font-weight: 700; }
+
+        /* ---- SIM 3 (Momen Inersia) ---- */
+        .moi-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+        .moi-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 8px; text-align: center; }
+        .moi-card .lbl { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 3px; }
+        .moi-card .val { font-size: 0.95rem; color: #38bdf8; font-weight: 700; }
+
+        .simulation-area { background-color: #f0f9ff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #bae6fd; position: relative; }
+
+        .question-block { margin-top: 20px; }
+        .question-block p { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        textarea { width: 100%; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px; font-size: 0.95rem; font-family: inherit; resize: vertical; min-height: 90px; outline: none; }
+        textarea:focus { border-color: #3b82f6; }
+
+        .evidence-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 12px; margin-top: 10px; margin-bottom: 15px; }
+        .evidence-box label { font-size: 0.85rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px; }
+        .evidence-input-row { display: flex; gap: 10px; flex-direction: column; margin-bottom: 8px; }
+        .file-upload-input, .url-video-input { width: 100%; padding: 8px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+        .preview-container { margin-top: 8px; display: none; max-width: 220px; position: relative; }
+        .preview-container img { width: 100%; border-radius: 6px; border: 1px solid #94a3b8; }
+
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 15px; }
+        table { width: 100%; min-width: 450px; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--light-green); color: var(--dark-green); font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        .table-input { width: 75px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.85rem; }
+
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 12px; flex-direction: column; }
+        .btn { width: 100%; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; text-align: center; }
+        .btn-outline { background: white; border: 2px solid var(--text-dark); color: var(--text-dark); }
+        .btn-primary { background: white; border: 2px solid var(--dark-green); color: var(--dark-green); font-weight: bold; }
+        .btn-primary:hover { background: var(--light-green); }
+
+        .grading-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 15px; margin-top: 15px; margin-bottom: 15px; }
+        .grading-box h3 { font-size: 1rem; color: #92400e; margin-bottom: 6px; }
+
+        .calc-btn { padding: 10px; font-size: 1rem; font-weight: bold; border: none; border-radius: 4px; background: #475569; color: white; cursor: pointer; transition: 0.1s; }
+        .calc-btn:hover { background: #64748b; }
+        .calc-btn:active { transform: scale(0.95); }
+
+        #teacher-panel { display: none; background: #1e293b; color: white; padding: 25px; border-radius: 12px; margin-top: 30px; }
+        #teacher-panel h2 { color: var(--accent-yellow); margin-bottom: 15px; }
+
+        #soal-container, #soal-container * { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        #soal-container { position: relative; }
+        #wm-soal { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: rgba(220,38,38,0.12); transform: rotate(-25deg); white-space: nowrap; z-index: 5; }
+
+        /* Opsi PG di mode tantangan */
+        .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .pg-option {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+            background: #fff; font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+        }
+        .pg-option:hover { background: #f1f5f9; }
+        .pg-option input[type="radio"] { width: auto; margin: 0; cursor: pointer; }
+        .pg-option.selected { border-color: #10b981; background: #ecfdf5; }
+        .pg-option .pg-letter { font-weight: bold; min-width: 18px; }
+
+        @media (min-width: 600px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+            .options, .action-buttons { flex-direction: row; }
+            .btn { width: auto; }
+            .header { padding: 40px 20px; }
+            .header h1 { font-size: 2.5rem; }
+            .container { padding: 0 20px; }
+            .card { padding: 30px; }
+            .evidence-input-row { flex-direction: row; }
+        }
+
+        @media print {
+            .nav-tabs, .action-buttons, .options, .sim-tabs, .btn, .feedback-box, .evidence-box input[type="file"], .evidence-box input[type="url"], #teacher-login-section, .no-print, .guide-box, #challenge-start-box, #challenge-area, .calc-btn, #cheat-modal, #audit-modal, .sim-dark-wrap { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 20px; page-break-inside: avoid; }
+            body { background-color: white; }
+            input, select, textarea { border: none !important; background: transparent !important; resize: none; appearance: none; }
+            .preview-container { display: block !important; max-width: 250px; margin-top: 8px; }
+            .evidence-box { border: 1px solid #ccc; background: transparent; padding: 10px; }
+            .table-input { border: none !important; font-weight: bold; }
+        }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="gold-text">Wokib</span>
+                <span class="cyan-text">Deep Learning</span>
+            </div>
+            <div class="header-right">
+                <span class="gold-text">2026</span>
+                <span class="cyan-text">STEM</span>
+            </div>
+        </div>
+        <h1>Rotational Motion, <span>Why Do Objects Spin Differently?</span></h1>
+        <p>Worksheet - 6 · Dynamics: Torque, Moment of Inertia, and Rotating Pulley</p>
+        <p>Physics XI - Phase F</p>
+        <p class="tagline-gold">Let's master the concepts, understand the context, and prove the truth</p>
+    </header>
+    <nav class="nav-tabs">
+        <a href="#langkah1" class="tab-btn active">1. Problem</a>
+        <a href="#langkah2" class="tab-btn">2. Simulation</a>
+        <a href="#langkah3" class="tab-btn">3. Experiment</a>
+        <a href="#langkah4" class="tab-btn">4. Analysis</a>
+        <a href="#langkah5" class="tab-btn">5. Reflection</a>
+        <a href="#langkah6" class="tab-btn">6. Challenge</a>
+    </nav>
+
+    <div class="container" id="konten-lkpd">
+
+        <div class="card section-target" id="identitas">
+            <h2>Identity</h2>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Student Name</label>
+                    <input type="text" id="input-nama" placeholder="Type your full name here..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select id="select-kelas" onchange="updateIdentitas()">
+                        <option value="">-- Select Class --</option>
+                        <option value="XI-A">XI-A</option><option value="XI-B">XI-B</option><option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option><option value="XI-E">XI-E</option><option value="XI-F">XI-F</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" id="input-sekolah" value="" placeholder="Type school name..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <select id="select-kelompok" onchange="updateIdentitas()">
+                        <option value="">-- Select Group --</option>
+                        <option value="Kelompok 1">Group 1</option><option value="Kelompok 2">Group 2</option>
+                        <option value="Kelompok 3">Group 3</option><option value="Kelompok 4">Group 4</option>
+                        <option value="Kelompok 5">Group 5</option><option value="Kelompok 6">Group 6</option>
+                        <option value="Kelompok 7">Group 7</option><option value="Kelompok 8">Group 8</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="input-tanggal" onchange="updateIdentitas()">
+                </div>
+                <div class="form-group full-width">
+                    <div class="rekap-box">
+                        <h3 id="judul-rekap-kelompok">Group Members List ...</h3>
+                        <ol id="daftar-teman-kelompok">
+                            <li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please fill in Student Name, Class, and Group first)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 1: PROBLEM ================= -->
+        <div id="langkah1" class="section-target">
+            <div class="card">
+                <span class="badge">Part 1 · Problem</span>
+                <h2>Mengapa benda berputar berbeda-beda?</h2>
+                <p>Perhatikan tiga situasi: (1) dua sistem katrol dengan beban sama tetapi satu katrol berotasi dan satu ideal, (2) jungkat-jungkit dengan dua keranjang buah pada jarak berbeda, dan (3) partikel yang berputar mengelilingi poros. Ketiganya melibatkan <b>torsi</b>, <b>momen inersia</b>, dan <b>percepatan sudut</b>. Mengapa perilakunya berbeda?</p>
+                <p><strong>Your Prediction:</strong> pada katrol yang berotasi (memiliki momen inersia), bagaimana percepatan beban dibanding katrol ideal?</p>
+                <div class="options">
+                    <button class="option-btn" id="opt-kecil" onclick="cekPrediksi('kecil')">Lebih kecil, karena sebagian energi/gerak "dipakai" untuk memutar katrol</button>
+                    <button class="option-btn" id="opt-sama" onclick="cekPrediksi('sama')">Sama saja, karena massa beban sama</button>
+                    <button class="option-btn" id="opt-besar" onclick="cekPrediksi('besar')">Lebih besar, karena katrol membantu menarik beban</button>
+                </div>
+                <div id="feedback-box" class="feedback-box"></div>
+                <div class="info-box">
+                    <strong>Tujuan:</strong> memahami torsi (τ = r × F), momen inersia (I = Σ m·r²), hubungan τ = I·α, serta pengaruh distribusi massa terhadap gerak rotasi.
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 2: SIMULATION (3 TAB ROTASI) ================= -->
+        <div id="langkah2" class="section-target">
+            <div class="card">
+                <span class="badge">Part 2 · Simulation</span>
+                <h2>Tiga simulasi rotasi</h2>
+                <p>Pilih tab simulasi. <b>Sim 1</b>: perbandingan katrol berotasi vs tak berotasi (slow motion). <b>Sim 2</b>: jungkat-jungkit & torsi. <b>Sim 3</b>: momen inersia dengan 1, 2, dan 3 partikel.</p>
+
+                <div class="sim-tabs">
+                    <button class="sim-tab-btn active" onclick="switchSimTab('sim1', this)">Sim 1 · Katrol Berotasi vs Ideal</button>
+                    <button class="sim-tab-btn" onclick="switchSimTab('sim2', this)">Sim 2 · Jungkat-jungkit & Torsi</button>
+                    <button class="sim-tab-btn" onclick="switchSimTab('sim3', this)">Sim 3 · Momen Inersia (1/2/3 Partikel)</button>
+                </div>
+
+                <!-- ============ SIM 1: KATROL BEROTASI VS IDEAL ============ -->
+                <div class="sim-panel active" id="sim1">
+                    <div class="sim-dark-wrap">
+                        <div class="sim-canvas-box" id="katrolCanvasBox">
+                            <canvas id="katrolCanvas"></canvas>
+                        </div>
+                        <div class="sim-controls-dark">
+                            <button class="sim-btn-green" id="katrolStartBtn" onclick="toggleKatrol()">▶ Mulai</button>
+                            <button class="sim-btn-red" onclick="resetKatrol()">🔄 Reset</button>
+                        </div>
+
+                        <div class="sim-dark-grid" style="margin-top:10px;">
+                            <div class="sim-panel-dark">
+                                <h3>⚙️ Pengaturan Sistem</h3>
+                                <div class="val-row"><span>Radius Katrol (R)</span><span id="valR">0.10 m</span></div>
+                                <input type="range" id="inputR" min="0.05" max="0.20" step="0.01" value="0.10">
+                                <div class="val-row"><span>Massa Katrol (M)</span><span id="valMk">2.0 kg</span></div>
+                                <input type="range" id="inputMk" min="0.5" max="5.0" step="0.5" value="2.0">
+                                <label>Bentuk Katrol:</label>
+                                <select id="inputShape">
+                                    <option value="solid">Silinder Pejal (I = ½ M R²)</option>
+                                    <option value="hollow">Silinder Berongga (I = M R²)</option>
+                                </select>
+                                <div class="val-row"><span>Kecepatan Simulasi (slow motion)</span><span id="valSlow">0.30×</span></div>
+                                <input type="range" id="inputSlow" min="0.05" max="1.00" step="0.05" value="0.30">
+                            </div>
+
+                            <div class="sim-panel-dark">
+                                <h3>🔩 Beban</h3>
+                                <label>Katrol 1 (Ideal) — Massa Kiri / Kanan:</label>
+                                <div class="val-row"><span>m₁</span><span id="valM1">2.0 kg</span></div>
+                                <input type="range" id="inputM1" min="1" max="10" step="0.5" value="2.0">
+                                <div class="val-row"><span>m₂</span><span id="valM2">4.0 kg</span></div>
+                                <input type="range" id="inputM2" min="1" max="10" step="0.5" value="4.0">
+                                <label style="margin-top:6px;">Katrol 2 (Berotasi) — Massa Kiri / Kanan:</label>
+                                <div class="val-row"><span>m₃</span><span id="valM3">2.0 kg</span></div>
+                                <input type="range" id="inputM3" min="1" max="10" step="0.5" value="2.0">
+                                <div class="val-row"><span>m₄</span><span id="valM4">5.0 kg</span></div>
+                                <input type="range" id="inputM4" min="1" max="10" step="0.5" value="5.0">
+                            </div>
+                        </div>
+
+                        <div class="data-panel-mini" id="katrolDataPanel" style="display:none;">
+                            <div class="row"><span>Waktu tempuh (t)</span><span id="resT">0.00 s</span></div>
+                            <div class="row"><span>Percepatan Katrol 1 (ideal)</span><span id="resA1">0.00 m/s²</span></div>
+                            <div class="row"><span>Percepatan Katrol 2 (berotasi)</span><span id="resA2">0.00 m/s²</span></div>
+                            <div class="row"><span>Percepatan sudut Katrol 2 (α)</span><span id="resAlpha2">0.00 rad/s²</span></div>
+                            <div class="row"><span>Selisih percepatan</span><span id="resDiff">0.00 m/s²</span></div>
+                        </div>
+                    </div>
+
+                    <div class="question-block">
+                        <p>Question 1. Bandingkan percepatan beban pada katrol ideal (tanpa rotasi) dan katrol berotasi. Mengapa katrol berotasi menghasilkan percepatan beban yang lebih kecil?</p>
+                        <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                    </div>
+                </div>
+
+                <!-- ============ SIM 2: JUNGKAT-JUNGKIT & TORSI ============ -->
+                <div class="sim-panel" id="sim2">
+                    <div class="sim-dark-wrap">
+                        <div class="sim-canvas-box" id="seesawCanvasBox">
+                            <canvas id="seesawCanvas"></canvas>
+                        </div>
+                        <div class="sim-controls-dark">
+                            <button class="sim-btn-blue" id="seesawStartBtn" onclick="toggleSeesaw()">▶ Start</button>
+                            <button class="sim-btn-red" onclick="resetSeesaw()">🔄 Reset</button>
+                        </div>
+
+                        <div class="sim-dark-grid" style="margin-top:10px;">
+                            <div class="sim-panel-dark">
+                                <h3>🥬 Keranjang 1 (Kiri)</h3>
+                                <div class="val-row"><span>Jumlah Jeruk</span><span id="valJ1">5</span></div>
+                                <input type="range" id="inputJ1" min="0" max="10" step="1" value="5">
+                                <div class="val-row"><span>Jarak dari poros</span><span id="valD1">1.5 m</span></div>
+                                <input type="range" id="inputD1" min="0.5" max="2.0" step="0.1" value="1.5">
+                            </div>
+                            <div class="sim-panel-dark">
+                                <h3>🥬 Keranjang 2 (Kanan)</h3>
+                                <div class="val-row"><span>Jumlah Jeruk</span><span id="valJ2">5</span></div>
+                                <input type="range" id="inputJ2" min="0" max="10" step="1" value="5">
+                                <div class="val-row"><span>Jarak dari poros</span><span id="valD2">1.0 m</span></div>
+                                <input type="range" id="inputD2" min="0.5" max="2.0" step="0.1" value="1.0">
+                            </div>
+                        </div>
+
+                        <div class="data-panel-mini" style="margin-top:8px;">
+                            <div class="row"><span>Berat Keranjang 1 (W₁)</span><span id="resW1">20 N</span></div>
+                            <div class="row"><span>Torsi Keranjang 1 (τ₁)</span><span id="resTau1">30 N·m</span></div>
+                            <div class="row"><span>Berat Keranjang 2 (W₂)</span><span id="resW2">20 N</span></div>
+                            <div class="row"><span>Torsi Keranjang 2 (τ₂)</span><span id="resTau2">20 N·m</span></div>
+                            <div class="row"><span>Status Kesetimbangan</span><span id="resStatusSeesaw">Tidak seimbang</span></div>
+                        </div>
+
+                        <div class="sim-panel-dark" style="margin-top:8px;">
+                            <h3>📝 Kuis Singkat (Sim 2)</h3>
+                            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.4;margin-bottom:8px;">Dengan g = 10 m/s², 1 jeruk = 200 g. Pilih <b>S</b> (Setuju) atau <b>TS</b> (Tidak Setuju) untuk tiap pernyataan:</p>
+                            <table style="width:100%;border-collapse:collapse;font-size:0.72rem;background:#1e293b;border-radius:6px;overflow:hidden;border:1px solid #334155;">
+                                <thead>
+                                    <tr><th style="border:1px solid #334155;padding:5px;background:#0f172a;color:#38bdf8;text-align:left;">Pernyataan</th><th style="border:1px solid #334155;padding:5px;background:#0f172a;color:#38bdf8;width:30px;">S</th><th style="border:1px solid #334155;padding:5px;background:#0f172a;color:#38bdf8;width:30px;">TS</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td style="border:1px solid #334155;padding:5px;text-align:left;">1. Berat total buah dalam satu keranjang adalah 20 N.</td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q0" value="S"></td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q0" value="TS"></td></tr>
+                                    <tr><td style="border:1px solid #334155;padding:5px;text-align:left;">2. Besar momen gaya oleh keranjang kiri terhadap poros adalah 30 N·m.</td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q1" value="S"></td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q1" value="TS"></td></tr>
+                                    <tr><td style="border:1px solid #334155;padding:5px;text-align:left;">3. Besar torsi oleh keranjang 2 terhadap poros lebih besar daripada keranjang 1.</td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q2" value="S"></td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q2" value="TS"></td></tr>
+                                    <tr><td style="border:1px solid #334155;padding:5px;text-align:left;">4. Agar seimbang, jeruk pada keranjang 1 harus dikurangi 2.</td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q3" value="S"></td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q3" value="TS"></td></tr>
+                                    <tr><td style="border:1px solid #334155;padding:5px;text-align:left;">5. Agar seimbang, keranjang 2 harus ditambah 1 melon.</td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q4" value="S"></td><td style="border:1px solid #334155;padding:5px;text-align:center;"><input type="radio" name="seesaw_q4" value="TS"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="question-block">
+                        <p>Question 2. Berdasarkan Sim 2, jelaskan mengapa jungkat-jungkit bisa seimbang meskipun jumlah jeruk di kedua keranjang berbeda. Kaitkan dengan rumus τ = r × F.</p>
+                        <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                    </div>
+                </div>
+
+                <!-- ============ SIM 3: MOMEN INERSIA 1/2/3 PARTIKEL ============ -->
+                <div class="sim-panel" id="sim3">
+                    <div class="sim-dark-wrap">
+                        <div class="sim-canvas-box" id="moiCanvasBox">
+                            <canvas id="moiCanvas"></canvas>
+                        </div>
+                        <div class="sim-controls-dark">
+                            <button class="sim-btn-blue" id="moiPauseBtn" onclick="toggleMoi()">⏸ Jeda</button>
+                            <button class="sim-btn-red" onclick="resetMoi()">🔄 Reset</button>
+                        </div>
+
+                        <div class="sim-dark-grid" style="margin-top:10px;">
+                            <div class="sim-panel-dark">
+                                <h3>⚙️ Pengaturan Partikel</h3>
+                                <label>Jumlah Partikel:</label>
+                                <select id="moiCount">
+                                    <option value="1">1 Partikel (I = m·r²)</option>
+                                    <option value="2" selected>2 Partikel (I = 2·m·r²)</option>
+                                    <option value="3">3 Partikel (I = 3·m·r²)</option>
+                                </select>
+                                <div class="val-row"><span>Massa tiap partikel (m)</span><span id="valMoiM">2.0 kg</span></div>
+                                <input type="range" id="moiMass" min="0.5" max="5.0" step="0.5" value="2.0">
+                                <div class="val-row"><span>Jarak dari poros (r)</span><span id="valMoiR">1.5 m</span></div>
+                                <input type="range" id="moiRadius" min="0.5" max="3.0" step="0.1" value="1.5">
+                            </div>
+                            <div class="sim-panel-dark">
+                                <h3>📊 Hasil</h3>
+                                <div class="moi-dashboard">
+                                    <div class="moi-card"><div class="lbl">Momen Inersia (I)</div><div class="val" id="moiOutI">0.00</div></div>
+                                    <div class="moi-card"><div class="lbl">Kecepatan Sudut (ω)</div><div class="val" id="moiOutW">0.00</div></div>
+                                    <div class="moi-card"><div class="lbl">Momentum Sudut (L)</div><div class="val" id="moiOutL">15.0</div></div>
+                                </div>
+                                <div class="data-panel-mini" style="margin-top:8px;">
+                                    <div class="row"><span>Rumus</span><span id="moiFormula">I = 2·m·r²</span></div>
+                                    <div class="row"><span>L (konstan)</span><span>15.0 kg·m²/s</span></div>
+                                </div>
+                                <p style="font-size:0.72rem;color:#94a3b8;margin-top:6px;line-height:1.4;">💡 Momentum sudut (L) dijaga konstan. Saat I berubah, ω berubah otomatis (L = I·ω) — inilah kekekalan momentum sudut.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-block">
+                        <p>Question 3. Berdasarkan Sim 3, bagaimana pengaruh jumlah partikel terhadap momen inersia total? Jelaskan dengan rumus I = Σ m·r².</p>
+                        <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- ================= PART 3: EXPERIMENT (JUNGKAT-JUNGKIT) ================= -->
+        <div id="langkah3" class="section-target">
+            <div class="card">
+                <span class="badge">Part 3 · Experiment</span>
+                <h2>Eksperimen jungkat-jungkit & kesetimbangan torsi</h2>
+                <p>Gunakan <b>Sim 2</b> untuk menguji kesetimbangan jungkat-jungkit. Catat data torsi kiri dan kanan pada beberapa kombinasi, lalu simpulkan syarat kesetimbangan rotasi.</p>
+
+                <div class="guide-box">
+                    <h4>🛠️ Panduan Eksperimen</h4>
+                    <ol>
+                        <li>Buka Sim 2. Atur jumlah jeruk dan jarak keranjang kiri serta kanan.</li>
+                        <li>Catat berat keranjang (W = m·g, g = 10 m/s², 1 jeruk = 200 g, keranjang = 0) dan torsinya (τ = W × r).</li>
+                        <li>Ulangi untuk minimal 4 kombinasi berbeda. Tandai apakah jungkat-jungkit <b>seimbang</b>.</li>
+                        <li>Simpulkan: kapan sistem seimbang? Bandingkan τ₁ dan τ₂.</li>
+                    </ol>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-bottom:15px;">
+                    <button class="btn btn-outline" style="flex:1;padding:8px;" onclick="isiDataSeesaw()">Isi Contoh</button>
+                    <button class="btn btn-outline" style="flex:1;padding:8px;" onclick="kosongkanDataSeesaw()">Kosongkan</button>
+                </div>
+
+                <h3 style="font-size:1rem;margin-bottom:8px;color:var(--dark-green);">Tabel A — Data Torsi Jungkat-jungkit</h3>
+                <div class="table-responsive">
+                    <table id="tabel-seesaw">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>W₁ (N)</th>
+                                <th>r₁ (m)</th>
+                                <th>τ₁ (N·m)</th>
+                                <th>W₂ (N)</th>
+                                <th>r₂ (m)</th>
+                                <th>τ₂ (N·m)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Diisi JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 4. Berdasarkan Tabel A, apa syarat agar jungkat-jungkit seimbang? Tuliskan hubungan matematis antara τ₁ dan τ₂.</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 5. Jika r₁ diperbesar dua kali (dengan W₁ tetap), apa yang harus dilakukan pada W₂ agar tetap seimbang? Jelaskan.</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+
+                <div class="evidence-box">
+                    <div class="evidence-input-row">
+                        <div style="flex:1;">
+                            <label>Upload Screenshot Simulasi: <span style="color: var(--red); font-weight: bold;">(Wajib / Dinilai)</span></label>
+                            <input type="file" id="upload-bukti" accept="image/*" class="file-upload-input" onchange="previewImage(this)">
+                            <div style="font-size:0.75rem;color:#b45309;margin-top:4px;">*Screenshot harus menunjukkan canvas Sim 2 (jungkat-jungkit + status seimbang).</div>
+                        </div>
+                        <div style="flex:1;">
+                            <label>Tautan Video Pendukung (Opsional):</label>
+                            <input type="url" placeholder="https://bit.ly/video-kamu" class="url-video-input">
+                        </div>
+                    </div>
+                    <div class="preview-container"><img src="" alt="Pratinjau Foto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 4: ANALYSIS ================= -->
+        <div id="langkah4" class="section-target">
+            <div class="card">
+                <span class="badge">Part 4 · Analysis</span>
+                <h2>Analisis momen inersia dan percepatan rotasi</h2>
+                <p>Gunakan Sim 1 dan Sim 3 untuk menjawab pertanyaan analisis berikut.</p>
+
+                <div class="question-block">
+                    <p>Question 6. Berdasarkan Sim 1, jelaskan mengapa percepatan beban pada katrol berotasi lebih kecil daripada katrol ideal. Gunakan konsep momen inersia.</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 7. Berdasarkan Sim 3, jelaskan pengaruh distribusi massa (jumlah partikel dan jarak r) terhadap momen inersia. Mengapa momen inersia disebut "ukuran kelembaman rotasi"?</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 8. Jelaskan hubungan antara torsi (τ), momen inersia (I), dan percepatan sudut (α) menggunakan hukum Newton II untuk rotasi: τ = I·α.</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 5: REFLECTION ================= -->
+        <div id="langkah5" class="section-target">
+            <div class="card">
+                <span class="badge">Part 5 · Reflection</span>
+                <h2>Refleksi konsep</h2>
+
+                <div class="question-block">
+                    <p>Question 9. Sebuah katrol silinder pejal bermassa M = 2 kg dan radius R = 0,1 m. Berapa momen inersianya? (Gunakan I = ½ M R², jawab dalam kg·m², 3 desimal)</p>
+                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:15px;flex-direction:column;">
+                        <input type="number" id="input-jawaban-refleksi" placeholder="... kg·m²" step="0.001" style="width:100%;padding:10px;border:1px solid #93c5fd;border-radius:6px;">
+                        <button class="btn btn-outline" style="width:100%;padding:10px;border-radius:8px;" onclick="cekRefleksi()">Cek jawaban</button>
+                    </div>
+                    <div id="feedback-refleksi" class="feedback-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 10. Berikan satu contoh nyata (selain jungkat-jungkit) yang memanfaatkan prinsip torsi dan momen inersia. Jelaskan bagaimana prinsip tersebut bekerja pada alat/kejadian tersebut.</p>
+                    <textarea class="ans-field" placeholder="Tulis penjelasanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 11. Tulis kesimpulanmu dalam tiga kalimat tentang torsi, momen inersia, dan gerak rotasi.</p>
+                    <textarea class="ans-field" placeholder="Tulis kesimpulanmu..."></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ================= PART 6: CHALLENGE ================= -->
+        <div id="langkah6" class="section-target">
+            <div class="card">
+                <span class="badge" style="background-color:#fee2e2;color:#b91c1c;">Part 6 · Time Challenge</span>
+                <h2>🔥 Mode Tantangan (HOTS)</h2>
+                <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar rotasi, torsi, dan momen inersia. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
+                <p style="font-size:0.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
+
+                <div id="challenge-start-box" style="text-align:center;padding:20px;">
+                    <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size:1.2rem;padding:15px 30px;background:var(--dark-green);color:white;">▶ Mulai Tantangan</button>
+                    <div style="margin-top:10px;font-size:0.85rem;color:var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain.</div>
+                </div>
+
+                <div id="challenge-area" style="display:none;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;background:#f8fafc;padding:10px;border-radius:8px;border:1px solid #cbd5e1;">
+                        <div><strong>Waktu:</strong> <span id="timer-display" style="font-family:monospace;font-size:1.2rem;color:var(--red);font-weight:bold;">08:00</span></div>
+                        <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color:var(--red);font-weight:bold;">0</span></div>
+                    </div>
+
+                    <div id="soal-container" style="margin-bottom:15px;"></div>
+
+                    <div style="background:#1e293b;padding:10px;border-radius:8px;margin-bottom:15px;">
+                        <input type="text" id="calc-display" readonly style="width:100%;padding:10px;font-size:1.2rem;text-align:right;background:#f8fafc;border:none;border-radius:4px;margin-bottom:8px;">
+                        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;">
+                            <button class="calc-btn" onclick="calcInput('sin')" style="background:#8b5cf6;">sin</button>
+                            <button class="calc-btn" onclick="calcInput('cos')" style="background:#3b82f6;">cos</button>
+                            <button class="calc-btn" onclick="calcInput('tan')" style="background:#0ea5e9;">tan</button>
+                            <button class="calc-btn" onclick="calcInput('(')" style="background:#64748b;">(</button>
+                            <button class="calc-btn" onclick="calcInput(')')" style="background:#64748b;">)</button>
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn" onclick="calcInput('/')" style="background:#f59e0b;">÷</button>
+                            <button class="calc-btn" onclick="calcClear()" style="background:#ef4444;">C</button>
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn" onclick="calcInput('*')" style="background:#f59e0b;">×</button>
+                            <button class="calc-btn" onclick="calcInput('-')" style="background:#f59e0b;">-</button>
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn" onclick="calcInput('+')" style="background:#f59e0b;">+</button>
+                            <button class="calc-btn" onclick="calcSolve()" style="background:#10b981;grid-row:span 2;font-size:1.2rem;">=</button>
+                            <button class="calc-btn" onclick="calcInput('0')" style="grid-column:span 2;">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="selesaiTantangan()" style="width:100%;">Kumpulkan Jawaban Tantangan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PENILAIAN & CETAK ================= -->
+        <div class="section-target">
+            <div class="card">
+                <div class="grading-box">
+                    <h3>Automated System Evaluation</h3>
+                    <p>Total Score: <strong id="val-score">0</strong> / 100</p>
+                    <p>Predicate: <strong id="val-predicate" style="color:#b45309;">Needs Improvement</strong></p>
+                </div>
+                <div id="report-curang" style="display:none;padding:10px;background:#fee2e2;border:1px solid #ef4444;border-radius:6px;margin-top:10px;color:#b91c1c;font-weight:bold;margin-bottom:15px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>Cetak hasil kerja</h2>
+                <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
+                    <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
+                    <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
+                </div>
+                <div id="pesan-validasi" class="feedback-box error" style="display:none;">Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.</div>
+                <p class="no-print" style="font-size:0.85rem;color:var(--text-muted);margin-top:20px;line-height:1.5;">Konsep STEM: Science (torsi, momen inersia, hukum Newton II rotasi), Technology (simulasi virtual & pengukuran), Engineering (desain katrol & jungkat-jungkit), Mathematics (perkalian silang, aljabar, proporsi).</p>
+            </div>
+
+            <div class="card" id="teacher-login-section">
+                <h2>Teacher Portal (Login)</h2>
+                <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
+                <div style="display:flex;gap:10px;margin-top:10px;flex-direction:column;">
+                    <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding:10px;border:1px solid var(--border-color);border-radius:6px;">
+                    <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
+                </div>
+            </div>
+
+            <div id="teacher-panel">
+                <h2>Dashboard Rekap Nilai Siswa</h2>
+                <div style="margin-bottom:15px;">
+                    <label style="margin-right:10px;">Pilih Kelas:</label>
+                    <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding:6px 10px;border-radius:6px;">
+                        <option value="XI-A">XI-A</option><option value="XI-B">XI-B</option><option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option><option value="XI-E">XI-E</option><option value="XI-F">XI-F</option>
+                    </select>
+                    <button class="btn btn-outline" style="margin-left:10px;color:white;border-color:white;" onclick="tutupPanelGuru()">Tutup Panel</button>
+                </div>
+                <div class="table-responsive">
+                    <table style="color:white;border-color:#475569;">
+                        <thead>
+                            <tr style="background-color:#334155;">
+                                <th>No</th><th>Student Name</th><th>Group</th><th>Score</th>
+                                <th>Predicate</th><th>Pelanggaran</th><th>Date</th><th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= MODAL CHEAT ================= -->
+    <div id="cheat-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;text-align:center;padding:20px;backdrop-filter:blur(5px);">
+        <div style="background:#fee2e2;border:4px dashed #dc2626;border-radius:16px;padding:30px;max-width:500px;width:100%;box-shadow:0 10px 25px rgba(0,0,0,0.5);animation:shake 0.5s;">
+            <div style="font-size:4rem;margin-bottom:10px;">🚨</div>
+            <h2 style="color:#b91c1c;font-size:1.8rem;margin-bottom:10px;font-weight:800;">PERINGATAN KECURANGAN!</h2>
+            <p style="font-size:1.2rem;color:#1f2937;margin-bottom:5px;">Halo, <strong id="modal-nama-siswa" style="color:#dc2626;font-size:1.4rem;">Siswa</strong>!</p>
+            <p id="modal-alasan" style="font-size:1rem;color:#4b5563;margin-bottom:15px;">Sistem mendeteksi Anda melakukan aktivitas terlarang.</p>
+            <div style="background:#fef2f2;border:1px solid #f87171;border-radius:8px;padding:15px;margin-bottom:20px;">
+                <p style="font-size:0.9rem;color:#991b1b;font-weight:bold;">TOTAL PELANGGARAN ANDA:</p>
+                <p style="font-size:3rem;color:#b91c1c;font-weight:900;line-height:1;" id="modal-total-curang">0</p>
+                <p style="font-size:0.8rem;color:#991b1b;margin-top:5px;">Nilai Anda dipotong otomatis 10 poin per pelanggaran.</p>
+            </div>
+            <button onclick="tutupModalDanGantiSoal()" style="background:#dc2626;color:white;border:none;padding:12px 30px;font-size:1.1rem;font-weight:bold;border-radius:8px;cursor:pointer;width:100%;transition:0.2s;">Tutup & Kembali Ujian (Soal Diganti!)</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL AUDIT ================= -->
+    <div id="audit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10001;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(5px);">
+        <div style="background:white;border:4px solid #1e293b;border-radius:12px;padding:24px;max-width:720px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="color:#1e293b;font-size:1.3rem;">📋 Audit Log Pelanggaran</h2>
+                <button onclick="document.getElementById('audit-modal').style.display='none'" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;">✕</button>
+            </div>
+            <p id="audit-header" style="font-size:0.9rem;color:#475569;margin-bottom:12px;"></p>
+            <div class="table-responsive">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#e2e8f0;">
+                            <th style="padding:8px;border:1px solid #cbd5e1;">No</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Waktu</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Jenis</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Detail</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Soal ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+    </style>
+    <script>
+        document.getElementById('input-tanggal').valueAsDate = new Date();
+        const g = 10;
+
+        /* =====================================================
+           TAB SIMULASI
+           ===================================================== */
+        function switchSimTab(id, btn) {
+            document.querySelectorAll('.sim-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.sim-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+            setTimeout(() => {
+                if (id === 'sim1') { initKatrolCanvas(); drawKatrol(); }
+                if (id === 'sim2') { initSeesawCanvas(); drawSeesaw(); }
+                if (id === 'sim3') { initMoiCanvas(); drawMoi(); }
+            }, 50);
+        }
+
+        /* =====================================================
+           SIM 1 — KATROL BEROTASI VS IDEAL
+           ===================================================== */
+        const katrolCanvas = document.getElementById('katrolCanvas');
+        const kctx = katrolCanvas.getContext('2d');
+        let kRunning = false, kTime = 0, kY1 = 0, kY2 = 0, kTheta2 = 0;
+        let kR = 0.10, kMk = 2.0, kShape = 'solid';
+        let kM1 = 2.0, kM2 = 4.0, kM3 = 2.0, kM4 = 5.0;
+        let kSlow = 0.30;
+
+        function initKatrolCanvas() {
+            const box = document.getElementById('katrolCanvasBox');
+            if (!box) return;
+            katrolCanvas.width = box.clientWidth || 700;
+            katrolCanvas.height = box.clientHeight || 320;
+        }
+
+        function updateKatrolValues() {
+            kR = parseFloat(document.getElementById('inputR').value);
+            kMk = parseFloat(document.getElementById('inputMk').value);
+            kShape = document.getElementById('inputShape').value;
+            kM1 = parseFloat(document.getElementById('inputM1').value);
+            kM2 = parseFloat(document.getElementById('inputM2').value);
+            kM3 = parseFloat(document.getElementById('inputM3').value);
+            kM4 = parseFloat(document.getElementById('inputM4').value);
+            kSlow = parseFloat(document.getElementById('inputSlow').value);
+            document.getElementById('valR').innerText = kR.toFixed(2) + ' m';
+            document.getElementById('valMk').innerText = kMk.toFixed(1) + ' kg';
+            document.getElementById('valSlow').innerText = kSlow.toFixed(2) + '×';
+            document.getElementById('valM1').innerText = kM1.toFixed(1) + ' kg';
+            document.getElementById('valM2').innerText = kM2.toFixed(1) + ' kg';
+            document.getElementById('valM3').innerText = kM3.toFixed(1) + ' kg';
+            document.getElementById('valM4').innerText = kM4.toFixed(1) + ' kg';
+        }
+
+        function getKatrolCalc() {
+            const a1 = Math.abs(kM2 - kM1) / (kM1 + kM2) * g;
+            const c2 = (kShape === 'solid') ? 0.5 : 1.0;
+            const a2 = Math.abs(kM4 - kM3) / (kM3 + kM4 + c2 * kMk) * g;
+            const alpha2 = a2 / kR;
+            return { a1, a2, alpha2 };
+        }
+
+        function drawFixedPulley(x, y, radius, label) {
+            kctx.fillStyle = '#475569';
+            kctx.fillRect(x - 5, 25, 10, (y - 25) - radius);
+            kctx.fillStyle = '#334155';
+            kctx.fillRect(x - 14, 25, 28, 7);
+            kctx.fillStyle = '#1e293b';
+            kctx.beginPath(); kctx.arc(x, y, radius + 5, 0, Math.PI * 2); kctx.fill();
+            kctx.fillStyle = '#cbd5e1';
+            kctx.beginPath(); kctx.arc(x, y, radius, 0, Math.PI * 2); kctx.fill();
+            kctx.fillStyle = '#0f172a';
+            kctx.beginPath(); kctx.arc(x, y, 5, 0, Math.PI * 2); kctx.fill();
+            kctx.fillStyle = '#f8fafc';
+            kctx.font = 'bold 12px sans-serif';
+            kctx.textAlign = 'left';
+            kctx.textBaseline = 'middle';
+            kctx.fillText(label, x + radius + 10, y);
+            kctx.textBaseline = 'alphabetic';
+        }
+
+        function drawRotatingPulley(x, y, radius, angle, label) {
+            kctx.fillStyle = '#475569';
+            kctx.fillRect(x - 5, 25, 10, (y - 25) - radius);
+            kctx.fillStyle = '#334155';
+            kctx.fillRect(x - 14, 25, 28, 7);
+            kctx.fillStyle = '#1e293b';
+            kctx.beginPath(); kctx.arc(x, y, radius + 5, 0, Math.PI * 2); kctx.fill();
+            kctx.fillStyle = '#94a3b8';
+            kctx.beginPath(); kctx.arc(x, y, radius, 0, Math.PI * 2); kctx.fill();
+            kctx.strokeStyle = '#0f172a'; kctx.lineWidth = 2.5;
+            kctx.beginPath();
+            kctx.moveTo(x, y);
+            kctx.lineTo(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+            kctx.moveTo(x, y);
+            kctx.lineTo(x + radius * Math.cos(angle + Math.PI), y + radius * Math.sin(angle + Math.PI));
+            kctx.stroke();
+            kctx.fillStyle = '#0f172a';
+            kctx.beginPath(); kctx.arc(x, y, 6, 0, Math.PI * 2); kctx.fill();
+            kctx.fillStyle = '#f8fafc';
+            kctx.font = 'bold 12px sans-serif';
+            kctx.textAlign = 'left';
+            kctx.textBaseline = 'middle';
+            kctx.fillText(label, x + radius + 10, y);
+            kctx.textBaseline = 'alphabetic';
+        }
+
+        function drawBox(x, y, text, color, size) {
+            kctx.fillStyle = color;
+            kctx.fillRect(x - size / 2, y, size, size);
+            kctx.strokeStyle = '#f8fafc';
+            kctx.lineWidth = 2;
+            kctx.strokeRect(x - size / 2, y, size, size);
+            kctx.fillStyle = '#fff';
+            kctx.font = 'bold 11px sans-serif';
+            kctx.textAlign = 'center';
+            kctx.textBaseline = 'middle';
+            kctx.fillText(text, x, y + size / 2);
+            kctx.textBaseline = 'alphabetic';
+        }
+
+        function drawKatrol() {
+            if (!katrolCanvas.width || !katrolCanvas.height) return;
+            kctx.clearRect(0, 0, katrolCanvas.width, katrolCanvas.height);
+            kctx.fillStyle = '#334155';
+            kctx.fillRect(30, 25, katrolCanvas.width - 60, 8);
+
+            const x1 = katrolCanvas.width * 0.27;
+            const x2 = katrolCanvas.width * 0.73;
+            const pY = 110;
+            const initLen = 150;
+            const scale = 120;
+            const pr = Math.max(20, kR * 250);
+            const maxOff = initLen - pr - 15;
+
+            const eY1 = Math.min(kY1, maxOff / scale);
+            const eY2 = Math.min(kY2, maxOff / scale);
+
+            drawFixedPulley(x1, pY, pr, 'Katrol 1');
+            const h1 = eY1 * scale;
+            const b1y1 = pY + initLen - h1, b2y1 = pY + initLen + h1;
+            kctx.strokeStyle = '#94a3b8'; kctx.lineWidth = 2.5;
+            kctx.beginPath();
+            kctx.moveTo(x1 - pr, pY); kctx.lineTo(x1 - pr, b1y1);
+            kctx.moveTo(x1 + pr, pY); kctx.lineTo(x1 + pr, b2y1);
+            kctx.stroke();
+            drawBox(x1 - pr, b1y1, `${kM1}kg`, '#0ea5e9', Math.max(26, kM1 * 6));
+            drawBox(x1 + pr, b2y1, `${kM2}kg`, '#f43f5e', Math.max(26, kM2 * 6));
+
+            drawRotatingPulley(x2, pY, pr, kTheta2, 'Katrol 2');
+            const h2 = eY2 * scale;
+            const b1y2 = pY + initLen - h2, b2y2 = pY + initLen + h2;
+            kctx.strokeStyle = '#94a3b8'; kctx.lineWidth = 2.5;
+            kctx.beginPath();
+            kctx.moveTo(x2 - pr, pY); kctx.lineTo(x2 - pr, b1y2);
+            kctx.moveTo(x2 + pr, pY); kctx.lineTo(x2 + pr, b2y2);
+            kctx.stroke();
+            drawBox(x2 - pr, b1y2, `${kM3}kg`, '#0ea5e9', Math.max(26, kM3 * 6));
+            drawBox(x2 + pr, b2y2, `${kM4}kg`, '#f43f5e', Math.max(26, kM4 * 6));
+        }
+
+        function katrolLoop() {
+            if (kRunning) {
+                const dt = 0.03 * kSlow;
+                kTime += dt;
+                const calc = getKatrolCalc();
+                kY1 = 0.5 * calc.a1 * kTime * kTime;
+                kY2 = 0.5 * calc.a2 * kTime * kTime;
+                kTheta2 += calc.alpha2 * dt;
+                if (Math.abs(kY1) >= 1.1 || Math.abs(kY2) >= 1.1) {
+                    kRunning = false;
+                    document.getElementById('katrolStartBtn').innerText = '▶ Mulai';
+                    const dt2 = document.getElementById('katrolDataPanel');
+                    dt2.style.display = 'block';
+                    document.getElementById('resT').innerText = kTime.toFixed(2) + ' s';
+                    document.getElementById('resA1').innerText = calc.a1.toFixed(2) + ' m/s²';
+                    document.getElementById('resA2').innerText = calc.a2.toFixed(2) + ' m/s²';
+                    document.getElementById('resAlpha2').innerText = calc.alpha2.toFixed(2) + ' rad/s²';
+                    document.getElementById('resDiff').innerText = Math.abs(calc.a1 - calc.a2).toFixed(2) + ' m/s²';
+                }
+            }
+            drawKatrol();
+            if (kRunning) requestAnimationFrame(katrolLoop);
+        }
+
+        function toggleKatrol() {
+            if (!kRunning) {
+                if (kTime === 0) document.getElementById('katrolDataPanel').style.display = 'none';
+                kRunning = true;
+                document.getElementById('katrolStartBtn').innerText = '⏸ Jeda';
+                katrolLoop();
+            } else {
+                kRunning = false;
+                document.getElementById('katrolStartBtn').innerText = '▶ Lanjutkan';
+            }
+        }
+
+        function resetKatrol() {
+            kRunning = false; kTime = 0; kY1 = 0; kY2 = 0; kTheta2 = 0;
+            document.getElementById('katrolStartBtn').innerText = '▶ Mulai';
+            document.getElementById('katrolDataPanel').style.display = 'none';
+            updateKatrolValues();
+            drawKatrol();
+        }
+
+        ['inputR', 'inputMk', 'inputShape', 'inputM1', 'inputM2', 'inputM3', 'inputM4', 'inputSlow'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                if (!kRunning) { updateKatrolValues(); drawKatrol(); }
+            });
+        });
+        document.getElementById('inputShape').addEventListener('change', () => {
+            if (!kRunning) { updateKatrolValues(); drawKatrol(); }
+        });
+
+        /* =====================================================
+           SIM 2 — JUNGKAT-JUNGKIT & TORSI
+           ===================================================== */
+        const seesawCanvas = document.getElementById('seesawCanvas');
+        const sctx = seesawCanvas.getContext('2d');
+        let sRunning = false, sProgress = 0;
+        let sJ1 = 5, sD1 = 1.5, sJ2 = 5, sD2 = 1.0;
+
+        function initSeesawCanvas() {
+            const box = document.getElementById('seesawCanvasBox');
+            if (!box) return;
+            seesawCanvas.width = box.clientWidth || 700;
+            seesawCanvas.height = box.clientHeight || 320;
+        }
+
+        function updateSeesawValues() {
+            sJ1 = parseInt(document.getElementById('inputJ1').value);
+            sD1 = parseFloat(document.getElementById('inputD1').value);
+            sJ2 = parseInt(document.getElementById('inputJ2').value);
+            sD2 = parseFloat(document.getElementById('inputD2').value);
+            document.getElementById('valJ1').innerText = sJ1;
+            document.getElementById('valD1').innerText = sD1.toFixed(1) + ' m';
+            document.getElementById('valJ2').innerText = sJ2;
+            document.getElementById('valD2').innerText = sD2.toFixed(1) + ' m';
+            const w1 = sJ1 * 0.2 * g;
+            const w2 = sJ2 * 0.2 * g;
+            const tau1 = w1 * sD1, tau2 = w2 * sD2;
+            document.getElementById('resW1').innerText = w1.toFixed(0) + ' N';
+            document.getElementById('resTau1').innerText = tau1.toFixed(1) + ' N·m';
+            document.getElementById('resW2').innerText = w2.toFixed(0) + ' N';
+            document.getElementById('resTau2').innerText = tau2.toFixed(1) + ' N·m';
+            const status = Math.abs(tau1 - tau2) < 0.5 ? 'Seimbang ✓' : 'Tidak seimbang';
+            document.getElementById('resStatusSeesaw').innerText = status;
+        }
+
+        function drawMiniMelon(x, y) {
+            sctx.fillStyle = '#22c55e';
+            sctx.beginPath(); sctx.arc(x, y, 9, 0, Math.PI * 2); sctx.fill();
+            sctx.strokeStyle = '#14532d'; sctx.lineWidth = 1.5;
+            sctx.beginPath(); sctx.arc(x, y, 9, 0.2, Math.PI - 0.2); sctx.stroke();
+        }
+        function drawMiniOrange(x, y) {
+            sctx.fillStyle = '#ff7b00';
+            sctx.beginPath(); sctx.arc(x, y, 7.5, 0, Math.PI * 2); sctx.fill();
+            sctx.strokeStyle = '#c2410c'; sctx.lineWidth = 1.5; sctx.stroke();
+        }
+
+        function drawBasket(x, y, label, angle, orangeCount) {
+            sctx.save();
+            sctx.translate(x, y);
+            sctx.rotate(angle);
+            sctx.fillStyle = '#854d0e';
+            sctx.beginPath(); sctx.roundRect(-22, -26, 44, 26, [0, 0, 8, 8]); sctx.fill();
+            sctx.strokeStyle = '#ca8a04'; sctx.lineWidth = 2; sctx.stroke();
+            sctx.fillStyle = '#22c55e';
+            sctx.beginPath(); sctx.arc(0, -32, 9, 0, Math.PI * 2); sctx.fill();
+            sctx.strokeStyle = '#14532d'; sctx.lineWidth = 1.5; sctx.stroke();
+            sctx.fillStyle = '#ff7b00';
+            const n = Math.min(orangeCount, 5);
+            const positions = [-16, -8, 0, 8, 16];
+            for (let i = 0; i < n; i++) {
+                sctx.beginPath(); sctx.arc(positions[i], -20, 4.5, 0, Math.PI * 2); sctx.fill();
+                sctx.strokeStyle = '#c2410c'; sctx.lineWidth = 1; sctx.stroke();
+            }
+            if (orangeCount > 5) {
+                sctx.fillStyle = '#fbbf24';
+                sctx.font = 'bold 9px sans-serif';
+                sctx.textAlign = 'center';
+                sctx.fillText(`+${orangeCount - 5}`, 0, -34);
+            }
+            sctx.restore();
+            sctx.save();
+            sctx.translate(x, y);
+            sctx.rotate(angle);
+            sctx.fillStyle = '#f8fafc';
+            sctx.font = 'bold 11px sans-serif';
+            sctx.textAlign = 'center';
+            sctx.fillText(label, 0, -54);
+            sctx.restore();
+        }
+
+        function drawVectorBar(cx, cy, tx, ty, text, angle) {
+            sctx.save();
+            const off = 18;
+            const dx = Math.sin(angle) * off, dy = Math.cos(angle) * off;
+            const sx = cx + dx, sy = cy + dy, ex = tx + dx, ey = ty + dy;
+            sctx.strokeStyle = '#38bdf8'; sctx.fillStyle = '#38bdf8'; sctx.lineWidth = 2;
+            sctx.beginPath(); sctx.moveTo(sx, sy); sctx.lineTo(ex, ey); sctx.stroke();
+            sctx.beginPath(); sctx.arc(sx, sy, 3, 0, Math.PI * 2); sctx.arc(ex, ey, 3, 0, Math.PI * 2); sctx.fill();
+            const mx = (sx + ex) / 2, my = (sy + ey) / 2;
+            sctx.translate(mx, my); sctx.rotate(angle);
+            sctx.font = 'bold 12px sans-serif'; sctx.textAlign = 'center';
+            sctx.fillStyle = '#fbbf24';
+            sctx.fillText(text, 0, 16);
+            sctx.restore();
+        }
+
+        function drawSeesaw() {
+            if (!seesawCanvas.width || !seesawCanvas.height) return;
+            sctx.clearRect(0, 0, seesawCanvas.width, seesawCanvas.height);
+            const cx = seesawCanvas.width / 2;
+            const cy = seesawCanvas.height / 2 + 25;
+            const maxBeam = Math.min(110, seesawCanvas.width * 0.18);
+            const maxD = 2.0;
+            const leftOff = maxBeam * (sD1 / maxD);
+            const rightOff = maxBeam * (sD2 / maxD);
+
+            const w1 = sJ1 * 0.2 * g, w2 = sJ2 * 0.2 * g;
+            const t1 = w1 * sD1, t2 = w2 * sD2;
+            const diff = t1 - t2;
+
+            if (sRunning && sProgress < 1) {
+                sProgress = Math.min(sProgress + 0.02, 1);
+            } else if (!sRunning && sProgress > 0) {
+                sProgress = Math.max(sProgress - 0.02, 0);
+            }
+
+            const maxAngle = Math.max(-0.25, Math.min(0.25, -diff * 0.015));
+            const currentAngle = sProgress * maxAngle;
+
+            sctx.fillStyle = '#64748b';
+            sctx.beginPath();
+            sctx.moveTo(cx, cy);
+            sctx.lineTo(cx - 20, cy + 45);
+            sctx.lineTo(cx + 20, cy + 45);
+            sctx.closePath();
+            sctx.fill();
+
+            sctx.save();
+            sctx.translate(cx, cy);
+            sctx.rotate(currentAngle);
+            sctx.fillStyle = '#0284c7';
+            sctx.beginPath();
+            sctx.roundRect(-maxBeam, -6, maxBeam * 2, 12, 4);
+            sctx.fill();
+            sctx.strokeStyle = '#38bdf8'; sctx.lineWidth = 2; sctx.stroke();
+            sctx.fillStyle = '#f59e0b';
+            sctx.beginPath(); sctx.arc(0, 0, 4.5, 0, Math.PI * 2); sctx.fill();
+            sctx.restore();
+
+            const off = 6;
+            const lx = cx - leftOff * Math.cos(currentAngle);
+            const ly = cy - leftOff * Math.sin(currentAngle) - off;
+            const rx = cx + rightOff * Math.cos(currentAngle);
+            const ry = cy + rightOff * Math.sin(currentAngle) - off;
+
+            drawBasket(lx, ly, 'Keranjang 1', currentAngle, sJ1);
+            drawBasket(rx, ry, 'Keranjang 2', currentAngle, sJ2);
+            drawVectorBar(cx, cy, lx, ly + off, `${sD1.toFixed(1)} m`, currentAngle);
+            drawVectorBar(cx, cy, rx, ry + off, `${sD2.toFixed(1)} m`, currentAngle);
+
+            drawMiniMelon(14, 18);
+            sctx.fillStyle = '#f59e0b';
+            sctx.font = 'bold 10px sans-serif';
+            sctx.textAlign = 'left';
+            sctx.fillText('1 Melon = 1,0 kg |', 26, 22);
+            drawMiniOrange(132, 18);
+            sctx.fillText('1 Jeruk = 200 g', 143, 22);
+        }
+
+        function seesawLoop() {
+            drawSeesaw();
+            requestAnimationFrame(seesawLoop);
+        }
+
+        function toggleSeesaw() {
+            sRunning = !sRunning;
+            document.getElementById('seesawStartBtn').innerText = sRunning ? '⏸ Jeda' : '▶ Start';
+            updateSeesawValues();
+        }
+
+        function resetSeesaw() {
+            sRunning = false; sProgress = 0;
+            document.getElementById('seesawStartBtn').innerText = '▶ Start';
+            updateSeesawValues();
+            drawSeesaw();
+        }
+
+        ['inputJ1', 'inputD1', 'inputJ2', 'inputD2'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                updateSeesawValues();
+                if (!sRunning) drawSeesaw();
+            });
+        });
+
+        /* =====================================================
+           SIM 3 — MOMEN INERSIA (1/2/3 PARTIKEL)
+           ===================================================== */
+        const moiCanvas = document.getElementById('moiCanvas');
+        const mctx = moiCanvas.getContext('2d');
+        let moiRunning = true, moiTheta = 0;
+        const L_CONST = 15.0;
+        let moiCountN = 2, moiM = 2.0, moiR = 1.5;
+
+        function initMoiCanvas() {
+            const box = document.getElementById('moiCanvasBox');
+            if (!box) return;
+            moiCanvas.width = box.clientWidth || 700;
+            moiCanvas.height = box.clientHeight || 320;
+        }
+
+        function updateMoiValues() {
+            moiCountN = parseInt(document.getElementById('moiCount').value);
+            moiM = parseFloat(document.getElementById('moiMass').value);
+            moiR = parseFloat(document.getElementById('moiRadius').value);
+            document.getElementById('valMoiM').innerText = moiM.toFixed(1) + ' kg';
+            document.getElementById('valMoiR').innerText = moiR.toFixed(1) + ' m';
+            const I = moiCountN * moiM * moiR * moiR;
+            let omega = L_CONST / Math.max(I, 0.1);
+            if (omega > 8.0) omega = 8.0;
+            document.getElementById('moiOutI').innerText = I.toFixed(2) + ' kg·m²';
+            document.getElementById('moiOutW').innerText = omega.toFixed(2) + ' rad/s';
+            document.getElementById('moiOutL').innerText = L_CONST.toFixed(1);
+            document.getElementById('moiFormula').innerText = `I = ${moiCountN}·m·r²`;
+        }
+
+        function drawGlowingBall(x, y, r, text) {
+            mctx.shadowColor = '#38bdf8';
+            mctx.shadowBlur = 12;
+            mctx.fillStyle = '#38bdf8';
+            mctx.beginPath(); mctx.arc(x, y, r, 0, Math.PI * 2); mctx.fill();
+            mctx.shadowBlur = 0;
+            mctx.fillStyle = '#fff';
+            mctx.font = 'bold 10px sans-serif';
+            mctx.textAlign = 'center';
+            mctx.fillText(text, x, y - 18);
+        }
+
+        function drawMoi() {
+            if (!moiCanvas.width || !moiCanvas.height) return;
+            mctx.clearRect(0, 0, moiCanvas.width, moiCanvas.height);
+            const cx = moiCanvas.width / 2;
+            const cy = moiCanvas.height / 2 + 10;
+
+            mctx.strokeStyle = '#38bdf8'; mctx.lineWidth = 3;
+            mctx.setLineDash([5, 5]);
+            mctx.beginPath(); mctx.moveTo(cx, cy - 130); mctx.lineTo(cx, cy + 130); mctx.stroke();
+            mctx.setLineDash([]);
+
+            mctx.fillStyle = '#94a3b8';
+            mctx.font = '11px sans-serif';
+            mctx.textAlign = 'left';
+            mctx.fillText('Poros Rotasi', cx + 12, cy - 100);
+
+            const rPx = moiR * 50;
+            const orbitRx = rPx;
+            const orbitRy = rPx * 0.35;
+
+            mctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+            mctx.lineWidth = 1.5;
+            mctx.beginPath();
+            mctx.ellipse(cx, cy, orbitRx, orbitRy, 0, 0, Math.PI * 2);
+            mctx.stroke();
+
+            const I = moiCountN * moiM * moiR * moiR;
+            let omega = L_CONST / Math.max(I, 0.1);
+            if (omega > 8.0) omega = 8.0;
+
+            const positions = [];
+            for (let i = 0; i < moiCountN; i++) {
+                const angle = moiTheta + (i * 2 * Math.PI / moiCountN);
+                positions.push({
+                    x: cx + Math.cos(angle) * orbitRx,
+                    y: cy + Math.sin(angle) * orbitRy
+                });
+            }
+
+            if (moiCountN === 1) {
+                mctx.strokeStyle = 'rgba(148, 163, 184, 0.5)';
+                mctx.lineWidth = 2;
+                mctx.beginPath();
+                mctx.moveTo(cx, cy); mctx.lineTo(positions[0].x, positions[0].y);
+                mctx.stroke();
+            } else if (moiCountN === 2) {
+                mctx.strokeStyle = '#64748b'; mctx.lineWidth = 4;
+                mctx.beginPath();
+                mctx.moveTo(positions[0].x, positions[0].y);
+                mctx.lineTo(positions[1].x, positions[1].y);
+                mctx.stroke();
+            } else if (moiCountN === 3) {
+                mctx.strokeStyle = '#64748b'; mctx.lineWidth = 3;
+                mctx.beginPath();
+                mctx.moveTo(positions[0].x, positions[0].y);
+                mctx.lineTo(positions[1].x, positions[1].y);
+                mctx.lineTo(positions[2].x, positions[2].y);
+                mctx.closePath();
+                mctx.stroke();
+            }
+
+            positions.forEach((p, i) => {
+                drawGlowingBall(p.x, p.y, 14, `m${i + 1}`);
+            });
+        }
+
+        function moiLoop() {
+            if (moiRunning) moiTheta += 0.02;
+            drawMoi();
+            requestAnimationFrame(moiLoop);
+        }
+
+        function toggleMoi() {
+            moiRunning = !moiRunning;
+            document.getElementById('moiPauseBtn').innerText = moiRunning ? '⏸ Jeda' : '▶ Lanjutkan';
+        }
+        function resetMoi() {
+            moiRunning = true; moiTheta = 0;
+            document.getElementById('moiPauseBtn').innerText = '⏸ Jeda';
+            drawMoi();
+        }
+
+        ['moiCount', 'moiMass', 'moiRadius'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateMoiValues);
+        });
+        document.getElementById('moiCount').addEventListener('change', updateMoiValues);
+
+        /* =====================================================
+           TABEL EKSPERIMEN JUNGKAT-JUNGKIT
+           ===================================================== */
+        function inisialisasiTabelSeesaw() {
+            const tbody = document.querySelector('#tabel-seesaw tbody');
+            tbody.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:bold;background:#f8fafc;">${i + 1}</td>
+                    <td><input type="number" class="table-input in-w1" step="0.1" oninput="hitungTabelSeesaw(this)"></td>
+                    <td><input type="number" class="table-input in-r1" step="0.1" oninput="hitungTabelSeesaw(this)"></td>
+                    <td class="out-t1" style="font-weight:bold;color:#0369a1;">–</td>
+                    <td><input type="number" class="table-input in-w2" step="0.1" oninput="hitungTabelSeesaw(this)"></td>
+                    <td><input type="number" class="table-input in-r2" step="0.1" oninput="hitungTabelSeesaw(this)"></td>
+                    <td class="out-t2" style="font-weight:bold;color:#0369a1;">–</td>
+                    <td class="out-status" style="font-weight:bold;">–</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function hitungTabelSeesaw(inputEl) {
+            const row = inputEl.closest('tr');
+            const w1 = parseFloat(row.querySelector('.in-w1').value);
+            const r1 = parseFloat(row.querySelector('.in-r1').value);
+            const w2 = parseFloat(row.querySelector('.in-w2').value);
+            const r2 = parseFloat(row.querySelector('.in-r2').value);
+            const t1 = row.querySelector('.out-t1');
+            const t2 = row.querySelector('.out-t2');
+            const st = row.querySelector('.out-status');
+            if (!isNaN(w1) && !isNaN(r1)) { t1.innerText = (w1 * r1).toFixed(1); } else { t1.innerText = '–'; }
+            if (!isNaN(w2) && !isNaN(r2)) { t2.innerText = (w2 * r2).toFixed(1); } else { t2.innerText = '–'; }
+            if (!isNaN(w1) && !isNaN(r1) && !isNaN(w2) && !isNaN(r2)) {
+                const d = Math.abs(w1 * r1 - w2 * r2);
+                if (d < 0.5) { st.innerText = 'Seimbang ✓'; st.style.color = '#15803d'; }
+                else { st.innerText = 'Tidak'; st.style.color = '#b91c1c'; }
+            } else { st.innerText = '–'; st.style.color = '#6b7280'; }
+            hitungNilaiOtomatis();
+        }
+
+        function isiDataSeesaw() {
+            const rows = document.querySelectorAll('#tabel-seesaw tbody tr');
+            const data = [
+                { w1: 20, r1: 1.0, w2: 20, r2: 1.0 },
+                { w1: 30, r1: 1.0, w2: 20, r2: 1.5 },
+                { w1: 20, r1: 1.5, w2: 30, r2: 1.0 },
+                { w1: 40, r1: 1.0, w2: 40, r2: 1.0 }
+            ];
+            rows.forEach((row, i) => {
+                row.querySelector('.in-w1').value = data[i].w1;
+                row.querySelector('.in-r1').value = data[i].r1;
+                row.querySelector('.in-w2').value = data[i].w2;
+                row.querySelector('.in-r2').value = data[i].r2;
+                hitungTabelSeesaw(row.querySelector('.in-w1'));
+            });
+        }
+
+        function kosongkanDataSeesaw() {
+            document.querySelectorAll('#tabel-seesaw .table-input').forEach(i => i.value = '');
+            document.querySelectorAll('#tabel-seesaw .out-t1, #tabel-seesaw .out-t2, #tabel-seesaw .out-status').forEach(td => {
+                td.innerText = '–'; td.style.color = '#6b7280';
+            });
+            hitungNilaiOtomatis();
+        }
+
+        /* =====================================================
+           IDENTITAS
+           ===================================================== */
+        function updateIdentitas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const judul = document.getElementById('judul-rekap-kelompok');
+            if (kelompok) judul.innerText = `Group Members List (${kelompok})`;
+            else judul.innerText = `Group Members List ...`;
+            if (!kelas || !kelompok) {
+                document.getElementById('daftar-teman-kelompok').innerHTML = '<li style="color:var(--text-muted);list-style:none;margin-left:-20px;">(Please select Class and Group first)</li>';
+                return;
+            }
+            const key = `lkpd_rotasi_kelompok_${kelas}_${kelompok}`;
+            let dataGrup = JSON.parse(localStorage.getItem(key)) || [];
+            if (nama !== '') {
+                let sessionId = localStorage.getItem('lkpd_rotasi_session_id');
+                if (!sessionId) {
+                    sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    localStorage.setItem('lkpd_rotasi_session_id', sessionId);
+                }
+                const idx = dataGrup.findIndex(it => it.sessionId === sessionId);
+                if (idx !== -1) dataGrup[idx].nama = nama;
+                else dataGrup.push({ sessionId, nama, waktu: Date.now() });
+                localStorage.setItem(key, JSON.stringify(dataGrup));
+            }
+            renderDaftarAnggota(dataGrup);
+            hitungNilaiOtomatis();
+        }
+
+        function renderDaftarAnggota(dataGrup) {
+            const listEl = document.getElementById('daftar-teman-kelompok');
+            listEl.innerHTML = '';
+            if (!dataGrup || dataGrup.length === 0) {
+                listEl.innerHTML = '<li style="color:var(--text-muted);list-style:none;margin-left:-20px;">No members have joined this group yet.</li>';
+                return;
+            }
+            dataGrup.sort((a, b) => a.waktu - b.waktu);
+            dataGrup.forEach(it => {
+                const li = document.createElement('li');
+                li.textContent = it.nama;
+                listEl.appendChild(li);
+            });
+        }
+
+        function previewImage(input) {
+            const container = input.closest('.evidence-box').querySelector('.preview-container');
+            const img = container.querySelector('img');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { img.src = e.target.result; container.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                img.src = ''; container.style.display = 'none';
+            }
+            hitungNilaiOtomatis();
+        }
+
+        /* =====================================================
+           SISTEM PENILAIAN OTOMATIS
+           ===================================================== */
+        let peringatanCurang = 0;
+        let skorTantangan = 0;
+        let auditLog = [];
+        let challengeActive = false;
+        let tantanganSelesai = false;
+        let timerInterval = null;
+        let waktuSisa = 480;
+        let soalAktif = [];
+        let soalRiwayatId = [];
+        let blurGuardTimer = null;
+
+        function escHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function hitungNilaiOtomatis() {
+            let skor = 0;
+
+            // 1. TABEL EKSPERIMEN (maks 20)
+            const rows = document.querySelectorAll('#tabel-seesaw tbody tr');
+            let validRows = 0;
+            rows.forEach(row => {
+                const t1 = row.querySelector('.out-t1').innerText;
+                const t2 = row.querySelector('.out-t2').innerText;
+                if (t1 !== '–' && t2 !== '–') validRows++;
+            });
+            if (validRows >= 4) skor += 20;
+            else if (validRows > 0) skor += 8;
+
+            // 2. ESAI (10 field × 4.5 = 45)
+            const ans = document.querySelectorAll('.ans-field');
+            function esaiValid(text, minKata, wajib, opsional) {
+                const t = (text || '').toLowerCase().trim();
+                const kata = t.split(/\s+/).filter(w => w.length > 0);
+                if (kata.length < minKata) return 0;
+                const adaWajib = wajib.every(k => t.includes(k));
+                const adaOpsional = opsional.some(k => t.includes(k));
+                if (adaWajib && adaOpsional) return 1;
+                if (adaWajib || adaOpsional) return 0.5;
+                return 0.2;
+            }
+            skor += esaiValid(ans[0]?.value, 8, ['katrol', 'percepatan'], ['inersia', 'kecil', 'rotasi', 'momen']) * 4.5;
+            skor += esaiValid(ans[1]?.value, 8, ['torsi', 'seimbang'], ['sama', 'berbeda', 'jarak', 'r']) * 4.5;
+            skor += esaiValid(ans[2]?.value, 8, ['partikel', 'inersia'], ['momen', 'jumlah', 'bertambah', 'kuadrat']) * 4.5;
+            skor += esaiValid(ans[3]?.value, 8, ['torsi', 'seimbang'], ['sama', 'kiri', 'kanan', 'τ']) * 4.5;
+            skor += esaiValid(ans[4]?.value, 8, ['jarak', 'berat'], ['torsi', 'dua', 'kali', 'kompensasi']) * 4.5;
+            skor += esaiValid(ans[5]?.value, 8, ['inersia', 'percepatan'], ['katrol', 'kecil', 'momen', 'α']) * 4.5;
+            skor += esaiValid(ans[6]?.value, 8, ['inersia', 'massa'], ['momen', 'jarak', 'distribusi', 'kelembaman']) * 4.5;
+            skor += esaiValid(ans[7]?.value, 8, ['torsi', 'inersia'], ['alpha', 'α', 'percepatan', 'newton', 'τ']) * 4.5;
+            skor += esaiValid(ans[8]?.value, 8, ['torsi', 'inersia'], ['nyata', 'contoh', 'roda', 'penerapan']) * 4.5;
+            skor += esaiValid(ans[9]?.value, 8, ['rotasi', 'torsi'], ['inersia', 'momen', 'gerak', 'benda']) * 4.5;
+
+            // 3. REFLEKSI NUMERIK Q9: I = ½ M R² = ½ × 2 × 0.01 = 0.010 kg·m² (toleransi 0.002)
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            if (!isNaN(refVal) && Math.abs(refVal - 0.010) <= 0.002) skor += 10;
+
+            // 4. FOTO (maks 15)
+            const fileInput = document.getElementById('upload-bukti');
+            let fotoUploaded = false;
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                fotoUploaded = true;
+                skor += 15;
+            }
+
+            // 5. TANTANGAN (maks 40 = 4 × 10)
+            skor += Math.min(40, skorTantangan);
+
+            // 6. POTONGAN
+            skor -= peringatanCurang * 10;
+            skor = Math.max(0, Math.min(100, Math.round(skor)));
+            if (!fotoUploaded && skor > 60) skor = 60;
+            if (skorTantangan === 0 && skor > 75) skor = 75;
+
+            document.getElementById('val-score').innerText = skor;
+            let pred = 'Needs Improvement', warna = '#b91c1c';
+            if (skor >= 90) { pred = 'Excellent'; warna = '#15803d'; }
+            else if (skor >= 75) { pred = 'Good'; warna = '#0369a1'; }
+            else if (skor >= 60) { pred = 'Fair'; warna = '#b45309'; }
+            let label = pred;
+            if (!fotoUploaded) label += ' (Foto blm diunggah!)';
+            if (skorTantangan === 0) label += ' (Tantangan blm dikerjakan!)';
+            if (peringatanCurang > 0) label += ` [Curang: -${peringatanCurang * 10} poin]`;
+            document.getElementById('val-predicate').innerText = label;
+            document.getElementById('val-predicate').style.color = warna;
+
+            const reportBox = document.getElementById('report-curang');
+            if (reportBox) {
+                if (peringatanCurang > 0) {
+                    reportBox.style.display = 'block';
+                    let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran.`;
+                    if (auditLog.length > 0) {
+                        ringkasan += '<br><br><b>Detail:</b><ul style="margin-left:18px;font-weight:normal;">';
+                        auditLog.forEach(it => { ringkasan += `<li>[${escHtml(it.waktu)}] ${escHtml(it.detail)} (Soal: ${it.soalId ?? '—'})</li>`; });
+                        ringkasan += '</ul>';
+                    }
+                    reportBox.innerHTML = ringkasan;
+                } else {
+                    reportBox.style.display = 'none';
+                }
+            }
+            return { skor, predikat: pred };
+        }
+
+        document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
+        document.getElementById('input-jawaban-refleksi').addEventListener('input', hitungNilaiOtomatis);
+
+        function cekPrediksi(pilihan) {
+            const bk = document.getElementById('opt-kecil');
+            const bs = document.getElementById('opt-sama');
+            const bb = document.getElementById('opt-besar');
+            bk.className = 'option-btn'; bs.className = 'option-btn'; bb.className = 'option-btn';
+            const fb = document.getElementById('feedback-box');
+            if (pilihan === 'kecil') {
+                bk.classList.add('selected-correct');
+                fb.className = 'feedback-box correct';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Tepat!</strong> Katrol berotasi memiliki momen inersia, sehingga sebagian torsi "dipakai" untuk memutar katrol → percepatan beban lebih kecil.';
+            } else {
+                (pilihan === 'sama' ? bs : bb).classList.add('selected-wrong');
+                fb.className = 'feedback-box wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Belum tepat.</strong> Uji di Sim 1 untuk melihat perbedaannya.';
+            }
+        }
+
+        function cekRefleksi() {
+            const val = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            const fb = document.getElementById('feedback-refleksi');
+            if (isNaN(val)) {
+                fb.className = 'feedback-box wrong'; fb.style.display = 'block';
+                fb.innerHTML = '<strong>Oops!</strong> Masukkan angka terlebih dahulu.'; return;
+            }
+            if (Math.abs(val - 0.010) <= 0.002) {
+                fb.className = 'feedback-box correct'; fb.style.display = 'block';
+                fb.innerHTML = '<strong>Correct!</strong> I = ½ M R² = ½ × 2 × (0,1)² = 0,010 kg·m².';
+            } else {
+                fb.className = 'feedback-box wrong'; fb.style.display = 'block';
+                fb.innerHTML = '<strong>Belum tepat.</strong> Gunakan I = ½ M R² dengan R = 0,1 m.';
+            }
+            hitungNilaiOtomatis();
+        }
+
+        /* =====================================================
+           VALIDASI & CETAK
+           ===================================================== */
+        function validasiIdentitas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const box = document.getElementById('pesan-validasi');
+            if (nama === '' || kelas === '' || kelompok === '') {
+                box.style.display = 'block';
+                document.getElementById('identitas').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+            box.style.display = 'none';
+            return true;
+        }
+
+        function prosesCetakPDF() { if (validasiIdentitas()) window.print(); }
+
+        function prosesUnduhWord() {
+            if (!validasiIdentitas()) return;
+            const clone = document.getElementById('konten-lkpd').cloneNode(true);
+            clone.querySelectorAll('.no-print,script,#teacher-panel,#teacher-login-section,.sim-dark-wrap,.sim-tabs').forEach(el => el.remove());
+            clone.querySelectorAll('[onclick],[oninput],[onchange]').forEach(el => {
+                el.removeAttribute('onclick'); el.removeAttribute('oninput'); el.removeAttribute('onchange');
+            });
+            const blob = new Blob(['\ufeff<html><head><meta charset="utf-8"></head><body>' + clone.innerHTML + '</body></html>'], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url; link.download = 'Worksheet_6_Rotasi.doc';
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // ==========================================
+        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws6)
+        // ==========================================
+        function simpanTugasKeSistem(event) {
+            if (!validasiIdentitas()) return;
+            
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const sekolah = document.getElementById('input-sekolah').value.trim();
+            const tanggal = document.getElementById('input-tanggal').value;
+            const evaluasi = hitungNilaiOtomatis();
+
+            const dataUntukDikirim = {
+                nama: nama,
+                kelas: kelas,
+                sekolah: sekolah,
+                materi: "Worksheet 6 - Rotasi",
+                skor: evaluasi.skor,
+                progres: "100%",
+                pelanggaran: peringatanCurang,
+                log: JSON.stringify(auditLog), 
+                benar: 0, 
+                totalSoal: 0, 
+                tipeUjian: "Worksheet"
+            };
+
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+
+            const btnKirim = event.target;
+            const teksAsli = btnKirim.innerText;
+            btnKirim.innerText = "Mengirim data...";
+            btnKirim.disabled = true;
+
+            fetch(URL_GOOGLE_SCRIPT, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
+            })
+            .then(() => {
+                let rekap = JSON.parse(localStorage.getItem('lkpd_rotasi_rekap_nilai_guru')) || [];
+                const idx = rekap.findIndex(it => it.nama === nama && it.kelas === kelas);
+                const data = {
+                    nama, kelas, kelompok,
+                    skor: evaluasi.skor, predikat: evaluasi.predikat, tanggal,
+                    pelanggaran: peringatanCurang, auditLog: auditLog
+                };
+                if (idx !== -1) rekap[idx] = data; else rekap.push(data);
+                localStorage.setItem('lkpd_rotasi_rekap_nilai_guru', JSON.stringify(rekap));
+
+                alert("✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.");
+                btnKirim.innerText = teksAsli;
+                btnKirim.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("❌ Gagal mengirim data. Pastikan internet lancar.");
+                btnKirim.innerText = teksAsli;
+                btnKirim.disabled = false;
+            });
+        }
+
+        function bukaPanelGuru() {
+            if (document.getElementById('input-pin-guru').value === '2026') {
+                document.getElementById('teacher-panel').style.display = 'block';
+                muatRekapGuru();
+                document.getElementById('teacher-panel').scrollIntoView({ behavior: 'smooth' });
+            } else alert('PIN Guru Salah! (Gunakan: 2026)');
+        }
+        function tutupPanelGuru() { document.getElementById('teacher-panel').style.display = 'none'; }
+
+        function muatRekapGuru() {
+            const filter = document.getElementById('filter-kelas-guru').value;
+            const tbody = document.getElementById('tabel-rekap-body');
+            tbody.innerHTML = '';
+            const rekap = JSON.parse(localStorage.getItem('lkpd_rotasi_rekap_nilai_guru')) || [];
+            const data = rekap.filter(it => it.kelas === filter);
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#94a3b8;">Belum ada data siswa untuk kelas ${escHtml(filter)}</td></tr>`;
+                return;
+            }
+            data.forEach((s, i) => {
+                const pel = typeof s.pelanggaran === 'number' ? s.pelanggaran : 0;
+                const warnaPel = pel > 0 ? '#dc2626' : '#22c55e';
+                const punyaLog = pel > 0 && Array.isArray(s.auditLog) && s.auditLog.length > 0;
+                const tombol = punyaLog
+                    ? `<button class="btn btn-outline" style="padding:4px 8px;font-size:0.75rem;width:100%;color:white;border-color:white;" onclick="tampilkanAuditLog('${escHtml(s.kelas)}','${escHtml(s.nama.replace(/'/g, "\\'"))}')">Lihat Log</button>`
+                    : '<span style="color:#64748b;">—</span>';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${escHtml(s.nama)}</td>
+                    <td>${escHtml(s.kelompok)}</td>
+                    <td><b>${s.skor}</b></td>
+                    <td><span style="padding:2px 8px;border-radius:4px;background:${getPillColor(s.predikat)};color:white;">${escHtml(s.predikat)}</span></td>
+                    <td style="color:${warnaPel};font-weight:bold;">${pel}</td>
+                    <td>${escHtml(s.tanggal)}</td>
+                    <td>${tombol}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function tampilkanAuditLog(kelas, nama) {
+            const key = `lkpd_rotasi_audit_${kelas}_${nama}`;
+            let log = JSON.parse(localStorage.getItem(key)) || [];
+            if (log.length === 0) {
+                const rekap = JSON.parse(localStorage.getItem('lkpd_rotasi_rekap_nilai_guru')) || [];
+                const siswa = rekap.find(x => x.nama === nama && x.kelas === kelas);
+                if (siswa && Array.isArray(siswa.auditLog)) log = siswa.auditLog;
+            }
+            document.getElementById('audit-header').innerText = `Siswa: ${nama} · Kelas: ${kelas} · Total kejadian: ${log.length}`;
+            const tbody = document.getElementById('audit-body');
+            tbody.innerHTML = '';
+            if (log.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:12px;color:#64748b;">Tidak ada pelanggaran tercatat.</td></tr>`;
+            } else {
+                log.forEach((it, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${i + 1}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;">${escHtml(it.waktu)}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;"><b>${escHtml(it.jenis)}</b></td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;">${escHtml(it.detail)}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${escHtml(it.soalId ?? '—')}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            document.getElementById('audit-modal').style.display = 'flex';
+        }
+
+        function getPillColor(pred) {
+            if (pred === 'Excellent') return '#15803d';
+            if (pred === 'Good') return '#0369a1';
+            if (pred === 'Fair') return '#b45309';
+            return '#b91c1c';
+        }
+
+        /* =====================================================
+           CHALLENGE MODE — 4 SOAL (3 PG + 1 ISIAN), 8 MENIT
+           ===================================================== */
+        const bankSoalPG = [
+            {
+                id: 101,
+                tipe: 'pg',
+                teks: "Sebuah torsi 20 N·m bekerja pada roda dengan momen inersia 4 kg·m². Berapa percepatan sudutnya?",
+                pilihan: ["2 rad/s²", "4 rad/s²", "5 rad/s²", "8 rad/s²"],
+                jawaban: 2,
+                pembahasan: "α = τ / I = 20 / 4 = 5 rad/s²."
+            },
+            {
+                id: 102,
+                tipe: 'pg',
+                teks: "Silinder pejal massa 4 kg, radius 0,5 m. Berapa momen inersianya? (I = ½ M R²)",
+                pilihan: ["0,25 kg·m²", "0,50 kg·m²", "1,00 kg·m²", "2,00 kg·m²"],
+                jawaban: 1,
+                pembahasan: "I = ½ × 4 × (0,5)² = ½ × 4 × 0,25 = 0,5 kg·m²."
+            },
+            {
+                id: 103,
+                tipe: 'pg',
+                teks: "Gaya 30 N bekerja tegak lurus pada lengan 0,4 m. Berapa torsinya?",
+                pilihan: ["7,5 N·m", "12 N·m", "30 N·m", "75 N·m"],
+                jawaban: 1,
+                pembahasan: "τ = r × F = 0,4 × 30 = 12 N·m."
+            },
+            {
+                id: 104,
+                tipe: 'pg',
+                teks: "Jungkat-jungkit: beban kiri 30 N pada r = 1,2 m. Berapa beban kanan (N) pada r = 1,8 m agar seimbang?",
+                pilihan: ["15 N", "20 N", "25 N", "30 N"],
+                jawaban: 1,
+                pembahasan: "τ₁ = τ₂ → 30 × 1,2 = F₂ × 1,8 → 36 = 1,8 F₂ → F₂ = 20 N."
+            },
+            {
+                id: 105,
+                tipe: 'pg',
+                teks: "Cincin massa 3 kg, radius 0,5 m. Berapa momen inersianya? (I = M R²)",
+                pilihan: ["0,375 kg·m²", "0,750 kg·m²", "1,500 kg·m²", "3,000 kg·m²"],
+                jawaban: 1,
+                pembahasan: "I = M R² = 3 × (0,5)² = 3 × 0,25 = 0,75 kg·m²."
+            }
+        ];
+
+        const bankSoalIsian = [
+            { id: 201, tipe: 'isian', teks: "Benda bermassa 2 kg pada jarak 1,5 m dari poros. Berapa momen inersianya? (kg·m²)", jawaban: 4.5, satuan: "kg·m²", toleransi: 0.05 },
+            { id: 202, tipe: 'isian', teks: "Momentum sudut 12 kg·m²/s, momen inersia 3 kg·m². Berapa kecepatan sudutnya? (rad/s)", jawaban: 4, satuan: "rad/s", toleransi: 0.1 },
+            { id: 203, tipe: 'isian', teks: "Bola pejal massa 5 kg, radius 0,2 m. Berapa momen inersianya? (I = 0,4 M R², kg·m²)", jawaban: 0.08, satuan: "kg·m²", toleransi: 0.005 },
+            { id: 204, tipe: 'isian', teks: "Partikel 3 buah masing-masing 2 kg pada jarak 1 m dari poros. Berapa I total? (kg·m²)", jawaban: 6, satuan: "kg·m²", toleransi: 0.1 },
+            { id: 205, tipe: 'isian', teks: "Roda berputar 5 rad/s dengan I = 4 kg·m². Berapa energi kinetik rotasinya? (½ I ω², Joule)", jawaban: 50, satuan: "J", toleransi: 0.5 }
+        ];
+
+        function getWatermarkText() {
+            const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const kelas = document.getElementById('select-kelas').value || '-';
+            const kel = document.getElementById('select-kelompok').value || '-';
+            return `${nama} · ${kelas} · ${kel} · ${new Date().toLocaleString('id-ID')}`;
+        }
+
+        function wrapText(ctx, text, x, y, maxW, lh) {
+            const words = text.split(' ');
+            let line = '', curY = y;
+            for (let n = 0; n < words.length; n++) {
+                const test = line + words[n] + ' ';
+                if (ctx.measureText(test).width > maxW && n > 0) {
+                    ctx.fillText(line.trim(), x, curY);
+                    line = words[n] + ' ';
+                    curY += lh;
+                } else line = test;
+            }
+            ctx.fillText(line.trim(), x, curY);
+            return curY + lh;
+        }
+
+        function renderSoalKeCanvas(soal, idx, totalSoal) {
+            const c = document.createElement('canvas');
+            const dpr = window.devicePixelRatio || 1;
+            const W = 700, H = 160;
+            c.width = W * dpr; c.height = H * dpr;
+            c.style.width = '100%'; c.style.height = 'auto';
+            c.style.display = 'block'; c.style.borderRadius = '8px';
+            c.style.border = '1px solid #e2e8f0';
+            const cx = c.getContext('2d');
+            cx.scale(dpr, dpr);
+            cx.fillStyle = '#f8fafc'; cx.fillRect(0, 0, W, H);
+            cx.fillStyle = '#b91c1c'; cx.font = 'bold 16px "Segoe UI", Tahoma, sans-serif';
+            const labelTipe = soal.tipe === 'pg' ? 'Pilihan Ganda' : 'Isian';
+            cx.fillText(`Soal ${idx + 1} dari ${totalSoal} (${labelTipe}):`, 20, 32);
+            cx.fillStyle = '#1f2937'; cx.font = '15px "Segoe UI", Tahoma, sans-serif';
+            wrapText(cx, soal.teks, 20, 62, W - 40, 22);
+            cx.save(); cx.globalAlpha = 0.10; cx.fillStyle = '#dc2626';
+            cx.font = 'bold 26px "Segoe UI", Tahoma, sans-serif';
+            cx.translate(W / 2, H / 2); cx.rotate(-0.35);
+            cx.textAlign = 'center'; cx.fillText(getWatermarkText(), 0, 0);
+            cx.restore();
+            cx.strokeStyle = '#e2e8f0'; cx.lineWidth = 1;
+            cx.strokeRect(0.5, 0.5, W - 1, H - 1);
+            return c;
+        }
+
+        function renderPilihanPG(soal, index) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pg-options';
+            const letters = ['A', 'B', 'C', 'D'];
+            soal.pilihan.forEach((p, i) => {
+                const label = document.createElement('label');
+                label.className = 'pg-option';
+                label.innerHTML = `
+                    <input type="radio" name="pg-soal-${index}" value="${i}" onchange="pilihPG(${index}, ${i})">
+                    <span class="pg-letter">${letters[i]}.</span>
+                    <span>${p}</span>
+                `;
+                wrapper.appendChild(label);
+            });
+            return wrapper;
+        }
+
+        function pilihPG(index, val) {
+            document.querySelectorAll(`input[name="pg-soal-${index}"]`).forEach(r => {
+                r.closest('.pg-option').classList.remove('selected');
+            });
+            const selected = document.querySelector(`input[name="pg-soal-${index}"][value="${val}"]`);
+            if (selected) selected.closest('.pg-option').classList.add('selected');
+        }
+
+        function renderSoalAktif(notif) {
+            const container = document.getElementById('soal-container');
+            container.innerHTML = '';
+            if (notif) {
+                const n = document.createElement('div');
+                n.style.cssText = 'background:#fef3c7;color:#92400e;padding:10px;border-radius:6px;font-size:0.85rem;font-weight:bold;margin-bottom:10px;text-align:center;';
+                n.innerText = notif;
+                container.appendChild(n);
+            }
+            soalAktif.forEach((soal, idx) => {
+                const wrap = document.createElement('div');
+                wrap.style.position = 'relative';
+                wrap.style.marginBottom = '18px';
+                wrap.style.padding = '10px';
+                wrap.style.background = '#ffffff';
+                wrap.style.border = '1px solid #e2e8f0';
+                wrap.style.borderRadius = '8px';
+
+                wrap.appendChild(renderSoalKeCanvas(soal, idx, soalAktif.length));
+
+                if (soal.tipe === 'pg') {
+                    wrap.appendChild(renderPilihanPG(soal, idx));
+                } else {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-top:10px;';
+                    row.innerHTML = `
+                        <input type="number" id="jawab-soal-${idx}" class="table-input" style="width:120px;padding:10px;" placeholder="Jawaban" autocomplete="off">
+                        <span style="font-weight: bold;">${escHtml(soal.satuan || '')}</span>
+                    `;
+                    wrap.appendChild(row);
+                }
+
+                container.appendChild(wrap);
+            });
+            let wm = document.getElementById('wm-soal');
+            if (!wm) { wm = document.createElement('div'); wm.id = 'wm-soal'; container.appendChild(wm); }
+            wm.innerText = getWatermarkText();
+        }
+
+        // Pilih 4 soal: 3 PG + 1 isian (acak)
+        function pilihSoalBaru() {
+            const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
+            const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
+            const dipilih = [
+                shuffledPG[0],
+                shuffledPG[1],
+                shuffledPG[2],
+                shuffledIsian[0]
+            ];
+            return dipilih.sort(() => 0.5 - Math.random());
+        }
+
+        function catatPelanggaran(reason) {
+            if (!challengeActive || tantanganSelesai) return;
+            peringatanCurang++;
+            const detailMap = {
+                tab: 'Meninggalkan halaman ujian (pindah tab / minimize)',
+                blur: 'Jendela browser kehilangan fokus',
+                printscreen: 'Menekan tombol PrintScreen',
+                shortcut: 'Menekan shortcut copy/select/print/save'
+            };
+            const soalId = (soalAktif && soalAktif[0]) ? soalAktif[0].id : null;
+            auditLog.push({ waktu: new Date().toLocaleString('id-ID'), jenis: reason, detail: detailMap[reason] || 'Aktivitas terlarang', soalId, totalKejadian: peringatanCurang });
+            const c = document.getElementById('cheat-count');
+            if (c) c.innerText = peringatanCurang;
+            const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            document.getElementById('modal-nama-siswa').innerText = nama;
+            document.getElementById('modal-total-curang').innerText = peringatanCurang;
+            const alasanMap = {
+                tab: 'Sistem mendeteksi Anda meninggalkan halaman ujian.',
+                blur: 'Sistem mendeteksi jendela browser kehilangan fokus.',
+                printscreen: 'Sistem mendeteksi Anda menekan PrintScreen. Screenshot dilarang!',
+                shortcut: 'Sistem mendeteksi Anda menekan shortcut copy/select/print/save.'
+            };
+            document.getElementById('modal-alasan').innerText = alasanMap[reason] || 'Aktivitas terlarang terdeteksi.';
+            document.getElementById('cheat-modal').style.display = 'flex';
+            hitungNilaiOtomatis();
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && challengeActive && !tantanganSelesai) catatPelanggaran('tab');
+        });
+        window.addEventListener('blur', () => {
+            if (!challengeActive || tantanganSelesai) return;
+            clearTimeout(blurGuardTimer);
+            blurGuardTimer = setTimeout(() => {
+                if (!document.hasFocus() && challengeActive && !tantanganSelesai) catatPelanggaran('blur');
+            }, 300);
+        });
+        window.addEventListener('focus', () => clearTimeout(blurGuardTimer));
+
+        (function () {
+            const t = document.getElementById('challenge-area');
+            if (!t) return;
+            ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(evt => {
+                t.addEventListener(evt, e => {
+                    if (challengeActive && !tantanganSelesai) { e.preventDefault(); return false; }
+                });
+            });
+        })();
+
+        document.addEventListener('keydown', e => {
+            if (!challengeActive || tantanganSelesai) return;
+            const key = (e.key || '').toLowerCase();
+            if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+                e.preventDefault();
+                try { navigator.clipboard.writeText(''); } catch (err) {}
+                catatPelanggaran('printscreen'); return;
+            }
+            if ((e.ctrlKey || e.metaKey) && ['c', 'a', 'p', 's', 'u'].includes(key)) {
+                e.preventDefault(); catatPelanggaran('shortcut'); return;
+            }
+        });
+
+        function tutupModalDanGantiSoal() {
+            document.getElementById('cheat-modal').style.display = 'none';
+            if (challengeActive && !tantanganSelesai) {
+                soalAktif = pilihSoalBaru();
+                renderSoalAktif('⚠️ Karena terdeteksi pelanggaran, soal Anda telah DIGANTI dengan 4 soal baru!');
+            }
+        }
+
+        function mulaiTantangan() {
+            document.getElementById('challenge-start-box').style.display = 'none';
+            document.getElementById('challenge-area').style.display = 'block';
+            soalAktif = pilihSoalBaru();
+            renderSoalAktif(null);
+            waktuSisa = 480; // 8 menit
+            peringatanCurang = 0;
+            tantanganSelesai = false;
+            challengeActive = true;
+            skorTantangan = 0;
+            auditLog = [];
+            document.getElementById('cheat-count').innerText = '0';
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                waktuSisa--;
+                updateTimerDisplay();
+                if (waktuSisa <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Waktu habis! Jawaban Anda akan dikumpulkan secara otomatis.');
+                    selesaiTantangan();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(waktuSisa / 60), d = waktuSisa % 60;
+            document.getElementById('timer-display').innerText = `${String(m).padStart(2, '0')}:${String(d).padStart(2, '0')}`;
+        }
+
+        function selesaiTantangan() {
+            if (tantanganSelesai) return;
+            tantanganSelesai = true;
+            challengeActive = false;
+            clearInterval(timerInterval);
+
+            let benar = 0;
+            const detailJawaban = [];
+
+            soalAktif.forEach((soal, idx) => {
+                if (soal.tipe === 'pg') {
+                    const selected = document.querySelector(`input[name="pg-soal-${idx}"]:checked`);
+                    const val = selected ? parseInt(selected.value) : -1;
+                    const isBenar = (val === soal.jawaban);
+                    if (isBenar) benar++;
+                    detailJawaban.push({
+                        no: idx + 1,
+                        tipe: 'PG',
+                        jawaban: val >= 0 ? String.fromCharCode(65 + val) : '—',
+                        kunci: String.fromCharCode(65 + soal.jawaban),
+                        benar: isBenar
+                    });
+                } else {
+                    const el = document.getElementById(`jawab-soal-${idx}`);
+                    const val = el ? parseFloat(el.value) : NaN;
+                    const isBenar = (!isNaN(val) && Math.abs(val - soal.jawaban) <= soal.toleransi);
+                    if (isBenar) benar++;
+                    detailJawaban.push({
+                        no: idx + 1,
+                        tipe: 'Isian',
+                        jawaban: isNaN(val) ? '—' : val,
+                        kunci: soal.jawaban,
+                        benar: isBenar
+                    });
+                }
+            });
+
+            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
+            skorTantangan = benar * 10;
+
+            let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
+            detailJawaban.forEach(d => {
+                pesan += `${d.no}. [${d.tipe}] Jawaban Anda: ${d.jawaban} | Kunci: ${d.kunci} → ${d.benar ? '✔ Benar' : '✘ Salah'}\n`;
+            });
+            if (peringatanCurang > 0) {
+                pesan += `\n⚠️ ANDA TERDETEKSI MELAKUKAN ${peringatanCurang} PELANGGARAN. Nilai akhir akan dipotong.`;
+            }
+            alert(pesan);
+            hitungNilaiOtomatis();
+        }
+
+        /* =====================================================
+           KALKULATOR ILMIAH
+           ===================================================== */
+        let calcExp = '';
+        function calcInput(val) {
+            if (['sin', 'cos', 'tan'].includes(val)) calcExp += val + '(';
+            else calcExp += val;
+            document.getElementById('calc-display').value = calcExp;
+        }
+        function calcClear() { calcExp = ''; document.getElementById('calc-display').value = ''; }
+        function calcSolve() {
+            try {
+                let open = (calcExp.match(/\(/g) || []).length;
+                let close = (calcExp.match(/\)/g) || []).length;
+                for (let i = 0; i < open - close; i++) calcExp += ')';
+                let toEval = calcExp.replace(/(sin|cos|tan)\(([^)]+)\)/g, (m, f, x) => `Math.${f}((${x}) * Math.PI / 180)`);
+                const res = Math.round(eval(toEval) * 10000) / 10000;
+                document.getElementById('calc-display').value = res;
+                calcExp = res.toString();
+            } catch (e) {
+                document.getElementById('calc-display').value = 'Format Salah';
+                calcExp = '';
+            }
+        }
+
+        /* =====================================================
+           INIT
+           ===================================================== */
+        window.addEventListener('load', () => {
+            initKatrolCanvas();
+            initSeesawCanvas();
+            initMoiCanvas();
+            updateKatrolValues();
+            updateSeesawValues();
+            updateMoiValues();
+            inisialisasiTabelSeesaw();
+            requestAnimationFrame(katrolLoop);
+            requestAnimationFrame(seesawLoop);
+            requestAnimationFrame(moiLoop);
+            hitungNilaiOtomatis();
+        });
+
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                initKatrolCanvas(); initSeesawCanvas(); initMoiCanvas();
+                drawKatrol(); drawSeesaw(); drawMoi();
+            }, 150);
+        });
+    </script>
+</body>
+</html>

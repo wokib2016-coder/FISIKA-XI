@@ -1,0 +1,2135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD Vektor - Navigasi Perahu</title>
+    <style>
+        :root {
+            --dark-green: #1a3c34;
+            --accent-yellow: #f2c94c;
+            --bg-light: #f8faf9;
+            --border-color: #d1d5db;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --light-green: #e6f4ea;
+            --red: #dc2626;
+            --green-text: #15803d;
+            --red-text: #b91c1c;
+            --blue: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background-color: var(--dark-green);
+            color: white;
+            padding: 30px 15px;
+            text-align: left;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .header-left, .header-right { display: flex; flex-direction: column; }
+        .header-right { text-align: right; }
+
+        .gold-text {
+            color: var(--accent-yellow);
+            text-decoration: underline;
+            text-decoration-color: #38bdf8;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 2px;
+        }
+
+        .cyan-text { color: #38bdf8; margin-top: 4px; font-size: 0.85rem; font-weight: 500; }
+
+        .header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+        .header h1 span { color: var(--accent-yellow); }
+        .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
+
+        .header .tagline-gold {
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--accent-yellow);
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: flex-start;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 15px;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: none;
+            border: 2px solid transparent;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 20px;
+            margin-right: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: var(--light-green);
+            color: var(--dark-green);
+            border-color: #34d399;
+        }
+
+        .container { max-width: 800px; margin: 20px auto 40px auto; padding: 0 15px; }
+        .section-target { scroll-margin-top: 80px; padding-top: 5px; margin-bottom: 25px; }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            word-wrap: break-word;
+        }
+
+        .card h2 { font-size: 1.3rem; margin-bottom: 12px; color: var(--text-dark); }
+        .card p { margin-bottom: 12px; color: #4b5563; font-size: 0.95rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #93c5fd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: white;
+        }
+
+        .rekap-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .rekap-box h3 { font-size: 1rem; color: var(--dark-green); margin-bottom: 8px; }
+
+        #daftar-teman-kelompok { list-style-type: decimal; padding-left: 20px; color: var(--text-dark); font-size: 0.95rem; }
+        #daftar-teman-kelompok li { padding: 3px 0; font-weight: 500; }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--light-green);
+            color: #047857;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .options { display: flex; gap: 8px; flex-direction: column; margin-bottom: 15px; }
+
+        .option-btn {
+            background: white;
+            border: 2px solid var(--text-dark);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .option-btn:hover { background-color: #f3f4f6; }
+        .option-btn.selected-correct { border-color: var(--green-text); background-color: var(--light-green); color: var(--green-text); }
+        .option-btn.selected-wrong { border-color: var(--red); background-color: #fee2e2; color: var(--red-text); }
+
+        .feedback-box {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .feedback-box.correct { background-color: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
+        .feedback-box.wrong { background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }
+        .feedback-box.error { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+
+        .info-box {
+            background-color: var(--light-green);
+            border-left: 4px solid #10b981;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #065f46;
+            margin-bottom: 15px;
+        }
+
+        .simulation-area {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #bae6fd;
+            position: relative;
+        }
+
+        .simulation-area h3 { font-size: 1.2rem; color: var(--dark-green); margin-bottom: 8px; text-align: center; }
+
+        .canvas-container {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+            background-color: #2980b9; 
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 2px solid #34495e;
+        }
+        #simCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .legend-container { display: flex; gap: 10px; font-size: 0.75rem; margin-bottom: 12px; justify-content: center; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 4px; font-weight: 600;}
+        .legend-color { width: 16px; height: 4px; border-radius: 2px; }
+
+        .slider-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .slider-group { display: flex; flex-direction: column; transition: opacity 0.3s; }
+        .slider-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-weight: 600; font-size: 0.85rem; }
+        input[type=range] { width: 100%; accent-color: #059669; }
+
+        .result-box {
+            background-color: var(--dark-green);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .result-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+        .result-item { background: #f8faf9; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; }
+        .result-item .label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+        .result-item .value { font-size: 1.3rem; font-weight: bold; color: var(--text-dark); }
+        .result-item .value.red { color: var(--red); }
+        .result-item .value.green { color: var(--green-text); }
+
+        .question-block { margin-top: 20px; }
+        .question-block p { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 90px;
+            outline: none;
+        }
+        textarea:focus { border-color: #3b82f6; }
+
+        .evidence-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .evidence-box label { font-size: 0.85rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px; }
+        .evidence-input-row { display: flex; gap: 10px; flex-direction: column; margin-bottom: 8px; }
+        .file-upload-input, .url-video-input { width: 100%; padding: 8px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+        
+        .preview-container { margin-top: 8px; display: none; max-width: 220px; position: relative; }
+        .preview-container img { width: 100%; border-radius: 6px; border: 1px solid #94a3b8; }
+
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 15px; }
+        table { width: 100%; min-width: 550px; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--light-green); color: var(--dark-green); font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        
+        .table-input { width: 70px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; }
+        .table-input-cell { width: 60px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; background-color: #f8fafc; }
+
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 12px; flex-direction: column; }
+        .btn { width: 100%; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; text-align: center; }
+        .btn-outline { background: white; border: 2px solid var(--text-dark); color: var(--text-dark); }
+        .btn-primary { background: white; border: 2px solid var(--dark-green); color: var(--dark-green); font-weight: bold; }
+        .btn-primary:hover { background: var(--light-green); }
+
+        .grading-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .grading-box h3 { font-size: 1rem; color: #92400e; margin-bottom: 6px; }
+
+        .calc-btn {
+            padding: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            background: #475569;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .calc-btn:hover { background: #64748b; }
+        .calc-btn:active { transform: scale(0.95); }
+
+        #teacher-panel { display: none; background: #1e293b; color: white; padding: 25px; border-radius: 12px; margin-top: 30px; }
+        #teacher-panel h2 { color: var(--accent-yellow); margin-bottom: 15px; }
+
+        .guide-box {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 5px solid #3b82f6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .guide-box h4 { color: #1e3a8a; margin-bottom: 8px; font-size: 1rem; }
+        .guide-box ul { margin-left: 20px; font-size: 0.9rem; color: #334155; }
+        .guide-box li { margin-bottom: 6px; }
+
+        .note-box { background-color: #fffbeb; border: 1px dashed #f59e0b; border-radius: 6px; padding: 12px; margin-top: 10px; font-size: 0.9rem; color: #92400e; line-height: 1.5; }
+        .note-box strong { color: #b45309; }
+
+        .img-soal-container {
+            text-align: center;
+            margin: 15px 0;
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #bae6fd;
+        }
+        .img-soal-container svg {
+            max-width: 260px;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        #soal-container, #soal-container * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        #soal-container { position: relative; }
+        #wm-soal {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(220, 38, 38, 0.12);
+            transform: rotate(-25deg);
+            white-space: nowrap;
+            z-index: 5;
+        }
+
+        .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .pg-option {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+            background: #fff; font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+        }
+        .pg-option:hover { background: #f1f5f9; }
+        .pg-option input[type="radio"] { width: auto; margin: 0; cursor: pointer; }
+        .pg-option.selected { border-color: #10b981; background: #ecfdf5; }
+        .pg-option .pg-letter { font-weight: bold; min-width: 18px; }
+
+        @media (min-width: 600px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+            .slider-grid { grid-template-columns: 1fr 1fr 1fr; }
+            .result-grid { grid-template-columns: repeat(3, 1fr); }
+            .options, .action-buttons { flex-direction: row; }
+            .btn { width: auto; }
+            .header { padding: 40px 20px; }
+            .header h1 { font-size: 2.5rem; }
+            .container { padding: 0 20px; }
+            .card { padding: 30px; }
+            .evidence-input-row { flex-direction: row; }
+        }
+
+        @media print {
+            .nav-tabs, .action-buttons, .options, .slider-grid, .btn, .feedback-box, .evidence-box input[type="file"], .evidence-box input[type="url"], #teacher-login-section, .no-print, .mode-toggle, .calc-btn, #challenge-start-box, #challenge-area, #cheat-modal, #audit-modal { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 20px; page-break-inside: avoid; }
+            body { background-color: white; }
+            input, select, textarea { border: none !important; background: transparent !important; resize: none; appearance: none; }
+            .preview-container { display: block !important; max-width: 250px; margin-top: 8px; }
+            .evidence-box { border: 1px solid #ccc; background: transparent; padding: 10px; }
+            .guide-box { border: 1px solid #ccc; background: transparent; }
+            .note-box { border: 1px solid #ccc; background: transparent; }
+            .table-input-cell { background: transparent; border: none; font-weight: bold;}
+            body.print-mode-guru .header, body.print-mode-guru .nav-tabs, body.print-mode-guru #identitas, body.print-mode-guru #langkah1, body.print-mode-guru #langkah2, body.print-mode-guru #langkah3, body.print-mode-guru #langkah4, body.print-mode-guru #langkah5 > .card, body.print-mode-guru #langkah6, body.print-mode-guru #teacher-login-section { display: none !important; }
+            body.print-mode-guru #teacher-panel { display: block !important; background: white !important; color: black !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+            body.print-mode-guru #teacher-panel h2 { color: black !important; margin-bottom: 20px; }
+            body.print-mode-guru #teacher-panel table { color: black !important; border-color: #000 !important; width: 100%; }
+            body.print-mode-guru #teacher-panel table th { background: #e5e7eb !important; color: black !important; border: 1px solid #ccc; }
+            body.print-mode-guru #teacher-panel table td { border-bottom: 1px solid #ccc !important; }
+            body.print-mode-guru #teacher-panel button, body.print-mode-guru #teacher-panel select, body.print-mode-guru #teacher-panel label { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="gold-text">Wokib</span>
+                <span class="cyan-text">Deep Learning</span>
+            </div>
+            <div class="header-right">
+                <span class="gold-text">2026</span>
+                <span class="cyan-text">STEM</span>
+            </div>
+        </div>
+        <h1>Vector Navigation, <span>How to Cross a River Against the Current?</span></h1>
+        <p>Worksheet - 1 · Vectors: Resultant and Components</p>
+        <p>Physics XI - Phase F</p>
+        <p class="tagline-gold">Let's master the concepts, understand the context, and prove the truth</p>
+    </header>
+    <nav class="nav-tabs">
+        <a href="#langkah1" class="tab-btn active">1. Problem</a>
+        <a href="#langkah2" class="tab-btn">2. Simulation</a>
+        <a href="#langkah3" class="tab-btn">3. Experiment</a>
+        <a href="#langkah4" class="tab-btn">4. Analysis</a>
+        <a href="#langkah5" class="tab-btn">5. Reflection</a>
+        <a href="#langkah6" class="tab-btn">6. Challenge</a>
+    </nav>
+
+    <div class="container" id="konten-lkpd">
+
+        <div class="card section-target" id="identitas">
+            <h2>Identity</h2>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Student Name</label>
+                    <input type="text" id="input-nama" placeholder="Type your full name here..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select id="select-kelas" onchange="updateIdentitas()">
+                        <option value="">-- Select Class --</option>
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" id="input-sekolah" value="" placeholder="Type school name..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <select id="select-kelompok" onchange="updateIdentitas()">
+                        <option value="">-- Select Group --</option>
+                        <option value="Kelompok 1">Group 1</option>
+                        <option value="Kelompok 2">Group 2</option>
+                        <option value="Kelompok 3">Group 3</option>
+                        <option value="Kelompok 4">Group 4</option>
+                        <option value="Kelompok 5">Group 5</option>
+                        <option value="Kelompok 6">Group 6</option>
+                        <option value="Kelompok 7">Group 7</option>
+                        <option value="Kelompok 8">Group 8</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="input-tanggal" onchange="updateIdentitas()">
+                </div>
+                <div class="form-group full-width">
+                    <div class="rekap-box">
+                        <h3 id="judul-rekap-kelompok">Group Members List ...</h3>
+                        <ol id="daftar-teman-kelompok">
+                            <li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please fill in Student Name, Class, and Group first)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah1" class="section-target">
+            <div class="card">
+                <span class="badge">Part 1 · Problem</span>
+                <h2>Menyeberangi Sungai</h2>
+                <p>Seorang nelayan ingin menyeberangi sungai yang memiliki arus deras. Jika ia mengarahkan perahunya lurus ke seberang (tegak lurus tepi), perahunya akan terseret oleh arus ke arah hilir. Bagaimana cara nelayan tersebut mengarahkan perahunya agar bisa sampai di seberang tepat lurus dengan titik awalnya?</p>
+                <p><strong>Your Prediction:</strong> Jika kecepatan arus diperbesar, maka sudut kemudi perahu harus diarahkan...</p>
+
+                <div class="options">
+                    <button class="option-btn" id="opt-lawan" onclick="cekPrediksi('lawan')">Lebih Melawan Arus (Sudut Lebih Besar)</button>
+                    <button class="option-btn" id="opt-ikut" onclick="cekPrediksi('ikut')">Mengikuti Arus (Sudut Lebih Kecil)</button>
+                    <button class="option-btn" id="opt-tetap" onclick="cekPrediksi('tetap')">Tetap Tegak Lurus</button>
+                </div>
+
+                <div id="feedback-box" class="feedback-box"></div>
+                <div class="info-box">
+                    <strong>Tujuan:</strong> memahami penjumlahan vektor (resultan) kecepatan, menguraikan vektor ke sumbu X dan Y, serta menentukan sudut kemudi untuk menyeberang lurus.
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah2" class="section-target">
+            <div class="card">
+                <span class="badge">Part 2 · Simulation</span>
+                <h2>Ubah parameter, amati lintasannya</h2>
+                <p>Atur kecepatan perahu, arus, dan sudut kemudi. Cari tahu berapa sudut yang tepat agar perahu bergerak lurus (tidak terseret) menuju seberang!</p>
+
+                <div class="simulation-area">
+                    <div class="canvas-container">
+                        <canvas id="simCanvas"></canvas>
+                    </div>
+
+                    <div class="legend-container">
+                        <div class="legend-item"><div class="legend-color" style="background-color: #ef4444;"></div> Vektor Perahu (v_p/a)</div>
+                        <div class="legend-item"><div class="legend-color" style="background-color: #facc15;"></div> Vektor Arus (v_a/t)</div>
+                        <div class="legend-item"><div class="legend-color" style="background-color: #10b981;"></div> Vektor Resultan (v_p/t)</div>
+                    </div>
+
+                    <div class="slider-grid">
+                        <div class="slider-group">
+                            <div class="slider-container"><span>Kecepatan Perahu (v_p):</span><span id="label-vp">4.0 m/s</span></div>
+                            <input type="range" id="vp-slider" min="1" max="10" value="4" step="0.5">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-container"><span>Kecepatan Arus (v_a):</span><span id="label-va">3.0 m/s</span></div>
+                            <input type="range" id="va-slider" min="0" max="8" value="3" step="0.5">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-container"><span>Sudut Kemudi (θ):</span><span id="label-theta">120°</span></div>
+                            <input type="range" id="theta-slider" min="0" max="180" value="120" step="1">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="startSimulation()">▶ Mulai Berlayar</button>
+                        <button class="btn btn-outline" style="flex:1;" onclick="resetSimulation()">↺ Reset</button>
+                    </div>
+                </div>
+
+                <div class="result-box">Resultan: v_r = √(v_rx² + v_ry²)</div>
+
+                <div class="result-grid">
+                    <div class="result-item"><div class="label">Kecepatan Sumbu X (v_x)</div><div class="value" id="res-vx">0.00 m/s</div></div>
+                    <div class="result-item"><div class="label">Kecepatan Sumbu Y (v_y)</div><div class="value red" id="res-vy">3.46 m/s</div></div>
+                    <div class="result-item"><div class="label">Kecepatan Resultan (v_r)</div><div class="value red" id="res-vr">3.46 m/s</div></div>
+                </div>
+
+                <div class="info-box" id="info-sim">Geser slider untuk mengatur arah perahu. Perhatikan apakah perahu bisa berlayar lurus ke seberang!</div>
+
+                <div class="question-block">
+                    <p>Question 1. Berdasarkan simulasi, untuk menyeberang lurus (v_x = 0) melawan arus, ke arah mana perahu harus dikemudikan? (Hilir atau Hulu?)</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah3" class="section-target">
+            <div class="card">
+                <span class="badge">Part 3 · Experiment</span>
+                <h2>Uji dengan data simulasi</h2>
+                <p>Gunakan simulasi di atas untuk mencari tahu sudut yang tepat agar perahu bisa menyeberang lurus, lalu catat datanya di tabel.</p>
+
+                <div class="guide-box">
+                    <h4>🛠️ Panduan Pengambilan Data</h4>
+                    <ul>
+                        <li>Atur Kecepatan Arus (v_a) menjadi <strong>3.0 m/s</strong>.</li>
+                        <li>Atur Kecepatan Perahu (v_p) menjadi <strong>4.0 m/s</strong>.</li>
+                        <li>Geser Sudut Kemudi (θ) sampai perahu tidak terseret ke kanan/kiri (v_x = 0).</li>
+                        <li>Catat sudut tersebut di tabel.</li>
+                        <li>Ulangi untuk Kecepatan Perahu yang berbeda.</li>
+                    </ul>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="tabel-eksperimen">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Kecepatan Arus (m/s)</th>
+                                <th rowspan="2">Kecepatan Perahu (m/s)</th>
+                                <th colspan="2">Data Simulasi</th>
+                                <th rowspan="2">Teori Sudut (θ)</th>
+                            </tr>
+                            <tr>
+                                <th>Sudut (θ)</th>
+                                <th>v_x Hasil</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="number" class="table-input-cell val-va" value="3.0" step="0.5" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input-cell val-vp" value="4.0" step="0.5" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input input-theta" step="1" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input input-vx" step="0.01" oninput="hitungTabel(this)"></td>
+                                <td class="teori-theta">–</td>
+                            </tr>
+                            <tr>
+                                <td><input type="number" class="table-input-cell val-va" value="3.0" step="0.5" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input-cell val-vp" value="5.0" step="0.5" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input input-theta" step="1" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input input-vx" step="0.01" oninput="hitungTabel(this)"></td>
+                                <td class="teori-theta">–</td>
+                            </tr>
+                            <tr>
+                                <td><input type="number" class="table-input-cell val-va" value="4.0" step="0.5" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input-cell val-vp" value="5.0" step="0.5" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input input-theta" step="1" oninput="hitungTabel(this)"></td>
+                                <td><input type="number" class="table-input input-vx" step="0.01" oninput="hitungTabel(this)"></td>
+                                <td class="teori-theta">–</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 2. Berdasarkan data, bagaimana hubungan antara kecepatan arus dan sudut kemudi yang dibutuhkan agar perahu lurus?</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+
+                    <div class="evidence-box">
+                        <div class="evidence-input-row">
+                            <div style="flex: 1;">
+                                <label>Upload Screenshot Simulasi: <span style="color: var(--red); font-weight: bold;">(Wajib / Dinilai)</span></label>
+                                <input type="file" id="upload-foto-bukti" accept="image/*" class="file-upload-input" onchange="previewImage(this)">
+                            </div>
+                        </div>
+                        <div class="preview-container"><img src="" alt="Pratinjau Foto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="langkah4" class="section-target">
+            <div class="card">
+                <span class="badge">Part 4 · Analysis</span>
+                <h2>Hitung Komponen Vektor</h2>
+                <p>Gunakan persamaan trigonometri untuk mencari komponen vektor perahu (v_px dan v_py) dan resultan totalnya.</p>
+
+                <div class="form-grid" style="margin-bottom: 15px;">
+                    <div class="form-group full-width">
+                        <label>Kecepatan Perahu (v_p): <span id="label-hitung-vp">4.0 m/s</span></label>
+                        <input type="range" id="slider-hitung-vp" min="1" max="10" value="4" step="0.5" style="accent-color: #059669;" oninput="hitungAnalisis()">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Kecepatan Arus (v_a): <span id="label-hitung-va">3.0 m/s</span></label>
+                        <input type="range" id="slider-hitung-va" min="0" max="8" value="3" step="0.5" style="accent-color: #059669;" oninput="hitungAnalisis()">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Sudut Kemudi (θ): <span id="label-hitung-theta">90°</span></label>
+                        <input type="range" id="slider-hitung-theta" min="0" max="180" value="90" step="1" style="accent-color: #059669;" oninput="hitungAnalisis()">
+                    </div>
+                </div>
+
+                <div class="result-grid four-cols" style="grid-template-columns: 1fr 1fr;">
+                    <div class="result-item"><div class="label">Vektor X Perahu (v_px)</div><div class="value" id="out-vpx">0.00 m/s</div></div>
+                    <div class="result-item"><div class="label">Vektor Y Perahu (v_py)</div><div class="value red" id="out-vpy">4.00 m/s</div></div>
+                    <div class="result-item"><div class="label">Resultan Sumbu X (v_rx)</div><div class="value red" id="out-vrx">3.00 m/s</div></div>
+                    <div class="result-item"><div class="label">Resultan Total (v_r)</div><div class="value red" id="out-vr">5.00 m/s</div></div>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 3. Tuliskan rumus untuk mencari sudut kemudi (θ) yang dibutuhkan agar perahu bisa menyeberang lurus (v_rx = 0)!</p>
+                    <textarea class="ans-field" placeholder="Tulis rumus matematikanya..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah5" class="section-target">
+            <div class="card">
+                <span class="badge">Part 5 · Reflection</span>
+                <h2>Refleksi Konsep</h2>
+
+                <div class="question-block">
+                    <p>Question 5. Sebuah perahu dengan kecepatan 5 m/s ingin menyeberangi sungai yang arusnya 3 m/s. Berapa sudut kemudi (θ) yang dibutuhkan agar perahu bergerak lurus ke seberang? (Gunakan arcsin)</p>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-direction: column;">
+                        <input type="number" id="input-jawaban-refleksi" placeholder="... derajat" style="width: 100%; padding: 10px; border: 1px solid #93c5fd; border-radius: 6px;">
+                        <button class="btn btn-outline" style="width: 100%; padding: 10px; border-radius: 8px;" onclick="cekRefleksi()">Cek jawaban</button>
+                    </div>
+                    <div id="feedback-refleksi" class="feedback-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 6. Apa yang akan terjadi pada waktu tempuh perahu jika ia dikemudikan melawan arus (dibandingkan jika tidak ada arus)?</p>
+                    <textarea class="ans-field" placeholder="Tulis penjelasanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 7. Tulis kesimpulanmu dalam tiga kalimat.</p>
+                    <textarea class="ans-field" placeholder="Tulis kesimpulanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 8. Perhatikan ilustrasi simulasi berikut:</p>
+                    
+                    <div class="img-soal-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 280">
+                            <rect width="300" height="280" fill="#2980b9"/>
+                            <path d="M20,60 Q50,55 80,60 T140,60 T200,60 T260,60" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+                            <path d="M40,120 Q70,115 100,120 T160,120 T220,120 T280,120" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+                            <path d="M10,180 Q40,175 70,180 T130,180 T190,180 T250,180" stroke="rgba(255,255,255,0.25)" stroke-width="2" fill="none"/>
+                            <rect width="300" height="35" fill="#2c3e50"/>
+                            <rect y="30" width="300" height="5" fill="#e67e22"/>
+                            <rect y="245" width="300" height="35" fill="#2c3e50"/>
+                            <rect y="245" width="300" height="5" fill="#e67e22"/>
+                            <rect x="125" y="45" width="50" height="25" rx="4" fill="#8B4513" stroke="#3e1d04" stroke-width="2"/>
+                            <text x="133" y="62" fill="#fff" font-size="11" font-weight="bold">KAYU</text>
+                            <line x1="150" y1="70" x2="150" y2="225" stroke="#facc15" stroke-dasharray="6,6" stroke-width="2.5"/>
+                            <g transform="translate(150, 235)">
+                                <ellipse cx="0" cy="0" rx="12" ry="18" fill="#8B4513" stroke="#3e1d04" stroke-width="2"/>
+                                <ellipse cx="0" cy="0" rx="8" ry="12" fill="#b91c1c"/>
+                                <rect x="-6" y="-3" width="12" height="6" fill="#DEB887"/>
+                            </g>
+                            <line x1="150" y1="215" x2="150" y2="135" stroke="#ef4444" stroke-width="3"/>
+                            <polygon points="150,125 145,137 155,137" fill="#ef4444"/>
+                            <text x="122" y="175" font-size="14" font-weight="bold" fill="#ef4444">vP</text>
+                            <line x1="155" y1="235" x2="225" y2="235" stroke="#facc15" stroke-width="3"/>
+                            <polygon points="235,235 223,230 223,240" fill="#facc15"/>
+                            <text x="185" y="222" font-size="14" font-weight="bold" fill="#facc15">vA</text>
+                        </svg>
+                    </div>
+
+                    <p>Gambar di atas memperlihatkan perahu yang akan diarahkan tegak lurus aliran sungai serta searah perahu tampak sebatang kayu yang hanyut lurus bersama aliran air sungai. Apabila <strong>v<sub>P</sub></strong> adalah vektor kecepatan perahu terhadap air dan <strong>v<sub>A</sub></strong> adalah vektor kecepatan aliran air sungai terhadap tanah, maka gerak perahu dan kayu akan ...</p>
+                    
+                    <div class="options" style="margin-top: 10px;">
+                        <button class="option-btn opt-8" data-val="salah" onclick="cekRefleksi8(this)">🔲 Bertabrakan hanya jika nilai v<sub>A</sub> = 0</button>
+                        <button class="option-btn opt-8" data-val="salah" onclick="cekRefleksi8(this)">🔲 Bertabrakan hanya jika nilai v<sub>P</sub> &gt; v<sub>A</sub></button>
+                        <button class="option-btn opt-8" data-val="salah" onclick="cekRefleksi8(this)">🔲 Tidak bertabrakan hanya nilai v<sub>P</sub> &lt; v<sub>A</sub></button>
+                        <button class="option-btn opt-8" data-val="salah" onclick="cekRefleksi8(this)">🔲 Tidak bertabrakan jika nilai v<sub>P</sub> = 0</button>
+                        <button class="option-btn opt-8" data-val="benar" onclick="cekRefleksi8(this)">🔲 Jika v<sub>P</sub> &gt; 0, bertabrakan berapapun nilai v<sub>P</sub></button>
+                    </div>
+                    
+                    <div style="margin-top: 12px;">
+                        <label style="font-weight: 600; font-size: 0.9rem; color: #334155; display: block; margin-bottom: 6px;">Tuliskan alasanmu:</label>
+                        <textarea class="ans-field" placeholder="Tuliskan alasan pemilihan jawaban di atas berdasarkan konsep vektor..."></textarea>
+                    </div>
+                </div>
+
+                <div class="grading-box">
+                    <h3>Automated System Evaluation</h3>
+                    <p>Total Score: <strong id="val-score">0</strong> / 100</p>
+                    <p>Predicate: <strong id="val-predicate" style="color: #b45309;">Needs Improvement</strong></p>
+                </div>
+            </div>
+
+            <!-- ================= BAGIAN 6: TIME CHALLENGE ================= -->
+            <div id="langkah6" class="section-target">
+                <div class="card">
+                    <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
+                    <h2>🔥 Mode Tantangan (HOTS)</h2>
+                    <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar vektor & navigasi perahu. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
+                    <p style="font-size:0.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
+                    
+                    <div id="challenge-start-box" style="text-align: center; padding: 20px;">
+                        <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size: 1.2rem; padding: 15px 30px; background: var(--dark-green); color: white;">▶ Mulai Tantangan</button>
+                        <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain.</div>
+                    </div>
+
+                    <div id="challenge-area" style="display: none;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <div><strong>Waktu:</strong> <span id="timer-display" style="font-family: monospace; font-size: 1.2rem; color: var(--red); font-weight: bold;">08:00</span></div>
+                            <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color: var(--red); font-weight: bold;">0</span></div>
+                        </div>
+
+                        <div id="soal-container" style="margin-bottom: 15px;">
+                            <!-- Soal akan di-generate di sini -->
+                        </div>
+
+                        <!-- Kalkulator Ilmiah -->
+                        <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                            <input type="text" id="calc-display" readonly style="width: 100%; padding: 10px; font-size: 1.2rem; text-align: right; background: #f8fafc; border: none; border-radius: 4px; margin-bottom: 8px;">
+                            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                                <button class="calc-btn" onclick="calcInput('sin')" style="background: #8b5cf6;">sin</button>
+                                <button class="calc-btn" onclick="calcInput('cos')" style="background: #3b82f6;">cos</button>
+                                <button class="calc-btn" onclick="calcInput('tan')" style="background: #0ea5e9;">tan</button>
+                                <button class="calc-btn" onclick="calcInput('(')" style="background: #64748b;">(</button>
+                                <button class="calc-btn" onclick="calcInput(')')" style="background: #64748b;">)</button>
+                                
+                                <button class="calc-btn" onclick="calcInput('7')">7</button>
+                                <button class="calc-btn" onclick="calcInput('8')">8</button>
+                                <button class="calc-btn" onclick="calcInput('9')">9</button>
+                                <button class="calc-btn" onclick="calcInput('/')" style="background: #f59e0b;">÷</button>
+                                <button class="calc-btn" onclick="calcClear()" style="background: #ef4444;">C</button>
+
+                                <button class="calc-btn" onclick="calcInput('4')">4</button>
+                                <button class="calc-btn" onclick="calcInput('5')">5</button>
+                                <button class="calc-btn" onclick="calcInput('6')">6</button>
+                                <button class="calc-btn" onclick="calcInput('*')" style="background: #f59e0b;">×</button>
+                                <button class="calc-btn" onclick="calcInput('-')" style="background: #f59e0b;">-</button>
+
+                                <button class="calc-btn" onclick="calcInput('1')">1</button>
+                                <button class="calc-btn" onclick="calcInput('2')">2</button>
+                                <button class="calc-btn" onclick="calcInput('3')">3</button>
+                                <button class="calc-btn" onclick="calcInput('+')" style="background: #f59e0b;">+</button>
+                                <button class="calc-btn" onclick="calcSolve()" style="background: #10b981; grid-row: span 2; font-size: 1.2rem;">=</button>
+
+                                <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                                <button class="calc-btn" onclick="calcInput('.')">.</button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="selesaiTantangan()" style="width: 100%;">Kumpulkan Jawaban Tantangan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card no-print">
+                <h2>Cetak hasil kerja</h2>
+                <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
+                    <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
+                    <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
+                </div>
+                <div id="pesan-validasi" class="feedback-box error" style="display: none;">
+                    Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.
+                </div>
+
+                <p class="no-print" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; line-height: 1.5;">Konsep STEM: Vektor, Penjumlahan Vektor, Trigonometri, Navigasi.</p>
+            </div>
+
+            <div class="card" id="teacher-login-section">
+                <h2>Teacher Portal (Login)</h2>
+                <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-direction: column;">
+                    <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
+                </div>
+            </div>
+
+            <div id="teacher-panel">
+                <h2>Dashboard Rekap Nilai Siswa</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="margin-right: 10px;">Pilih Kelas:</label>
+                    <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding: 6px 10px; border-radius: 6px;">
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                    <button class="btn btn-outline" style="margin-left: 10px; color: white; border-color: white;" onclick="tutupPanelGuru()">Tutup Panel</button>
+                    <button class="btn btn-primary" style="margin-left: 10px; background: #10b981; color: white; border: none;" onclick="cetakRekapGuru()">🖨️ Cetak Rekap Nilai</button>
+                </div>
+                <div class="table-responsive">
+                    <table style="color: white; border-color: #475569;">
+                        <thead>
+                            <tr style="background-color: #334155;">
+                                <th>No</th>
+                                <th>Student Name</th>
+                                <th>Group</th>
+                                <th>Score</th>
+                                <th>Predicate</th>
+                                <th>Pelanggaran</th>
+                                <th>Date</th>
+                                <th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= MODAL PERINGATAN KECURANGAN ================= -->
+    <div id="cheat-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; text-align: center; padding: 20px; backdrop-filter: blur(5px);">
+        <div style="background: #fee2e2; border: 4px dashed #dc2626; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: shake 0.5s;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚨</div>
+            <h2 style="color: #b91c1c; font-size: 1.8rem; margin-bottom: 10px; font-weight: 800;">PERINGATAN KECURANGAN!</h2>
+            <p style="font-size: 1.2rem; color: #1f2937; margin-bottom: 5px;">Halo, <strong id="modal-nama-siswa" style="color: #dc2626; font-size: 1.4rem;">Siswa</strong>!</p>
+            <p id="modal-alasan" style="font-size: 1rem; color: #4b5563; margin-bottom: 15px;">Sistem mendeteksi Anda melakukan aktivitas terlarang.</p>
+            
+            <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <p style="font-size: 0.9rem; color: #991b1b; font-weight: bold;">TOTAL PELANGGARAN ANDA:</p>
+                <p style="font-size: 3rem; color: #b91c1c; font-weight: 900; line-height: 1;" id="modal-total-curang">0</p>
+                <p style="font-size: 0.8rem; color: #991b1b; margin-top: 5px;">Nilai Anda dipotong otomatis 10 poin per pelanggaran.</p>
+            </div>
+            
+            <button onclick="tutupModalDanGantiSoal()" style="background: #dc2626; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s;">Tutup & Kembali Ujian (Soal Diganti!)</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL AUDIT LOG GURU ================= -->
+    <div id="audit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);">
+        <div style="background: white; border: 4px solid #1e293b; border-radius: 12px; padding: 24px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="color:#1e293b;font-size:1.3rem;">📋 Audit Log Pelanggaran</h2>
+                <button onclick="document.getElementById('audit-modal').style.display='none'" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;">✕</button>
+            </div>
+            <p id="audit-header" style="font-size:0.9rem;color:#475569;margin-bottom:12px;"></p>
+            <div class="table-responsive">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#e2e8f0;">
+                            <th style="padding:8px;border:1px solid #cbd5e1;">No</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Waktu</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Jenis</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Detail</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Soal ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+    </style>
+    <script>
+        document.getElementById('input-tanggal').valueAsDate = new Date();
+        const deg2rad = Math.PI / 180;
+        const rad2deg = 180 / Math.PI;
+
+        let statusBenar8 = false;
+
+        // ==========================================
+        // 1. LOGIKA SIMULASI CANVAS & VEKTOR
+        // ==========================================
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let topBankEdge, bottomBankEdge, startX, startY;
+        
+        let isRunning = false;
+        let boatX, boatY;
+        let vBoat = 4, vRiver = 3, thetaDeg = 120;
+        let trail = [];
+        let lastTime = performance.now();
+        let waterOffset = 0;
+
+        const vpSlider = document.getElementById('vp-slider');
+        const vaSlider = document.getElementById('va-slider');
+        const thetaSlider = document.getElementById('theta-slider');
+        const labelVp = document.getElementById('label-vp');
+        const labelVa = document.getElementById('label-va');
+        const labelTheta = document.getElementById('label-theta');
+        
+        const resVx = document.getElementById('res-vx');
+        const resVy = document.getElementById('res-vy');
+        const resVr = document.getElementById('res-vr');
+        const infoSim = document.getElementById('info-sim');
+
+        const V_SCALE = 15; 
+        const ARROW_SCALE = 20;
+
+        function initCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            topBankEdge = canvas.height * 0.15;
+            bottomBankEdge = canvas.height * 0.85;
+            startX = canvas.width * 0.3; 
+            startY = bottomBankEdge - 10; 
+            
+            resetSimulation();
+        }
+
+        window.addEventListener('resize', initCanvas);
+
+        function updateSimParams() {
+            vBoat = parseFloat(vpSlider.value);
+            vRiver = parseFloat(vaSlider.value);
+            thetaDeg = parseFloat(thetaSlider.value);
+            
+            labelVp.innerText = vBoat.toFixed(1) + ' m/s';
+            labelVa.innerText = vRiver.toFixed(1) + ' m/s';
+            labelTheta.innerText = thetaDeg + '°';
+
+            const rad = thetaDeg * deg2rad;
+            
+            const vpx = vBoat * Math.cos(rad); 
+            const vpy = vBoat * Math.sin(rad); 
+            
+            const vrx = vpx + vRiver; 
+            const vry = vpy;
+            const vr = Math.sqrt(vrx*vrx + vry*vry);
+
+            resVx.innerText = vrx.toFixed(2) + ' m/s';
+            resVy.innerText = vry.toFixed(2) + ' m/s';
+            resVr.innerText = vr.toFixed(2) + ' m/s';
+
+            if (Math.abs(vrx) < 0.2) {
+                infoSim.innerHTML = '<strong>Hebat!</strong> Perahu berlayar lurus ke seberang (v_x ≈ 0).';
+                infoSim.style.backgroundColor = '#dcfce7';
+            } else if (vrx > 0) {
+                infoSim.innerHTML = 'Perahu terseret ke arah Kanan. Kemudikan lebih ke arah Kiri (tambah sudut).';
+                infoSim.style.backgroundColor = '#fee2e2';
+            } else {
+                infoSim.innerHTML = 'Perahu terseret ke arah Kiri. Kemudikan lebih ke arah Kanan (kurangi sudut).';
+                infoSim.style.backgroundColor = '#fee2e2';
+            }
+        }
+
+        vpSlider.addEventListener('input', updateSimParams);
+        vaSlider.addEventListener('input', updateSimParams);
+        thetaSlider.addEventListener('input', updateSimParams);
+
+        function resetSimulation() {
+            isRunning = false;
+            boatX = startX;
+            boatY = startY;
+            trail = [{x: boatX, y: boatY}];
+            updateSimParams();
+        }
+
+        function startSimulation() {
+            if (boatY <= topBankEdge + 10) {
+                resetSimulation();
+            }
+            isRunning = true;
+        }
+
+        function drawLand() {
+            let gradTop = ctx.createLinearGradient(0, 0, 0, topBankEdge);
+            gradTop.addColorStop(0, '#27ae60');
+            gradTop.addColorStop(1, '#2c3e50');
+            ctx.fillStyle = gradTop;
+            ctx.fillRect(0, 0, canvas.width, topBankEdge);
+            
+            ctx.fillStyle = '#e67e22'; 
+            ctx.fillRect(0, topBankEdge - 6, canvas.width, 6);
+
+            let gradBot = ctx.createLinearGradient(0, bottomBankEdge, 0, canvas.height);
+            gradBot.addColorStop(0, '#2c3e50'); 
+            gradBot.addColorStop(1, '#27ae60'); 
+            ctx.fillStyle = gradBot;
+            ctx.fillRect(0, bottomBankEdge, canvas.width, canvas.height - bottomBankEdge);
+
+            ctx.fillStyle = '#e67e22';
+            ctx.fillRect(0, bottomBankEdge, canvas.width, 6);
+        }
+
+        function drawWater(deltaTime) {
+            waterOffset += vRiver * deltaTime * 2; 
+            if (waterOffset > canvas.width) waterOffset -= canvas.width;
+
+            ctx.fillStyle = '#2980b9';
+            ctx.fillRect(0, topBankEdge, canvas.width, bottomBankEdge - topBankEdge);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < 15; i++) {
+                let yPos = topBankEdge + 10 + (i * 15);
+                let xPos1 = (waterOffset + i * 50) % canvas.width;
+                let xPos2 = (xPos1 + canvas.width / 2) % canvas.width;
+                ctx.moveTo(xPos1, yPos);
+                ctx.quadraticCurveTo(xPos1 + 15, yPos - 3, xPos1 + 30, yPos);
+                ctx.moveTo(xPos2, yPos);
+                ctx.quadraticCurveTo(xPos2 + 15, yPos - 3, xPos2 + 30, yPos);
+            }
+            ctx.stroke();
+        }
+
+        function drawBoat(x, y) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(-thetaDeg * deg2rad);
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(0, 5, 10, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#8B4513';
+            ctx.strokeStyle = '#3e1d04';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(20, 0); 
+            ctx.bezierCurveTo(8, -12, -12, -14, -20, -9);
+            ctx.lineTo(-20, 9); 
+            ctx.bezierCurveTo(-12, 14, 8, 12, 20, 0); 
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#A0522D';
+            ctx.beginPath();
+            ctx.moveTo(14, 0);
+            ctx.bezierCurveTo(4, -8, -12, -9, -16, -6);
+            ctx.lineTo(-16, 6);
+            ctx.bezierCurveTo(-12, 9, 4, 8, 14, 0);
+            ctx.fill();
+            
+            ctx.fillStyle = '#DEB887';
+            ctx.fillRect(4, -9, 4, 18);
+            ctx.fillRect(-8, -7, 4, 14);
+
+            ctx.restore();
+        }
+
+        function drawVectors(x, y) {
+            const rad = thetaDeg * deg2rad;
+            const vpx = vBoat * Math.cos(rad);
+            const vpy = vBoat * Math.sin(rad);
+            const vrx = vpx + vRiver;
+            const vry = vpy;
+
+            let airEndX = x + (vRiver * ARROW_SCALE);
+            let airEndY = y;
+
+            let boatEndX = x + (vpx * ARROW_SCALE);
+            let boatEndY = y - (vpy * ARROW_SCALE);
+
+            let resEndX = x + (vrx * ARROW_SCALE);
+            let resEndY = y - (vry * ARROW_SCALE);
+
+            drawArrow(x, y, airEndX, airEndY, '#facc15', 'v_air');
+            drawArrow(x, y, boatEndX, boatEndY, '#ef4444', 'v_perahu');
+            drawArrow(x, y, resEndX, resEndY, '#10b981', 'v_resultan');
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(boatEndX, boatEndY);
+            ctx.lineTo(resEndX, resEndY);
+            ctx.moveTo(airEndX, airEndY);
+            ctx.lineTo(resEndX, resEndY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const radiusArc = 35;
+            ctx.beginPath();
+            ctx.arc(x, y, radiusArc, 0, -rad, true); 
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`θ=${thetaDeg}°`, x + 15, y - 10);
+        }
+
+        function drawArrow(fromx, fromy, tox, toy, color, label) {
+            const headlen = 10;
+            const dx = tox - fromx;
+            const dy = toy - fromy;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(tox, toy);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = color;
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText(label, tox + 5, toy - 5);
+        }
+
+        function drawTrail() {
+            if (trail.length < 2) return;
+            ctx.strokeStyle = 'rgba(241, 196, 15, 0.8)';
+            ctx.setLineDash([5, 5]);
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(trail[0].x, trail[0].y);
+            for (let i = 1; i < trail.length; i++) {
+                ctx.lineTo(trail[i].x, trail[i].y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function animate(timestamp) {
+            const deltaTime = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawLand();
+            drawWater(deltaTime);
+
+            if (isRunning) {
+                const rad = thetaDeg * deg2rad;
+                const vpx = vBoat * Math.cos(rad);
+                const vpy = vBoat * Math.sin(rad);
+                const vrx = vpx + vRiver; 
+                const vry = vpy;
+
+                boatX += vrx * V_SCALE * deltaTime;
+                boatY -= vry * V_SCALE * deltaTime;
+
+                trail.push({x: boatX, y: boatY});
+
+                if (boatY <= topBankEdge + 10) {
+                    isRunning = false;
+                    boatY = topBankEdge + 10;
+                    infoSim.innerHTML = "<strong>Tiba di seberang!</strong>";
+                }
+                
+                if (boatX < 10) {
+                    isRunning = false;
+                    boatX = 10;
+                    infoSim.innerHTML = "Perahu menabrak tepi kiri sungai!";
+                } else if (boatX > canvas.width - 10) {
+                    isRunning = false;
+                    boatX = canvas.width - 10;
+                    infoSim.innerHTML = "Perahu terseret jauh ke kanan!";
+                }
+            }
+
+            drawTrail();
+            drawBoat(boatX, boatY);
+            drawVectors(boatX, boatY);
+
+            requestAnimationFrame(animate);
+        }
+
+        // ==========================================
+        // 2. LOGIKA LKPD & PENILAIAN
+        // ==========================================
+        function cekPrediksi(pilihan) {
+            const btnLawan = document.getElementById('opt-lawan');
+            const btnIkut = document.getElementById('opt-ikut');
+            const btnTetap = document.getElementById('opt-tetap');
+            const feedbackBox = document.getElementById('feedback-box');
+            btnLawan.className = 'option-btn'; btnIkut.className = 'option-btn'; btnTetap.className = 'option-btn';
+
+            if (pilihan === 'lawan') {
+                btnLawan.classList.add('selected-correct');
+                feedbackBox.className = 'feedback-box correct';
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = '<strong>Tepat sekali!</strong> Untuk melawan arus yang deras, perahu harus diarahkan lebih ke hulu (melawan arus) agar vektor resultannya lurus.';
+            } else {
+                if (pilihan === 'ikut') btnIkut.classList.add('selected-wrong');
+                else btnTetap.classList.add('selected-wrong');
+                feedbackBox.className = 'feedback-box wrong';
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = '<strong>Belum tepat.</strong> Coba jalankan simulasi untuk melihat kenyataannya.';
+            }
+        }
+
+        function hitungTabel(inputElement) {
+            let row = inputElement.closest('tr');
+            let va = parseFloat(row.querySelector('.val-va').value);
+            let vp = parseFloat(row.querySelector('.val-vp').value);
+            let tdTeori = row.querySelector('.teori-theta');
+            
+            if(isNaN(va) || isNaN(vp) || vp <= 0) { 
+                tdTeori.innerText = '–'; 
+                return; 
+            }
+            
+            let sinTheta = va / vp;
+            let teoriRad = Math.asin(Math.min(1, sinTheta)); 
+            let teoriDeg = 180 - (teoriRad * rad2deg);
+            
+            tdTeori.innerText = teoriDeg.toFixed(1) + '°';
+            hitungNilaiOtomatis();
+        }
+
+        function updateIdentitas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const judulRekap = document.getElementById('judul-rekap-kelompok');
+
+            if (kelompok) { judulRekap.innerText = `Group Members List (${kelompok})`; }
+            else { judulRekap.innerText = `Group Members List ...`; }
+
+            if (!kelas || !kelompok) {
+                document.getElementById('daftar-teman-kelompok').innerHTML = '<li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please select Class and Group first)</li>';
+                return;
+            }
+
+            const storageKey = `lkpd_kelompok_${kelas}_${kelompok}`;
+            let dataGrup = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (nama !== '') {
+                let sessionId = localStorage.getItem('lkpd_session_id');
+                if (!sessionId) {
+                    sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    localStorage.setItem('lkpd_session_id', sessionId);
+                }
+                let indexSesi = dataGrup.findIndex(item => item.sessionId === sessionId);
+                if (indexSesi !== -1) { dataGrup[indexSesi].nama = nama; }
+                else { dataGrup.push({ sessionId: sessionId, nama: nama, waktu: Date.now() }); }
+                localStorage.setItem(storageKey, JSON.stringify(dataGrup));
+            }
+            renderDaftarAnggota(dataGrup);
+            hitungNilaiOtomatis();
+        }
+
+        function renderDaftarAnggota(dataGrup) {
+            const listEl = document.getElementById('daftar-teman-kelompok');
+            listEl.innerHTML = '';
+            if (!dataGrup || dataGrup.length === 0) {
+                listEl.innerHTML = '<li style="color: var(--text-muted); list-style: none; margin-left: -20px;">No members have joined this group yet.</li>';
+                return;
+            }
+            dataGrup.sort((a, b) => a.waktu - b.waktu);
+            dataGrup.forEach(item => {
+                let li = document.createElement('li');
+                li.textContent = item.nama;
+                listEl.appendChild(li);
+            });
+        }
+
+        function hitungNilaiOtomatis() {
+            let skorTotal = 0;
+
+            const textareas = document.querySelectorAll('.ans-field');
+            let terisiCount = 0;
+            textareas.forEach(ta => { if(ta.value.trim().length > 5) terisiCount++; });
+            if (textareas.length > 0) skorTotal += (terisiCount / textareas.length) * 30;
+
+            const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+            let barisTerisi = 0;
+            rows.forEach(row => {
+                let valTheta = row.querySelector('.input-theta').value.trim();
+                let valVx = row.querySelector('.input-vx').value.trim();
+                if(valTheta !== '' && valVx !== '') barisTerisi++;
+            });
+            if(barisTerisi >= 3) skorTotal += 20;
+
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            if(!isNaN(refVal) && Math.abs(refVal - 143.13) <= 1.0) skorTotal += 15;
+
+            if(statusBenar8) skorTotal += 15;
+
+            const fileInput = document.getElementById('upload-foto-bukti');
+            if (fileInput && fileInput.files && fileInput.files.length > 0) skorTotal += 20;
+
+            skorTotal += skorTantangan;
+            skorTotal -= (peringatanCurang * 10);
+            skorTotal = Math.max(0, Math.round(skorTotal));
+
+            const fotoUploaded = (fileInput && fileInput.files && fileInput.files.length > 0);
+            if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
+            if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
+
+            document.getElementById('val-score').innerText = skorTotal;
+
+            let predikat = "Needs Improvement";
+            let warna = "#b91c1c";
+            if (skorTotal >= 90) { predikat = "Excellent"; warna = "#15803d"; }
+            else if (skorTotal >= 75) { predikat = "Good"; warna = "#0369a1"; }
+            else if (skorTotal >= 60) { predikat = "Fair"; warna = "#b45309"; }
+
+            let labelPredikat = predikat;
+            if (!fotoUploaded) labelPredikat += " (Foto blm diunggah!)";
+            if (skorTantangan === 0) labelPredikat += " (Tantangan blm dikerjakan!)";
+            if (peringatanCurang > 0) labelPredikat += ` [Curang: -${peringatanCurang*10} poin]`;
+
+            const elPredikat = document.getElementById('val-predicate');
+            elPredikat.innerText = labelPredikat;
+            elPredikat.style.color = warna;
+
+            return { skor: skorTotal, predikat: predikat };
+        }
+
+        document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
+        document.getElementById('input-jawaban-refleksi').addEventListener('input', hitungNilaiOtomatis);
+
+        function previewImage(input) {
+            const container = input.closest('.evidence-box').querySelector('.preview-container');
+            const img = container.querySelector('img');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { img.src = e.target.result; container.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            } else { img.src = ''; container.style.display = 'none'; }
+            hitungNilaiOtomatis(); 
+        }
+
+        // --- PART 4: ANALISIS ---
+        const sliderHitVp = document.getElementById('slider-hitung-vp');
+        const sliderHitVa = document.getElementById('slider-hitung-va');
+        const sliderHitTheta = document.getElementById('slider-hitung-theta');
+        
+        if(sliderHitVp && sliderHitVa && sliderHitTheta) {
+            sliderHitVp.addEventListener('input', hitungAnalisis);
+            sliderHitVa.addEventListener('input', hitungAnalisis);
+            sliderHitTheta.addEventListener('input', hitungAnalisis);
+        }
+
+        function hitungAnalisis() {
+            const vp = parseFloat(sliderHitVp.value);
+            const va = parseFloat(sliderHitVa.value);
+            const theta = parseFloat(sliderHitTheta.value);
+            
+            document.getElementById('label-hitung-vp').innerText = vp.toFixed(1) + ' m/s';
+            document.getElementById('label-hitung-va').innerText = va.toFixed(1) + ' m/s';
+            document.getElementById('label-hitung-theta').innerText = theta + '°';
+
+            const rad = theta * deg2rad;
+            
+            const vpx = vp * Math.cos(rad);
+            const vpy = vp * Math.sin(rad);
+            
+            const vrx = vpx + va; 
+            const vry = vpy;
+            const vr = Math.sqrt(vrx*vrx + vry*vry);
+
+            document.getElementById('out-vpx').innerText = vpx.toFixed(2) + ' m/s';
+            document.getElementById('out-vpy').innerText = vpy.toFixed(2) + ' m/s';
+            document.getElementById('out-vrx').innerText = vrx.toFixed(2) + ' m/s';
+            document.getElementById('out-vr').innerText = vr.toFixed(2) + ' m/s';
+        }
+
+        // --- PART 5: REFLEKSI ---
+        function cekRefleksi() {
+            const input = document.getElementById('input-jawaban-refleksi').value;
+            const jawaban = parseFloat(input);
+            const feedbackBox = document.getElementById('feedback-refleksi');
+            if (isNaN(jawaban)) {
+                feedbackBox.className = 'feedback-box wrong';
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = '<strong>Oops!</strong> Masukkan angka terlebih dahulu.';
+                return;
+            }
+            if (Math.abs(jawaban - 143.13) <= 1.0 || Math.abs(jawaban - 36.87) <= 1.0) {
+                feedbackBox.className = 'feedback-box correct';
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = '<strong>Correct.</strong> Sudut kemudi tumpul terhadap arah arus adalah sekitar 143.13° (atau 36.87° dari garis vertikal seberang).';
+            } else {
+                feedbackBox.className = 'feedback-box wrong';
+                feedbackBox.style.display = 'block';
+                feedbackBox.innerHTML = '<strong>Belum tepat.</strong> Gunakan komponen sumbu X perahu dan arus untuk mencari sudut kemudi.';
+            }
+            hitungNilaiOtomatis();
+        }
+
+        function cekRefleksi8(btn) {
+            const allBtns = document.querySelectorAll('.opt-8');
+            allBtns.forEach(b => {
+                b.className = 'option-btn opt-8';
+                b.style.borderColor = 'var(--text-dark)';
+            });
+
+            const val = btn.getAttribute('data-val');
+            if (val === 'benar') {
+                btn.classList.add('selected-correct');
+                statusBenar8 = true;
+            } else {
+                btn.classList.add('selected-wrong');
+                statusBenar8 = false;
+            }
+            hitungNilaiOtomatis();
+        }
+
+        // --- SISTEM GURU & CETAK ---
+        function validasiIdentitas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const pesanBox = document.getElementById('pesan-validasi');
+            if (nama === '' || kelas === '' || kelompok === '') {
+                pesanBox.style.display = 'block';
+                document.getElementById('identitas').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+            pesanBox.style.display = 'none';
+            return true;
+        }
+
+        function prosesCetakPDF() { if (validasiIdentitas()) window.print(); }
+
+        function prosesUnduhWord() {
+            if (!validasiIdentitas()) return;
+            const cloneKonten = document.getElementById('konten-lkpd').cloneNode(true);
+            cloneKonten.querySelectorAll('.no-print').forEach(el => el.remove());
+            const konten = cloneKonten.innerHTML;
+            const blob = new Blob(['\ufeff<html><head><meta charset="utf-8"></head><body>' + konten + '</body></html>'], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url; link.download = 'Worksheet_1_Vektor_Navigasi.doc';
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // ==========================================
+        // PERBAIKAN: KIRIM KE GOOGLE SHEETS
+        // ==========================================
+        function simpanTugasKeSistem(event) {
+            if (!validasiIdentitas()) return;
+            
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const sekolah = document.getElementById('input-sekolah').value.trim();
+            const tanggal = document.getElementById('input-tanggal').value;
+            const evaluasi = hitungNilaiOtomatis();
+
+            const dataUntukDikirim = {
+                nama: nama,
+                kelas: kelas,
+                sekolah: sekolah,
+                materi: "Worksheet 1 - Vektor",
+                skor: evaluasi.skor,
+                progres: "100%",
+                pelanggaran: peringatanCurang,
+                log: JSON.stringify(auditLog), 
+                benar: 0, 
+                totalSoal: 0, 
+                tipeUjian: "Worksheet"
+            };
+
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+
+            const btnKirim = event.target;
+            const teksAsli = btnKirim.innerText;
+            btnKirim.innerText = "Mengirim data...";
+            btnKirim.disabled = true;
+
+            fetch(URL_GOOGLE_SCRIPT, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
+            })
+            .then(() => {
+                let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_rekap_nilai_guru')) || [];
+                let existingIdx = rekapGlobal.findIndex(item => item.nama === nama && item.kelas === kelas);
+                let dataSiswa = { nama, kelas, kelompok, skor: evaluasi.skor, predikat: evaluasi.predikat, tanggal, pelanggaran: peringatanCurang, auditLog: auditLog };
+                
+                if(existingIdx !== -1) rekapGlobal[existingIdx] = dataSiswa;
+                else rekapGlobal.push(dataSiswa);
+                localStorage.setItem('lkpd_rekap_nilai_guru', JSON.stringify(rekapGlobal));
+
+                alert("✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.");
+                btnKirim.innerText = teksAsli;
+                btnKirim.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("❌ Gagal mengirim data. Pastikan internet lancar.");
+                btnKirim.innerText = teksAsli;
+                btnKirim.disabled = false;
+            });
+        }
+
+        function bukaPanelGuru() {
+            const pin = document.getElementById('input-pin-guru').value;
+            if(pin === '2026') {
+                document.getElementById('teacher-panel').style.display = 'block';
+                muatRekapGuru();
+                document.getElementById('teacher-panel').scrollIntoView({ behavior: 'smooth' });
+            } else alert('PIN Guru Salah! (Gunakan: 2026)');
+        }
+
+        function tutupPanelGuru() { document.getElementById('teacher-panel').style.display = 'none'; }
+
+        function muatRekapGuru() {
+            const kelasFilter = document.getElementById('filter-kelas-guru').value;
+            const tbody = document.getElementById('tabel-rekap-body');
+            tbody.innerHTML = '';
+
+            let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_rekap_nilai_guru')) || [];
+            let kelasData = rekapGlobal.filter(item => item.kelas === kelasFilter);
+
+            if(kelasData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8;">Belum ada data siswa untuk kelas ${kelasFilter}</td></tr>`;
+                return;
+            }
+
+            kelasData.forEach((siswa, index) => {
+                let tr = document.createElement('tr');
+                let pel = (typeof siswa.pelanggaran === 'number') ? siswa.pelanggaran : 0;
+                let warnaPel = pel > 0 ? '#dc2626' : '#22c55e';
+                let punyaLog = pel > 0 && Array.isArray(siswa.auditLog) && siswa.auditLog.length > 0;
+                let tombolLog = punyaLog
+                    ? `<button class="btn btn-outline" style="padding:4px 8px;font-size:0.75rem;width:100%;color:white;border-color:white;" onclick="tampilkanAuditLog('${siswa.kelas}','${siswa.nama.replace(/'/g, "\\'")}')">Lihat Log</button>`
+                    : '<span style="color:#64748b;">—</span>';
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${siswa.nama}</td>
+                    <td>${siswa.kelompok}</td>
+                    <td><b>${siswa.skor}</b></td>
+                    <td><span style="padding: 2px 8px; border-radius: 4px; background: ${getPillColor(siswa.predikat)};">${siswa.predikat}</span></td>
+                    <td style="color:${warnaPel}; font-weight: bold;">${pel}</td>
+                    <td>${siswa.tanggal}</td>
+                    <td>${tombolLog}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function tampilkanAuditLog(kelas, nama) {
+            const key = `lkpd_audit_${kelas}_${nama}`;
+            let log = JSON.parse(localStorage.getItem(key)) || [];
+            if (log.length === 0) {
+                const rekap = JSON.parse(localStorage.getItem('lkpd_rekap_nilai_guru')) || [];
+                const siswa = rekap.find(x => x.nama === nama && x.kelas === kelas);
+                if (siswa && Array.isArray(siswa.auditLog)) log = siswa.auditLog;
+            }
+            document.getElementById('audit-header').innerText =
+                `Siswa: ${nama} · Kelas: ${kelas} · Total kejadian: ${log.length}`;
+            const tbody = document.getElementById('audit-body');
+            tbody.innerHTML = '';
+            if (log.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:12px;color:#64748b;">Tidak ada pelanggaran tercatat.</td></tr>`;
+            } else {
+                log.forEach((item, i) => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${i + 1}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;">${item.waktu}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;"><b>${item.jenis}</b></td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;">${item.detail}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${item.soalId ?? '—'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            document.getElementById('audit-modal').style.display = 'flex';
+        }
+
+        function getPillColor(pred) {
+            if(pred === 'Excellent') return '#15803d';
+            if(pred === 'Good') return '#0369a1';
+            if(pred === 'Fair') return '#b45309';
+            return '#b91c1c';
+        }
+
+        function cetakRekapGuru() {
+            document.body.classList.add('print-mode-guru');
+            window.print();
+            setTimeout(() => document.body.classList.remove('print-mode-guru'), 1000);
+        }
+
+        // ==========================================
+        // MODUL 6: CHALLENGE MODE (4 SOAL: 3 PG + 1 ISIAN, 8 MENIT)
+        // ==========================================
+        const bankSoalPG = [
+            {
+                id: 101,
+                tipe: 'pg',
+                teks: "Perahu diarahkan tegak lurus arus dengan v_p = 4 m/s dan arus v_a = 3 m/s. Berapa besar kecepatan resultan perahu terhadap tanah?",
+                pilihan: ["3 m/s", "4 m/s", "5 m/s", "7 m/s"],
+                jawaban: 2,
+                pembahasan: "v_r = √(v_p² + v_a²) = √(16 + 9) = √25 = 5 m/s."
+            },
+            {
+                id: 102,
+                tipe: 'pg',
+                teks: "Sebuah perahu dengan v_p = 5 m/s dan arus v_a = 3 m/s. Berapa sudut kemudi (θ) terhadap arah arus agar perahu lurus ke seberang? (Gunakan arcsin)",
+                pilihan: ["36,87°", "53,13°", "143,13°", "126,87°"],
+                jawaban: 2,
+                pembahasan: "sin(180°−θ) = v_a/v_p = 3/5 = 0,6 → 180°−θ = 36,87° → θ = 143,13°."
+            },
+            {
+                id: 103,
+                tipe: 'pg',
+                teks: "Sebuah vektor kecepatan 10 m/s membentuk sudut 30° terhadap sumbu X. Berapa komponen X-nya?",
+                pilihan: ["5,00 m/s", "8,66 m/s", "10,00 m/s", "0,50 m/s"],
+                jawaban: 1,
+                pembahasan: "v_x = v·cos(30°) = 10 × 0,866 = 8,66 m/s."
+            },
+            {
+                id: 104,
+                tipe: 'pg',
+                teks: "Perahu diarahkan tegak lurus arus (θ = 90°) dengan v_p = 5 m/s dan v_a = 12 m/s. Berapa besar v_resultan?",
+                pilihan: ["7 m/s", "13 m/s", "17 m/s", "60 m/s"],
+                jawaban: 1,
+                pembahasan: "v_r = √(5² + 12²) = √(25+144) = √169 = 13 m/s."
+            },
+            {
+                id: 105,
+                tipe: 'pg',
+                teks: "Perahu dengan v_p = 6 m/s dan v_a = 4 m/s. Berapa sudut kemudi (θ) terhadap arah arus agar perahu lurus ke seberang? (arcsin)",
+                pilihan: ["41,81°", "48,19°", "138,19°", "131,81°"],
+                jawaban: 2,
+                pembahasan: "sin(180°−θ) = 4/6 = 0,667 → 180°−θ = 41,81° → θ = 138,19°."
+            }
+        ];
+
+        const bankSoalIsian = [
+            { id: 201, tipe: 'isian', teks: "Perahu dengan v_p = 4 m/s dan sudut kemudi 120° terhadap arah arus. Berapa komponen v_px (searah arus)? (m/s, bulatkan 2 desimal)", jawaban: -2.0, satuan: "m/s", toleransi: 0.05 },
+            { id: 202, tipe: 'isian', teks: "Perahu dengan v_p = 4 m/s dan sudut kemudi 120°. Jika v_a = 3 m/s, berapa v_rx (komponen resultan searah arus)? (m/s, bulatkan 2 desimal)", jawaban: 1.0, satuan: "m/s", toleransi: 0.05 },
+            { id: 203, tipe: 'isian', teks: "Sebuah vektor kecepatan 10 m/s membentuk sudut 30° terhadap sumbu X. Berapa komponen Y-nya? (m/s, bulatkan 2 desimal)", jawaban: 5, satuan: "m/s", toleransi: 0.05 },
+            { id: 204, tipe: 'isian', teks: "Perahu diarahkan dengan sudut 90° terhadap arus. Jika v_p = 6 m/s dan v_a = 8 m/s, berapa besar v_resultan? (m/s)", jawaban: 10, satuan: "m/s", toleransi: 0.1 },
+            { id: 205, tipe: 'isian', teks: "Perahu dengan v_p = 5 m/s dan arus v_a = 3 m/s. Berapa sudut kemudi θ terhadap arah arus agar perahu lurus ke seberang? (arcsin, derajat)", jawaban: 143.13, satuan: "°", toleransi: 1.0 }
+        ];
+
+        let timerInterval = null;
+        let waktuSisa = 480; 
+        let peringatanCurang = 0;
+        let soalAktif = [];
+        let soalRiwayatId = [];
+        let tantanganSelesai = false;
+        let skorTantangan = 0;
+        let challengeActive = false;
+        let blurGuardTimer = null;
+        let auditLog = [];
+
+        function getWatermarkText() {
+            const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const kelas = document.getElementById('select-kelas').value || '-';
+            const kel = document.getElementById('select-kelompok').value || '-';
+            const tgl = new Date().toLocaleString('id-ID');
+            return `${nama} · ${kelas} · ${kel} · ${tgl}`;
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let curY = y;
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    ctx.fillText(line.trim(), x, curY);
+                    line = words[n] + ' ';
+                    curY += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line.trim(), x, curY);
+            return curY + lineHeight;
+        }
+
+        function renderSoalKeCanvas(soal, index, totalSoal) {
+            const canvasEl = document.createElement('canvas');
+            const dpr = window.devicePixelRatio || 1;
+            const cssW = 700;
+            let cssH = 150;
+            if (soal.tipe === 'pg') cssH = 170; 
+            canvasEl.width = cssW * dpr;
+            canvasEl.height = cssH * dpr;
+            canvasEl.style.width = '100%';
+            canvasEl.style.height = 'auto';
+            canvasEl.style.display = 'block';
+            canvasEl.style.borderRadius = '8px';
+            canvasEl.style.border = '1px solid #e2e8f0';
+            const c = canvasEl.getContext('2d');
+            c.scale(dpr, dpr);
+
+            c.fillStyle = '#f8fafc';
+            c.fillRect(0, 0, cssW, cssH);
+
+            c.fillStyle = '#b91c1c';
+            c.font = 'bold 16px "Segoe UI", Tahoma, sans-serif';
+            const labelTipe = soal.tipe === 'pg' ? 'Pilihan Ganda' : 'Isian';
+            c.fillText(`Soal ${index + 1} dari ${totalSoal} (${labelTipe}):`, 20, 32);
+
+            c.fillStyle = '#1f2937';
+            c.font = '15px "Segoe UI", Tahoma, sans-serif';
+            wrapText(c, soal.teks, 20, 62, cssW - 40, 22);
+
+            c.save();
+            c.globalAlpha = 0.10;
+            c.fillStyle = '#dc2626';
+            c.font = 'bold 26px "Segoe UI", Tahoma, sans-serif';
+            c.translate(cssW / 2, cssH / 2);
+            c.rotate(-0.35);
+            c.textAlign = 'center';
+            c.fillText(getWatermarkText(), 0, 0);
+            c.restore();
+
+            c.strokeStyle = '#e2e8f0';
+            c.lineWidth = 1;
+            c.strokeRect(0.5, 0.5, cssW - 1, cssH - 1);
+
+            return canvasEl;
+        }
+
+        function renderPilihanPG(soal, index) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pg-options';
+            const letters = ['A', 'B', 'C', 'D'];
+            soal.pilihan.forEach((p, i) => {
+                const label = document.createElement('label');
+                label.className = 'pg-option';
+                label.innerHTML = `
+                    <input type="radio" name="pg-soal-${index}" value="${i}" onchange="pilihPG(${index}, ${i})">
+                    <span class="pg-letter">${letters[i]}.</span>
+                    <span>${p}</span>
+                `;
+                wrapper.appendChild(label);
+            });
+            return wrapper;
+        }
+
+        function pilihPG(index, val) {
+            const wrap = document.querySelector(`input[name="pg-soal-${index}"]`);
+            if (!wrap) return;
+            document.querySelectorAll(`input[name="pg-soal-${index}"]`).forEach(r => {
+                r.closest('.pg-option').classList.remove('selected');
+            });
+            const selected = document.querySelector(`input[name="pg-soal-${index}"][value="${val}"]`);
+            if (selected) selected.closest('.pg-option').classList.add('selected');
+        }
+
+        function renderSoalAktif(notifText) {
+            const container = document.getElementById('soal-container');
+            container.innerHTML = '';
+
+            if (notifText) {
+                const notif = document.createElement('div');
+                notif.style.cssText = 'background:#fef3c7;color:#92400e;padding:10px;border-radius:6px;font-size:0.85rem;font-weight:bold;margin-bottom:10px;text-align:center;';
+                notif.innerText = notifText;
+                container.appendChild(notif);
+            }
+
+            soalAktif.forEach((soal, index) => {
+                const wrap = document.createElement('div');
+                wrap.style.position = 'relative';
+                wrap.style.marginBottom = '18px';
+                wrap.style.padding = '10px';
+                wrap.style.background = '#ffffff';
+                wrap.style.border = '1px solid #e2e8f0';
+                wrap.style.borderRadius = '8px';
+
+                wrap.appendChild(renderSoalKeCanvas(soal, index, soalAktif.length));
+
+                if (soal.tipe === 'pg') {
+                    wrap.appendChild(renderPilihanPG(soal, index));
+                } else {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-top:10px;';
+                    row.innerHTML = `
+                        <input type="number" id="jawab-soal-${index}" class="table-input" style="width:120px;padding:10px;" placeholder="Jawaban" autocomplete="off">
+                        <span style="font-weight: bold;">${soal.satuan || ''}</span>
+                    `;
+                    wrap.appendChild(row);
+                }
+
+                container.appendChild(wrap);
+            });
+
+            let wm = document.getElementById('wm-soal');
+            if (!wm) {
+                wm = document.createElement('div');
+                wm.id = 'wm-soal';
+                container.appendChild(wm);
+            }
+            wm.innerText = getWatermarkText();
+
+            const area = document.getElementById('challenge-area');
+            if (area) area.classList.add('protected');
+        }
+
+        function pilihSoalBaru() {
+            const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
+            const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
+            const dipilih = [
+                shuffledPG[0],
+                shuffledPG[1],
+                shuffledPG[2],
+                shuffledIsian[0]
+            ];
+            return dipilih.sort(() => 0.5 - Math.random());
+        }
+
+        function catatPelanggaran(reason) {
+            if (!challengeActive || tantanganSelesai) return;
+            peringatanCurang++;
+
+            const detailMap = {
+                'tab':        'Meninggalkan halaman ujian (pindah tab / minimize)',
+                'blur':       'Jendela browser kehilangan fokus (snipping tool / aplikasi lain)',
+                'printscreen':'Menekan tombol PrintScreen',
+                'shortcut':   'Menekan shortcut copy/select/print/save (Ctrl+C/A/P/S/U)'
+            };
+            const soalSaatIni = (soalAktif && soalAktif[0]) ? soalAktif[0].id : null;
+            auditLog.push({
+                waktu: new Date().toLocaleString('id-ID'),
+                jenis: reason,
+                detail: detailMap[reason] || 'Aktivitas terlarang',
+                soalId: soalSaatIni,
+                totalKejadian: peringatanCurang
+            });
+
+            const cheatCountEl = document.getElementById('cheat-count');
+            if (cheatCountEl) cheatCountEl.innerText = peringatanCurang;
+
+            const namaSiswa = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const modalNama = document.getElementById('modal-nama-siswa');
+            const modalTotal = document.getElementById('modal-total-curang');
+            const modalAlasan = document.getElementById('modal-alasan');
+            if (modalNama) modalNama.innerText = namaSiswa;
+            if (modalTotal) modalTotal.innerText = peringatanCurang;
+            if (modalAlasan) {
+                const alasanMap = {
+                    'tab':         'Sistem mendeteksi Anda meninggalkan halaman ujian.',
+                    'blur':        'Sistem mendeteksi jendela browser kehilangan fokus (kemungkinan membuka snipping tool / aplikasi lain).',
+                    'printscreen': 'Sistem mendeteksi Anda menekan tombol PrintScreen. Screenshot dilarang!',
+                    'shortcut':    'Sistem mendeteksi Anda menekan shortcut copy/select/print/save. Menyalin soal dilarang!'
+                };
+                modalAlasan.innerText = alasanMap[reason] || 'Sistem mendeteksi aktivitas terlarang selama ujian.';
+            }
+
+            const modal = document.getElementById('cheat-modal');
+            if (modal) modal.style.display = 'flex';
+
+            hitungNilaiOtomatis();
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden && challengeActive && !tantanganSelesai) {
+                catatPelanggaran('tab');
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            if (!challengeActive || tantanganSelesai) return;
+            clearTimeout(blurGuardTimer);
+            blurGuardTimer = setTimeout(() => {
+                if (!document.hasFocus() && challengeActive && !tantanganSelesai) {
+                    catatPelanggaran('blur');
+                }
+            }, 300);
+        });
+        window.addEventListener('focus', () => {
+            clearTimeout(blurGuardTimer);
+        });
+
+        (function pasangProteksiSeleksi() {
+            const target = document.getElementById('challenge-area');
+            if (!target) return;
+            ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(evt => {
+                target.addEventListener(evt, e => {
+                    if (challengeActive && !tantanganSelesai) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            });
+        })();
+
+        document.addEventListener('keydown', e => {
+            if (!challengeActive || tantanganSelesai) return;
+            const key = (e.key || '').toLowerCase();
+            if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+                e.preventDefault();
+                try { navigator.clipboard.writeText(''); } catch (err) {}
+                catatPelanggaran('printscreen');
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && ['c', 'a', 'p', 's', 'u'].includes(key)) {
+                e.preventDefault();
+                catatPelanggaran('shortcut');
+                return;
+            }
+        });
+
+        function tutupModalDanGantiSoal() {
+            document.getElementById('cheat-modal').style.display = 'none';
+            if (challengeActive && !tantanganSelesai) {
+                soalAktif = pilihSoalBaru(); 
+                renderSoalAktif('⚠️ Karena terdeteksi pelanggaran, soal Anda telah DIGANTI dengan 4 soal baru!');
+            }
+        }
+
+        function mulaiTantangan() {
+            document.getElementById('challenge-start-box').style.display = 'none';
+            document.getElementById('challenge-area').style.display = 'block';
+
+            soalAktif = pilihSoalBaru(); 
+            renderSoalAktif(null);
+
+            waktuSisa = 480; 
+            peringatanCurang = 0;
+            tantanganSelesai = false;
+            challengeActive = true;
+            skorTantangan = 0;
+            auditLog = [];
+            document.getElementById('cheat-count').innerText = "0";
+
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                waktuSisa--;
+                updateTimerDisplay();
+                if (waktuSisa <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis! Jawaban Anda akan dikumpulkan secara otomatis.");
+                    selesaiTantangan();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let menit = Math.floor(waktuSisa / 60);
+            let detik = waktuSisa % 60;
+            document.getElementById('timer-display').innerText = 
+                `${String(menit).padStart(2, '0')}:${String(detik).padStart(2, '0')}`;
+        }
+
+        function selesaiTantangan() {
+            if (tantanganSelesai) return;
+            tantanganSelesai = true;
+            challengeActive = false;
+            clearInterval(timerInterval);
+
+            let benar = 0;
+            const detailJawaban = [];
+
+            soalAktif.forEach((soal, index) => {
+                if (soal.tipe === 'pg') {
+                    const selected = document.querySelector(`input[name="pg-soal-${index}"]:checked`);
+                    const val = selected ? parseInt(selected.value) : -1;
+                    const isBenar = (val === soal.jawaban);
+                    if (isBenar) benar++;
+                    detailJawaban.push({
+                        no: index + 1,
+                        tipe: 'PG',
+                        jawaban: val >= 0 ? String.fromCharCode(65 + val) : '—',
+                        kunci: String.fromCharCode(65 + soal.jawaban),
+                        benar: isBenar
+                    });
+                } else {
+                    const el = document.getElementById(`jawab-soal-${index}`);
+                    const val = el ? parseFloat(el.value) : NaN;
+                    const isBenar = (!isNaN(val) && Math.abs(val - soal.jawaban) <= soal.toleransi);
+                    if (isBenar) benar++;
+                    detailJawaban.push({
+                        no: index + 1,
+                        tipe: 'Isian',
+                        jawaban: isNaN(val) ? '—' : val,
+                        kunci: soal.jawaban,
+                        benar: isBenar
+                    });
+                }
+            });
+
+            skorTantangan = benar * 10;
+
+            let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
+            detailJawaban.forEach(d => {
+                pesan += `${d.no}. [${d.tipe}] Jawaban Anda: ${d.jawaban} | Kunci: ${d.kunci} → ${d.benar ? '✔ Benar' : '✘ Salah'}\n`;
+            });
+            if (peringatanCurang > 0) {
+                pesan += `\n⚠️ ANDA TERDETEKSI MELAKUKAN ${peringatanCurang} PELANGGARAN. Nilai akhir akan dipotong.`;
+            }
+            alert(pesan);
+            hitungNilaiOtomatis();
+        }
+
+        let calcExp = "";
+        function calcInput(val) {
+            if (val === 'sin' || val === 'cos' || val === 'tan') {
+                calcExp += val + "(";
+            } else {
+                calcExp += val;
+            }
+            document.getElementById('calc-display').value = calcExp;
+        }
+        function calcClear() {
+            calcExp = "";
+            document.getElementById('calc-display').value = "";
+        }
+        function calcSolve() {
+            try {
+                let openParen = (calcExp.match(/\(/g) || []).length;
+                let closeParen = (calcExp.match(/\)/g) || []).length;
+                let missingParen = openParen - closeParen;
+                for (let i = 0; i < missingParen; i++) calcExp += ")";
+
+                let toEval = calcExp.replace(/(sin|cos|tan)\(([^)]+)\)/g, function(match, func, innerNum) {
+                    return `Math.${func}((${innerNum}) * Math.PI / 180)`;
+                });
+
+                let result = eval(toEval);
+                let finalResult = Math.round(result * 10000) / 10000;
+                document.getElementById('calc-display').value = finalResult;
+                calcExp = finalResult.toString();
+            } catch (e) {
+                document.getElementById('calc-display').value = "Format Salah";
+                calcExp = "";
+            }
+        }
+
+        // --- INISIALISASI SAAT HALAMAN DIMUAT ---
+        window.onload = () => {
+            initCanvas();
+            hitungAnalisis();
+            requestAnimationFrame(animate);
+        };
+
+    </script>
+</body>
+</html>

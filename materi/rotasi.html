@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 5: Dinamika Rotasi</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+    }
+
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+
+    /* HEADER */
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    /* KONTEN */
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+
+    /* RUMUS BOX */
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.1rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* SIMULASI JUNGKAT-JUNGKIT */
+    .simulasi-container { background: #0f172a; border-radius: 12px; padding: 15px; color: white; margin-top: 15px; }
+    .panel-atas { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; }
+    .area-tuas { position: relative; height: 200px; background: #0f172a; border-radius: 8px; overflow: hidden; border-bottom: 4px solid #334155; display: flex; justify-content: center; align-items: flex-end; }
+    .papan { position: absolute; bottom: 60px; width: 90%; height: 12px; background: #64748b; border-radius: 6px; transition: transform 0.5s ease-in-out; transform-origin: center center; display: flex; justify-content: space-between; align-items: flex-start; }
+    .titik-tumpu { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent; border-bottom: 60px solid #475569; z-index: 10; }
+    .beban { position: absolute; bottom: 10px; width: 40px; height: 40px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 0.8rem; color: #0f172a; transition: left 0.2s; }
+    .beban-kiri { background: var(--blue-link); }
+    .beban-kanan { background: var(--teal); }
+
+    .data-torsi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-top: 10px; }
+    .torsi-box { text-align: center; border-right: 1px solid #334155; }
+    .torsi-box:last-child { border-right: none; }
+    .torsi-box span { display: block; font-size: 0.75rem; color: #94a3b8; }
+    .torsi-box strong { font-size: 1.1rem; color: var(--accent-yellow); font-family: monospace; }
+    
+    .status-seimbang { text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; font-size: 0.9rem; transition: 0.3s; }
+    .status-seimbang.seimbang { background: var(--green-light); color: var(--green-success); }
+    .status-seimbang.miring-kiri, .status-seimbang.miring-kanan { background: #fee2e2; color: var(--red-alert); }
+
+    .panel-bawah { display: flex; flex-direction: column; gap: 15px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
+    .kontrol-simulasi label { display: flex; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px;}
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); margin-bottom: 5px; }
+
+    /* SIMULASI MOMEN INERSIA (BARU) */
+    .area-putar {
+        position: relative; height: 220px; background: #0f172a; border-radius: 8px;
+        overflow: hidden; border-bottom: 4px solid #334155; display: flex; justify-content: center; align-items: center;
+    }
+    .poros {
+        position: absolute; width: 20px; height: 20px; background: #cbd5e1; border-radius: 50%;
+        z-index: 10;
+    }
+    .lengan-putar {
+        position: absolute; width: 100%; height: 6px; background: rgba(255,255,255,0.1);
+        transform-origin: center center; display: flex; justify-content: space-between; align-items: center;
+        transition: transform 0.05s linear;
+    }
+    .partikel {
+        width: 30px; height: 30px; background: var(--accent-yellow); border-radius: 50%;
+        position: absolute; top: -12px; box-shadow: inset -3px -3px 5px rgba(0,0,0,0.5);
+    }
+    .partikel-kiri { left: -15px; }
+    .partikel-kanan { right: -15px; }
+
+    .data-inersia {
+        display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;
+        background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155;
+        margin-top: 10px;
+    }
+    .data-inersia .torsi-box strong { color: #2dd4bf; font-size: 0.95rem; }
+    .data-inersia .torsi-box:last-child strong { color: var(--accent-yellow); }
+
+    /* KUIS */
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); font-size: 0.95rem;}
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    .pembahasan { display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid var(--green-success); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #065f46; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Materi 5: <span>Dinamika Rotasi</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- PENGANTAR TORSI -->
+        <div class="card">
+            <h2>A. Momen Gaya (Torsi)</h2>
+            <p>Torsi (τ) adalah penyebab benda berputar. Torsi bergantung pada gaya dan jarak dari titik poros.</p>
+            <div class="rumus-box">τ = F × d</div>
+            <h3>Kesetimbangan Benda Tegar</h3>
+            <p>Sebuah jungkat-jungkit akan seimbang jika total torsi di sisi kiri sama dengan total torsi di sisi kanan.</p>
+            <div class="rumus-box">Στ_kiri = Στ_kanan</div>
+        </div>
+
+        <!-- SIMULASI 1: JUNGKAT-JUNGKIT -->
+        <div class="card">
+            <h2>B. Simulasi Jungkat-Jungkit (Torsi)</h2>
+            <p>Geser posisi dan ubah massa beban kiri dan kanan agar jungkat-jungkit menjadi seimbang (mendatar).</p>
+            
+            <div class="simulasi-container">
+                <div class="panel-atas">
+                    <div class="area-tuas" id="area-tuas">
+                        <div class="papan" id="papan">
+                            <div class="beban beban-kiri" id="beban-kiri" style="left: 10%;">A</div>
+                            <div class="beban beban-kanan" id="beban-kanan" style="right: 10%;">B</div>
+                        </div>
+                        <div class="titik-tumpu"></div>
+                    </div>
+                    <div class="data-torsi">
+                        <div class="torsi-box">
+                            <span>Torsi Kiri (A)</span>
+                            <strong id="torsi-kiri">0 N.m</strong>
+                        </div>
+                        <div class="torsi-box">
+                            <span>Torsi Kanan (B)</span>
+                            <strong id="torsi-kanan">0 N.m</strong>
+                        </div>
+                    </div>
+                    <div class="status-seimbang miring-kiri" id="status-seimbang">Miring ke Kiri</div>
+                </div>
+
+                <div class="panel-bawah kontrol-simulasi">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label>Massa A (kg) <span id="label-mA">10</span></label>
+                            <input type="range" id="slider-mA" min="5" max="50" value="10" oninput="updateTuas()">
+                            <label style="margin-top:10px;">Jarak A (m) <span id="label-dA">2.0</span></label>
+                            <input type="range" id="slider-dA" min="0.5" max="4.5" step="0.1" value="2.0" oninput="updateTuas()">
+                        </div>
+                        <div>
+                            <label>Massa B (kg) <span id="label-mB">20</span></label>
+                            <input type="range" id="slider-mB" min="5" max="50" value="20" oninput="updateTuas()">
+                            <label style="margin-top:10px;">Jarak B (m) <span id="label-dB">1.0</span></label>
+                            <input type="range" id="slider-dB" min="0.5" max="4.5" step="0.1" value="1.0" oninput="updateTuas()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MATERI MOMEN INERSIA -->
+        <div class="card">
+            <h2>C. Momen Inersia dan Momentum Sudut</h2>
+            <p><strong>Momen Inersia (I)</strong> adalah ukuran kelembaman (kesukaran) suatu benda untuk berputar. Ibarat massa (m) pada gerak lurus, Momen Inersia adalah "massa"-nya benda yang berputar. Nilainya bergantung pada massa partikel dan <strong>jaraknya dari poros (r)</strong>.</p>
+            <div class="rumus-box">I = Σ (m × r²)</div>
+            
+            <p><strong>Momentum Sudut (L)</strong> adalah momentum yang dimiliki benda yang berputar.</p>
+            <div class="rumus-box">L = I × ω</div>
+            <p>Keterangan: L = Momentum Sudut (kg.m²/s), I = Momen Inersia (kg.m²), ω = Kecepatan Sudut (rad/s).</p>
+
+            <h3>Hukum Kekekalan Momentum Sudut</h3>
+            <p>Jika tidak ada torsi dari luar (gaya luar), maka total momentum sudut suatu sistem akan <strong>selalu tetap</strong>. Ini berarti jika Momen Inersia (I) diperkecil (misal: benda ditarik mendekati poros), maka kecepatan putarnya (ω) akan <strong>membesar</strong> agar nilai L tetap konstan.</p>
+            <div class="rumus-box">L_awal = L_akhir &nbsp; -> &nbsp; I1 × ω1 = I2 × ω2</div>
+        </div>
+
+        <!-- SIMULASI 2: MOMEN INERSIA -->
+        <div class="card">
+            <h2>D. Simulasi Momen Inersia (Penari Es)</h2>
+            <p>Tarik atau geser slider untuk mengubah jarak partikel (beban) dari poros. Amati bahwa <strong>Momentum Sudut (L) selalu tetap</strong>, namun putarannya berubah!</p>
+            
+            <div class="simulasi-container">
+                <div class="panel-atas">
+                    <div class="area-putar" id="area-putar">
+                        <div class="lengan-putar" id="lengan-putar">
+                            <div class="partikel partikel-kiri"></div>
+                            <div class="partikel partikel-kanan"></div>
+                        </div>
+                        <div class="poros"></div>
+                    </div>
+
+                    <!-- Readout Data -->
+                    <div class="data-inersia">
+                        <div class="torsi-box">
+                            <span>Momen Inersia (I)</span>
+                            <strong id="readout-I">0 kg.m²</strong>
+                        </div>
+                        <div class="torsi-box">
+                            <span>Kecepatan Sudut (ω)</span>
+                            <strong id="readout-omega">0 rad/s</strong>
+                        </div>
+                        <div class="torsi-box">
+                            <span>Momentum Sudut (L)</span>
+                            <strong id="readout-L">0 kg.m²/s</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-bawah kontrol-simulasi">
+                    <div>
+                        <label>Jarak Partikel dari Poros (r) <span id="label-r">1.0 meter</span></label>
+                        <input type="range" id="slider-r" min="0.2" max="2.0" step="0.1" value="1.0" oninput="updateInersia()">
+                    </div>
+                    <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px; text-align: center;">*Asumsi: Sistem terdiri dari 2 partikel, masing-masing bermassa 1 kg. Momentum Sudut Awal (L) = 2 kg.m²/s.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KUIS INTERAKTIF HOTS -->
+        <div class="card">
+            <h2>E. Uji Pemahaman Interaktif (HOTS)</h2>
+            <div class="kuis-box">
+                
+                <div class="soal" id="soal1">
+                    <div class="soal-teks">1. Dua partikel masing-masing bermassa 2 kg terletak pada jarak 3 meter dari poros yang sama. Berapakah momen inersia sistem tersebut?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'C')">A. 6 kg.m²</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'C')">B. 12 kg.m²</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'C')">C. 36 kg.m²</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'C')">D. 72 kg.m²</button>
+                    <div class="pembahasan" id="pembahasan-soal1">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        I = Σ (m × r²) = (m1 × r1²) + (m2 × r2²)<br>
+                        I = (2 × 3²) + (2 × 3²)<br>
+                        I = (2 × 9) + (2 × 9) = 18 + 18 = <strong>36 kg.m²</strong>.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal2">
+                    <div class="soal-teks">2. Seorang penari es berputar dengan momen inersia 4 kg.m² dan kecepatan sudut 6 rad/s. Tiba-tiba ia menarik tangannya ke dalam sehingga momen inersianya menjadi 2 kg.m². Berapakah kecepatan sudut penari sekarang?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'B')">A. 3 rad/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'B')">B. 12 rad/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'B')">C. 24 rad/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'B')">D. 6 rad/s</button>
+                    <div class="pembahasan" id="pembahasan-soal2">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Gunakan Hukum Kekekalan Momentum Sudut:<br>
+                        I1 × ω1 = I2 × ω2<br>
+                        4 × 6 = 2 × ω2<br>
+                        24 = 2 ω2 -> ω2 = 12 rad/s.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal3">
+                    <div class="soal-teks">3. Sebuah pintu didorong dengan gaya 20 N. Jika gaya diberikan tepat di tengah-tengah pintu, dan pintu memiliki lebar 1 meter, berapakah torsi yang dihasilkan (terhadap engsel)?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'B')">A. 20 N.m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'B')">B. 10 N.m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'B')">C. 40 N.m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'B')">D. 0 N.m</button>
+                    <div class="pembahasan" id="pembahasan-soal3">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Torsi = Gaya × Jarak dari poros.<br>
+                        Karena didorong di tengah pintu, jaraknya dari engsel adalah 0,5 meter.<br>
+                        τ = 20 N × 0,5 m = 10 N.m.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal4">
+                    <div class="soal-teks">4. Mengapa gagang pintu selalu dipasang jauh dari engsel (di sisi berlawanan dengan engsel)?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'A', 'B')">A. Agar pintu terlihat lebih bagus</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'B', 'B')">B. Untuk memperbesar lengan torsi, sehingga gaya yang dikeluarkan lebih kecil</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'C', 'B')">C. Untuk mengurangi massa pintu</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'D', 'B')">D. Agar aman dari jangkauan anak-anak</button>
+                    <div class="pembahasan" id="pembahasan-soal4">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Torsi = Gaya × Jarak. Dengan memperbesar jarak (d) dari engsel, kita hanya perlu memberikan sedikit gaya (F) untuk menghasilkan torsi yang cukup besar.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal5">
+                    <div class="soal-teks">5. Berdasarkan Hukum Kekekalan Momentum Sudut (L = I × ω), jika sebuah benda yang berputar tiba-tiba menyusut (jari-jarinya mengecil) karena suatu hal, maka yang akan terjadi pada benda tersebut adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'A', 'A')">A. Momen inersia mengecil dan putarannya makin cepat</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'B', 'A')">B. Momen inersia membesar dan putarannya makin lambat</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'C', 'A')">C. Momen inersia mengecil dan putarannya makin lambat</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'D', 'A')">D. Momen inersia dan kecepatan putarannya tetap</button>
+                    <div class="pembahasan" id="pembahasan-soal5">
+                        <strong>Benar! Jawaban: A.</strong><br>
+                        Karena r mengecil, I (m × r²) akan mengecil. Agar nilai L (I × ω) tetap konstan, maka kecepatan sudut (ω) harus bertambah besar. Benda akan berputar lebih cepat (seperti penari es yang menarik tangannya).
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================= LOGIKA KUIS =================
+        function cekKuis(idSoal, jawabanDipilih, jawabanBenar) {
+            const soalContainer = document.getElementById(idSoal);
+            const buttons = soalContainer.querySelectorAll('.opsi-btn');
+            const pembahasan = document.getElementById('pembahasan-' + idSoal);
+
+            buttons.forEach(btn => {
+                if (btn.innerText.startsWith(jawabanDipilih)) {
+                    if (jawabanDipilih === jawabanBenar) btn.classList.add('benar');
+                    else btn.classList.add('salah');
+                }
+                if (btn.innerText.startsWith(jawabanBenar)) btn.classList.add('benar');
+                btn.disabled = true;
+                btn.style.cursor = 'default';
+            });
+            pembahasan.style.display = 'block';
+        }
+
+        // ================= SIMULASI 1: JUNGKAT-JUNGKIT =================
+        const g = 10; 
+        
+        function updateTuas() {
+            const mA = parseInt(document.getElementById('slider-mA').value);
+            const dA = parseFloat(document.getElementById('slider-dA').value);
+            const mB = parseInt(document.getElementById('slider-mB').value);
+            const dB = parseFloat(document.getElementById('slider-dB').value);
+
+            document.getElementById('label-mA').innerText = mA;
+            document.getElementById('label-dA').innerText = dA.toFixed(1);
+            document.getElementById('label-mB').innerText = mB;
+            document.getElementById('label-dB').innerText = dB.toFixed(1);
+
+            const torsiKiri = mA * g * dA;
+            const torsiKanan = mB * g * dB;
+
+            document.getElementById('torsi-kiri').innerText = torsiKiri + " N.m";
+            document.getElementById('torsi-kanan').innerText = torsiKanan + " N.m";
+
+            const posPersenKiri = 50 - (dA * 8);
+            const posPersenKanan = 50 + (dB * 8);
+
+            const bebanKiri = document.getElementById('beban-kiri');
+            const bebanKanan = document.getElementById('beban-kanan');
+            
+            bebanKiri.style.left = posPersenKiri + '%';
+            bebanKanan.style.right = (100 - posPersenKanan) + '%';
+
+            bebanKiri.innerText = mA;
+            bebanKanan.innerText = mB;
+            bebanKiri.style.width = (20 + mA * 0.5) + 'px';
+            bebanKiri.style.height = (20 + mA * 0.5) + 'px';
+            bebanKanan.style.width = (20 + mB * 0.5) + 'px';
+            bebanKanan.style.height = (20 + mB * 0.5) + 'px';
+
+            const papan = document.getElementById('papan');
+            const status = document.getElementById('status-seimbang');
+            const selisih = torsiKanan - torsiKiri;
+
+            if (Math.abs(selisih) < 5) {
+                papan.style.transform = 'rotate(0deg)';
+                status.className = 'status-seimbang seimbang';
+                status.innerText = '⚖️ Seimbang!';
+            } else if (selisih > 0) {
+                const derajat = Math.min(15, selisih / 20);
+                papan.style.transform = `rotate(${derajat}deg)`;
+                status.className = 'status-seimbang miring-kanan';
+                status.innerText = '⬇️ Miring ke Kanan (B lebih berat)';
+            } else {
+                const derajat = Math.max(-15, selisih / 20);
+                papan.style.transform = `rotate(${derajat}deg)`;
+                status.className = 'status-seimbang miring-kiri';
+                status.innerText = '⬇️ Miring ke Kiri (A lebih berat)';
+            }
+        }
+
+        // ================= SIMULASI 2: MOMEN INERSIA =================
+        let sudutPutar = 0;
+        let animasiId = null;
+        
+        // Nilai konstan untuk sistem
+        const massaPartikel = 1; // kg (ada 2 partikel)
+        const L_awal = 2; // Momentum sudut konstan (kg.m2/s)
+
+        function updateInersia() {
+            const r = parseFloat(document.getElementById('slider-r').value);
+            document.getElementById('label-r').innerText = r.toFixed(1) + " meter";
+
+            // Hitung Momen Inersia (I = m.r^2 + m.r^2 = 2.m.r^2)
+            const I = 2 * massaPartikel * (r * r);
+
+            // Hitung Kecepatan Sudut (ω = L / I)
+            const omega = L_awal / I;
+
+            // Update Readout
+            document.getElementById('readout-I').innerText = I.toFixed(2) + " kg.m²";
+            document.getElementById('readout-omega').innerText = omega.toFixed(2) + " rad/s";
+            document.getElementById('readout-L').innerText = (I * omega).toFixed(2) + " kg.m²/s";
+
+            // Update Visual Jarak Partikel (Skala visual: 1 meter = 40 pixel)
+            const skalaVisual = 40;
+            const lebarLengan = (r * skalaVisual) * 2; // total lebar kiri ke kanan
+            
+            const lengan = document.getElementById('lengan-putar');
+            lengan.style.width = lebarLengan + 'px';
+
+            // Jalankan animasi jika belum
+            if (!animasiId) {
+                loopPutar(omega);
+            } else {
+                // Update kecepatan putaran secara real-time
+                clearInterval(animasiId);
+                loopPutar(omega);
+            }
+        }
+
+        function loopPutar(omega) {
+            const lengan = document.getElementById('lengan-putar');
+            
+            // Gunakan setInterval agar kecepatan rotasi stabil
+            animasiId = setInterval(() => {
+                sudutPutar += omega * 0.05; // 0.05 adalah delta time
+                lengan.style.transform = `rotate(${sudutPutar}rad)`;
+            }, 30);
+        }
+
+        // Inisialisasi awal
+        window.onload = function() {
+            updateTuas();
+            updateInersia();
+        };
+    </script>
+</body>
+</html>

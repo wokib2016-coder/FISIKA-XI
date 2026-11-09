@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD Gaya Apung & Menimbang di Air - Interaktif</title>
+    <style>
+        :root {
+            --dark-green: #1a3c34;
+            --accent-yellow: #f2c94c;
+            --bg-light: #f8faf9;
+            --border-color: #d1d5db;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --light-green: #e6f4ea;
+            --red: #dc2626;
+            --green-text: #15803d;
+            --red-text: #b91c1c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background-color: var(--dark-green);
+            color: white;
+            padding: 30px 15px;
+            text-align: left;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .header-left, .header-right { display: flex; flex-direction: column; }
+        .header-right { text-align: right; }
+
+        .gold-text {
+            color: var(--accent-yellow);
+            text-decoration: underline;
+            text-decoration-color: rgba(255, 255, 255, 0.9);
+            text-underline-offset: 4px;
+            text-decoration-thickness: 2px;
+        }
+
+        .cyan-text { color: #38bdf8; margin-top: 4px; font-size: 0.85rem; font-weight: 500; }
+
+        .header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+        .header h1 span { color: var(--accent-yellow); }
+        .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
+
+        .header .tagline-gold {
+            font-size: 0.95rem;
+            font-weight: 700;
+            font-style: italic;
+            color: var(--accent-yellow);
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: flex-start;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 15px;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: none;
+            border: 2px solid transparent;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 20px;
+            margin-right: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: var(--light-green);
+            color: var(--dark-green);
+            border-color: #34d399;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto 40px auto;
+            padding: 0 15px;
+        }
+
+        .section-target {
+            scroll-margin-top: 80px;
+            padding-top: 5px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            word-wrap: break-word;
+        }
+
+        .card h2 { font-size: 1.3rem; margin-bottom: 12px; color: var(--text-dark); }
+        .card p { margin-bottom: 12px; color: #4b5563; font-size: 0.95rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; }
+
+        .form-group input, .form-group select {
+            width: 100% !important;
+            padding: 10px 12px;
+            border: 1px solid #93c5fd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: white;
+        }
+
+        .rekap-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .rekap-box h3 { font-size: 1rem; color: var(--dark-green); margin-bottom: 8px; }
+
+        #daftar-teman-kelompok {
+            list-style-type: decimal;
+            padding-left: 20px;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        #daftar-teman-kelompok li { padding: 3px 0; font-weight: 500; }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--light-green);
+            color: #047857;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .options { display: flex; gap: 8px; flex-direction: column; margin-bottom: 15px; }
+
+        .option-btn {
+            background: white;
+            border: 2px solid var(--text-dark);
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .option-btn:hover { background-color: #f3f4f6; }
+        .option-btn.selected-correct { border-color: var(--green-text); background-color: var(--light-green); color: var(--green-text); }
+        .option-btn.selected-wrong { border-color: var(--red); background-color: #fee2e2; color: var(--red-text); }
+
+        .feedback-box {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .feedback-box.correct { background-color: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
+        .feedback-box.wrong { background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }
+        .feedback-box.error { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+
+        .info-box {
+            background-color: var(--light-green);
+            border-left: 4px solid #10b981;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #065f46;
+            margin-bottom: 15px;
+        }
+
+        .guide-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 5px solid #10b981;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .guide-box h4 { color: #065f46; margin-bottom: 8px; font-size: 1rem; }
+        .guide-box ol, .guide-box ul { margin-left: 20px; font-size: 0.9rem; color: #334155; }
+        .guide-box li { margin-bottom: 6px; }
+
+        textarea {
+            width: 100% !important;
+            min-height: 90px;
+            padding: 12px;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            outline: none;
+            background-color: white;
+        }
+        textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .question-block { margin-top: 20px; }
+        .question-block p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        .evidence-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .evidence-box label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .evidence-input-row {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            margin-bottom: 8px;
+        }
+        .file-upload-input, .url-video-input {
+            width: 100%;
+            padding: 8px;
+            font-size: 0.85rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+        }
+        .preview-container {
+            margin-top: 8px;
+            display: none;
+            max-width: 220px;
+            position: relative;
+        }
+        .preview-container img {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #94a3b8;
+        }
+
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 15px; }
+        table { width: 100%; min-width: 550px; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--light-green); color: var(--dark-green); font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        .table-input { width: 80px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; }
+        .table-input-cell { width: 60px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; background-color: #f8fafc; }
+
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 12px; flex-direction: column; }
+        .btn { width: 100%; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; text-align: center; }
+        .btn-outline { background: white; border: 2px solid var(--text-dark); color: var(--text-dark); }
+        .btn-primary { background: white; border: 2px solid var(--dark-green); color: var(--dark-green); font-weight: bold; }
+        .btn-primary:hover { background: var(--light-green); }
+
+        .grading-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .grading-box h3 { font-size: 1rem; color: #92400e; margin-bottom: 6px; }
+
+        .calc-btn {
+            padding: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            background: #475569;
+            color: white;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .calc-btn:hover { background: #64748b; }
+        .calc-btn:active { transform: scale(0.95); }
+
+        #teacher-panel {
+            display: none;
+            background: #1e293b;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        #teacher-panel h2 { color: var(--accent-yellow); margin-bottom: 15px; }
+
+        #soal-container, #soal-container * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        #soal-container { position: relative; }
+        #wm-soal {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(220, 38, 38, 0.12);
+            transform: rotate(-25deg);
+            white-space: nowrap;
+            z-index: 5;
+        }
+
+        .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .pg-option {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+            background: #fff; font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+        }
+        .pg-option:hover { background: #f1f5f9; }
+        .pg-option input[type="radio"] { width: auto; margin: 0; cursor: pointer; }
+        .pg-option.selected { border-color: #10b981; background: #ecfdf5; }
+        .pg-option .pg-letter { font-weight: bold; min-width: 18px; }
+
+        .simulation-area {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #bae6fd;
+            position: relative;
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            background: #111827; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        canvas { display: block; width: 100%; height: 100%; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .panel {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+        .panel h3 {
+            margin: 0 0 8px; font-size: 0.9rem; color: var(--dark-green);
+            border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;
+        }
+        .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .row label { flex: 0 0 100px; font-size: 0.8rem; color: #475569; }
+        .row input[type="range"] { flex: 1; accent-color: #059669; cursor: pointer; }
+        .row .val { flex: 0 0 50px; text-align: right; font-size: 0.8rem; color: #0369a1; font-weight: bold; }
+        .row select { padding: 4px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 0.8rem; }
+
+        .result-panel {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 12px; font-size: 0.85rem; margin-bottom: 15px; transition: all 0.3s;
+        }
+        .result-panel.locked { background: #f0fdf4; border-color: #bbf7d0; box-shadow: 0 0 10px rgba(34,197,94,0.1); }
+        .result-panel h4 { margin: 0 0 8px; color: #15803d; font-size: 0.9rem; text-align: center; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; }
+        .result-card .title { font-weight: bold; font-size: 0.8rem; display: block; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px; }
+        .result-card.c1 .title { color: #ef4444; }
+        .result-card.c2 .title { color: #3b82f6; }
+        .result-card .kv { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 0.75rem; color: #475569; }
+        .result-card .kv span:last-child { color: #0f172a; font-weight: bold; }
+
+        .result-summary { text-align: center; font-size: 0.8rem; margin-bottom: 8px; color: #475569; }
+        .result-summary b { color: #15803d; }
+
+        .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+        .btn-start { background: #10b981; color: white; box-shadow: 0 2px 4px rgba(16,185,129,0.3); }
+        .btn-start:hover { background: #059669; }
+        .btn-reset { background: #f59e0b; color: white; box-shadow: 0 2px 4px rgba(245,158,11,0.3); }
+        .btn-reset:hover { background: #d97706; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .result-item { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
+        .result-item .label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
+        .result-item .value { font-size: 1rem; font-weight: bold; color: #0369a1; }
+        .result-item .value.red { color: #dc2626; }
+
+        @media (min-width: 600px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+            .result-grid { grid-template-columns: repeat(3, 1fr); }
+            .options, .action-buttons { flex-direction: row; }
+            .btn { width: auto; }
+            .header { padding: 40px 20px; }
+            .header h1 { font-size: 2.5rem; }
+            .container { padding: 0 20px; }
+            .card { padding: 30px; }
+            .evidence-input-row { flex-direction: row; }
+        }
+
+        @media print {
+            .nav-tabs, .action-buttons, .options, .btn, .feedback-box, .evidence-box input[type="file"], .evidence-box input[type="url"], #teacher-login-section, .no-print, .guide-box, #challenge-start-box, #challenge-area, .calc-btn, #cheat-modal, #audit-modal, .controls, .scene, .result-panel, .table-btn-row, #teacher-panel { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 20px; page-break-inside: avoid; }
+            body { background-color: white; }
+            input, select, textarea { border: none !important; background: transparent !important; resize: none; appearance: none; }
+            .preview-container { display: block !important; max-width: 250px; margin-top: 8px; }
+            .evidence-box { border: 1px solid #ccc; background: transparent; padding: 10px; }
+            .table-input { border: none !important; font-weight: bold; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="gold-text">Wokib</span>
+                <span class="cyan-text">Deep Learning</span>
+            </div>
+            <div class="header-right">
+                <span class="gold-text">2026</span>
+                <span class="cyan-text">STEM</span>
+            </div>
+        </div>
+        <h1>Buoyancy, <span>Why Do Objects Feel Lighter in Water?</span></h1>
+        <p>Worksheet - 9 · Mechanics: Archimedes' Principle and Buoyancy</p>
+        <p>Physics XI - Phase F</p>
+        <p class="tagline-gold">Let's master the concepts, understand the context, and prove the truth</p>
+    </header>
+    <nav class="nav-tabs">
+        <a href="#langkah1" class="tab-btn active">1. Problem</a>
+        <a href="#langkah2" class="tab-btn">2. Simulation</a>
+        <a href="#langkah3" class="tab-btn">3. Experiment</a>
+        <a href="#langkah4" class="tab-btn">4. Analysis</a>
+        <a href="#langkah5" class="tab-btn">5. Reflection</a>
+        <a href="#langkah6" class="tab-btn">6. Challenge</a>
+    </nav>
+
+    <div class="container" id="konten-lkpd">
+
+        <div class="card section-target" id="identitas">
+            <h2>Identity</h2>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Student Name</label>
+                    <input type="text" id="input-nama" placeholder="Type your full name here..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select id="select-kelas" onchange="updateIdentitas()">
+                        <option value="">-- Select Class --</option>
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" id="input-sekolah" value="" placeholder="Type school name..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <select id="select-kelompok" onchange="updateIdentitas()">
+                        <option value="">-- Select Group --</option>
+                        <option value="Kelompok 1">Group 1</option>
+                        <option value="Kelompok 2">Group 2</option>
+                        <option value="Kelompok 3">Group 3</option>
+                        <option value="Kelompok 4">Group 4</option>
+                        <option value="Kelompok 5">Group 5</option>
+                        <option value="Kelompok 6">Group 6</option>
+                        <option value="Kelompok 7">Group 7</option>
+                        <option value="Kelompok 8">Group 8</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="input-tanggal" onchange="updateIdentitas()">
+                </div>
+                <div class="form-group full-width">
+                    <div class="rekap-box">
+                        <h3 id="judul-rekap-kelompok">Group Members List ...</h3>
+                        <ol id="daftar-teman-kelompok">
+                            <li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please fill in Student Name, Class, and Group first)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="langkah1" class="section-target">
+            <div class="card">
+                <span class="badge">Part 1 · Problem</span>
+                <h2>Misteri Perubahan Berat Benda di Dalam Air</h2>
+                <p>Sebuah benda padat digantung pada neraca pegas. Ketika benda berada di udara, neraca menunjukkan berat sebenarnya. Ketika benda dicelupkan sepenuhnya ke dalam air, angka pada neraca berkurang (berat semu).</p>
+                <p><strong>Your Prediction:</strong> Mengapa berat benda terasa lebih ringan saat berada di dalam air?</p>
+
+                <div class="options">
+                    <button class="option-btn" id="opt-berkurang" onclick="cekPrediksi('massa')">Massa benda berkurang di dalam air</button>
+                    <button class="option-btn" id="opt-kekal" onclick="cekPrediksi('apung')">Air memberikan gaya dorong ke atas (Gaya Apung)</button>
+                    <button class="option-btn" id="opt-bertambah" onclick="cekPrediksi('gravitasi')">Gravitasi bumi melemah di dalam air</button>
+                </div>
+
+                <div id="feedback-box" class="feedback-box"></div>
+                <div class="info-box">
+                    <strong>Tujuan:</strong> memahami konsep Hukum Archimedes, gaya apung, berat semu, serta hubungan antara massa jenis benda dan fluida.
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah2" class="section-target">
+            <div class="card">
+                <span class="badge">Part 2 · Simulation</span>
+                <h2>Eksplorasi Timbangan & Gaya Apung</h2>
+                <p>Geser slider posisi untuk mencelupkan benda ke dalam air. Perhatikan bagaimana angka pada <b>Neraca Gantung</b> (atas), <b>Neraca Duduk</b> (bawah), dan <b>Neraca Samping</b> (penampung air tumpah) berubah!</p>
+
+                <div class="simulation-area">
+                    <div class="scene" id="scene">
+                        <canvas id="simCanvas"></canvas>
+                    </div>
+
+                    <div class="btn-row" style="margin-top: 0; margin-bottom: 15px;">
+                        <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset Simulasi</button>
+                    </div>
+
+                    <div class="controls">
+                        <div class="panel">
+                            <h3>⚙️ Kontrol Utama</h3>
+                            <div class="row">
+                                <label>Posisi (Kedalaman)</label>
+                                <input type="range" id="posSlider" min="0" max="100" value="0">
+                                <span class="val" id="posVal">0%</span>
+                            </div>
+                            <div class="row">
+                                <label>Massa (kg)</label>
+                                <input type="range" id="massSlider" min="0.2" max="3.0" step="0.1" value="1.5">
+                                <span class="val" id="massVal">1.5</span>
+                            </div>
+                            <div class="row">
+                                <label>Volume (cm³)</label>
+                                <input type="range" id="volSlider" min="300" max="1500" step="100" value="500">
+                                <span class="val" id="volVal">500</span>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h3>💧 Jenis Cairan</h3>
+                            <div class="row" style="flex-direction: column; align-items: stretch;">
+                                <select id="liquidSelect" style="width: 100%;">
+                                    <option value="1000" data-color="rgba(14, 165, 233, 0.45)">Air Murni (1.000 kg/m³)</option>
+                                    <option value="1030" data-color="rgba(2, 132, 199, 0.5)">Air Laut (1.030 kg/m³)</option>
+                                    <option value="800" data-color="rgba(234, 179, 8, 0.4)">Minyak (800 kg/m³)</option>
+                                    <option value="1260" data-color="rgba(168, 85, 247, 0.4)">Gliserin (1.260 kg/m³)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px;">
+                        <div style="font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px;">
+                            <span>Grafik Riwayat Pembacaan</span>
+                            <span style="font-size: 0.7rem; color: #38bdf8;">Merah: Gantung | Hijau: Duduk | Ungu: Samping</span>
+                        </div>
+                        <canvas id="graphCanvas" width="560" height="150" style="background: #0f172a; border-radius: 6px;"></canvas>
+                    </div>
+
+                    <div class="result-panel" id="resultPanel">
+                        <div id="resultText" style="text-align:center;">Atur parameter lalu gesejer slider posisi untuk mencelupkan benda.</div>
+                    </div>
+                </div>
+
+                <div class="info-box" id="info-sim">
+                    💡 Tips: Jika massa jenis benda lebih kecil dari fluida, benda akan terapung. Jika lebih besar, benda akan tenggelam dan tali akan kendor saat menyentuh dasar.
+                </div>
+
+                <div class="question-block">
+                    <p>Question 1. Berdasarkan simulasi, jelaskan mengapa berat benda di dalam air (berat semu) lebih kecil dibandingkan beratnya di udara?</p>
+                    <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div id="langkah3" class="section-target">
+            <div class="card">
+                <span class="badge">Part 3 · Experiment</span>
+                <h2>Uji dengan data eksperimen (Integrasi Phyphox)</h2>
+                <p>Anda bisa menggunakan fitur sensor percepatan di HP untuk mengukur getaran atau menggunakan neraca pegas manual. Masukkan data berat di udara (W_u) dan berat di air (W_a) ke dalam tabel untuk menghitung gaya apung (F_a) dan volume benda!</p>
+
+                <div class="guide-box">
+                    <h4>🛠️ Panduan Eksperimen: Berat Semu</h4>
+                    <ol style="margin-left: 20px; font-size: 0.9rem; color: #334155; margin-bottom: 10px;">
+                        <li>Timbang benda menggunakan neraca pegas di udara, catat sebagai <strong>W<sub>udara</sub></strong> (Newton).</li>
+                        <li>Celupkan benda sepenuhnya ke dalam air (pastikan tidak menyentuh dasar wadah).</li>
+                        <li>Catat angka pada neraca pegas saat benda di dalam air sebagai <strong>W<sub>air</sub></strong> (Newton).</li>
+                        <li>Hitung Gaya Apung: F<sub>a</sub> = W<sub>udara</sub> - W<sub>air</sub>.</li>
+                        <li>Hitung Volume benda: V = F<sub>a</sub> / (ρ<sub>air</sub> × g), dengan ρ<sub>air</sub> = 1000 kg/m³ dan g = 10 m/s².</li>
+                    </ol>
+                </div>
+
+                <div class="table-btn-row" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-primary" style="flex: 1; padding: 8px;" onclick="isiDataContoh()">Isi Contoh</button>
+                    <button class="btn btn-primary" style="flex: 1; padding: 8px;" onclick="kosongkanData()">Kosongkan</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="tabel-eksperimen" style="table-layout: fixed;">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Benda</th>
+                                <th style="width: 20%;">W udara (N)</th>
+                                <th style="width: 20%;">W air (N)</th>
+                                <th style="width: 20%;">F apung (N)<br>Otomatis</th>
+                                <th style="width: 20%;">Volume (m³)<br>Otomatis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="table-input input-benda" value="Batu" style="width: 100%;"></td>
+                                <td><input type="number" class="table-input input-wu" value="10" step="0.1" min="0"></td>
+                                <td><input type="number" class="table-input input-wa" value="6" step="0.1" min="0"></td>
+                                <td class="fa-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="vol-cell" style="font-weight:bold; color:#15803d;">–</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-benda" value="Besi" style="width: 100%;"></td>
+                                <td><input type="number" class="table-input input-wu" value="20" step="0.1" min="0"></td>
+                                <td><input type="number" class="table-input input-wa" value="17" step="0.1" min="0"></td>
+                                <td class="fa-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="vol-cell" style="font-weight:bold; color:#15803d;">–</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-benda" value="Kayu" style="width: 100%;"></td>
+                                <td><input type="number" class="table-input input-wu" value="5" step="0.1" min="0"></td>
+                                <td><input type="number" class="table-input input-wa" value="0" step="0.1" min="0"></td>
+                                <td class="fa-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="vol-cell" style="font-weight:bold; color:#15803d;">–</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 2. Berdasarkan tabel, bagaimana hubungan antara Gaya Apung (F<sub>a</sub>) dengan Volume benda yang tercelup? Jelaskan menggunakan rumus Hukum Archimedes!</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+
+                    <div class="evidence-box">
+                        <div class="evidence-input-row">
+                            <div style="flex: 1;">
+                                <label>Upload Screenshot / Foto Eksperimen: <span style="color: var(--red); font-weight: bold;">(Wajib / Dinilai)</span></label>
+                                <input type="file" id="upload-bukti" accept="image/*" class="file-upload-input" onchange="previewImage(this)">
+                            </div>
+                            <div style="flex: 1;">
+                                <label>Tautan Video Pendukung (Opsional):</label>
+                                <input type="url" placeholder="https://bit.ly/video-kamu" class="url-video-input">
+                            </div>
+                        </div>
+                        <div class="preview-container"><img src="" alt="Pratinjau Foto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah4" class="section-target">
+            <div class="card">
+                <span class="badge">Part 4 · Analysis</span>
+                <h2>Hubungan Berat, Gaya Apung, dan Massa Jenis</h2>
+                <p>Berat benda dipengaruhi oleh massa dan gravitasi (W = m·g). Gaya apung dipengaruhi oleh massa jenis fluida, gravitasi, dan volume benda yang tercelup (F<sub>a</sub> = ρ<sub>f</sub>·g·V).</p>
+
+                <div class="form-grid" style="margin-bottom: 15px;">
+                    <div class="form-group full-width">
+                        <label>Massa Benda (m): <span id="label-massaAnalisis">2 kg</span></label>
+                        <input type="range" id="slider-massaAnalisis" min="1" max="10" value="2" step="0.5" style="accent-color: #059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Volume Tercelup (V): <span id="label-volAnalisis">0.001 m³</span></label>
+                        <input type="range" id="slider-volAnalisis" min="0.001" max="0.01" value="0.001" step="0.001" style="accent-color: #059669;">
+                    </div>
+                </div>
+
+                <div class="result-grid four-cols" style="grid-template-columns: 1fr 1fr;">
+                    <div class="result-item"><div class="label">Berat Benda (W = m·g)</div><div class="value" id="out-berat">20 N</div></div>
+                    <div class="result-item"><div class="label">Gaya Apung (Fa = ρ·g·V)</div><div class="value red" id="out-apung">10 N</div></div>
+                    <div class="result-item"><div class="label">Berat Semu (W - Fa)</div><div class="value red" id="out-semu">10 N</div></div>
+                    <div class="result-item"><div class="label">Status Benda</div><div class="value" id="out-status">Tenggelam</div></div>
+                </div>
+                <p style="font-size:0.8rem;color:#6b7280;margin-top:-5px;">Catatan: Massa jenis fluida diasumsikan air (1000 kg/m³), g = 10 m/s².</p>
+
+                <div class="question-block">
+                    <p>Question 3. Jelaskan mengapa kapal laut yang terbuat dari besi (massa jenis besar) bisa terapung di air, sedangkan paku besi kecil justru tenggelam?</p>
+                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah5" class="section-target">
+            <div class="card">
+                <span class="badge">Part 5 · Reflection</span>
+                <h2>Refleksi Konsep</h2>
+
+                <div class="question-block">
+                    <p>Question 4. Sebuah benda memiliki berat 50 N di udara. Ketika dicelupkan ke dalam air, beratnya menjadi 30 N. Berapa besar gaya apung yang bekerja pada benda tersebut? (N)</p>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-direction: column;">
+                        <input type="number" id="input-jawaban-refleksi" placeholder="... N" style="width: 100%; padding: 10px; border: 1px solid #93c5fd; border-radius: 6px;">
+                        <button class="btn btn-primary" style="width: 100%; padding: 10px; border-radius: 8px;" onclick="cekRefleksi()">Cek jawaban</button>
+                    </div>
+                    <div id="feedback-refleksi" class="feedback-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 5. Mengapa gaya apung (Fa) bisa membuat benda melayang atau terapung, padahal gaya gravitasi bumi tetap bekerja?</p>
+                    <textarea class="ans-field" placeholder="Tulis penjelasanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 6. Tulis kesimpulanmu dalam tiga kalimat.</p>
+                    <textarea class="ans-field" placeholder="Tulis kesimpulanmu..."></textarea>
+                </div>
+            </div>
+        </div>
+        <div id="langkah6" class="section-target">
+            <div class="card">
+                <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
+                <h2>🔥 Mode Tantangan (HOTS)</h2>
+                <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar Hukum Archimedes dan gaya apung. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
+                <p style="font-size:0.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
+
+                <div id="challenge-start-box" style="text-align: center; padding: 20px;">
+                    <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size: 1.2rem; padding: 15px 30px; background: var(--dark-green); color: white;">▶ Mulai Tantangan</button>
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain.</div>
+                </div>
+
+                <div id="challenge-area" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <div><strong>Waktu:</strong> <span id="timer-display" style="font-family: monospace; font-size: 1.2rem; color: var(--red); font-weight: bold;">08:00</span></div>
+                        <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color: var(--red); font-weight: bold;">0</span></div>
+                    </div>
+
+                    <div id="soal-container" style="margin-bottom: 15px;"></div>
+
+                    <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                        <input type="text" id="calc-display" readonly style="width: 100%; padding: 10px; font-size: 1.2rem; text-align: right; background: #f8fafc; border: none; border-radius: 4px; margin-bottom: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                            <button class="calc-btn" onclick="calcInput('sin')" style="background: #8b5cf6;">sin</button>
+                            <button class="calc-btn" onclick="calcInput('cos')" style="background: #3b82f6;">cos</button>
+                            <button class="calc-btn" onclick="calcInput('tan')" style="background: #0ea5e9;">tan</button>
+                            <button class="calc-btn" onclick="calcInput('(')" style="background: #64748b;">(</button>
+                            <button class="calc-btn" onclick="calcInput(')')" style="background: #64748b;">)</button>
+
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn" onclick="calcInput('/')" style="background: #f59e0b;">÷</button>
+                            <button class="calc-btn" onclick="calcClear()" style="background: #ef4444;">C</button>
+
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn" onclick="calcInput('*')" style="background: #f59e0b;">×</button>
+                            <button class="calc-btn" onclick="calcInput('-')" style="background: #f59e0b;">-</button>
+
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn" onclick="calcInput('+')" style="background: #f59e0b;">+</button>
+                            <button class="calc-btn" onclick="calcSolve()" style="background: #10b981; grid-row: span 2; font-size: 1.2rem;">=</button>
+
+                            <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="selesaiTantangan()" style="width: 100%;">Kumpulkan Jawaban Tantangan</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-target">
+            <div class="card">
+                <div class="grading-box">
+                    <h3>Automated System Evaluation</h3>
+                    <p>Total Score: <strong id="val-score">0</strong> / 100</p>
+                    <p>Predicate: <strong id="val-predicate" style="color: #b45309;">Needs Improvement</strong></p>
+                </div>
+                <div id="report-curang" style="display:none; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 6px; margin-top: 10px; color: #b91c1c; font-weight: bold; margin-bottom: 15px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>Cetak hasil kerja</h2>
+                <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
+                    <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
+                    <!-- PERBAIKAN: Menambahkan (event) pada tombol -->
+                    <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
+                </div>
+                <div id="pesan-validasi" class="feedback-box error" style="display: none;">
+                    Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.
+                </div>
+                <p class="no-print" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; line-height: 1.5;">Konsep STEM: Science (Hukum Archimedes), Technology (Phyphox & Sensor), Engineering (Desain Kapal), Mathematics (Aljabar & Perbandingan).</p>
+            </div>
+
+            <div class="card" id="teacher-login-section">
+                <h2>Teacher Portal (Login)</h2>
+                <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-direction: column;">
+                    <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
+                </div>
+            </div>
+
+            <div id="teacher-panel">
+                <h2>Dashboard Rekap Nilai Siswa</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="margin-right: 10px;">Pilih Kelas:</label>
+                    <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding: 6px 10px; border-radius: 6px;">
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                    <button class="btn btn-outline" style="margin-left: 10px; color: white; border-color: white;" onclick="tutupPanelGuru()">Tutup Panel</button>
+                    <button class="btn btn-primary" style="margin-left: 10px; background: #10b981; color: white; border: none;" onclick="cetakRekapGuru()">🖨️ Cetak Rekap Nilai</button>
+                </div>
+                <div class="table-responsive">
+                    <table style="color: white; border-color: #475569;">
+                        <thead>
+                            <tr style="background-color: #334155;">
+                                <th>No</th>
+                                <th>Student Name</th>
+                                <th>Group</th>
+                                <th>Score</th>
+                                <th>Predicate</th>
+                                <th>Pelanggaran</th>
+                                <th>Date</th>
+                                <th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="cheat-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; text-align: center; padding: 20px; backdrop-filter: blur(5px);">
+        <div style="background: #fee2e2; border: 4px dashed #dc2626; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: shake 0.5s;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚨</div>
+            <h2 style="color: #b91c1c; font-size: 1.8rem; margin-bottom: 10px; font-weight: 800;">PERINGATAN KECURANGAN!</h2>
+            <p style="font-size: 1.2rem; color: #1f2937; margin-bottom: 5px;">Halo, <strong id="modal-nama-siswa" style="color: #dc2626; font-size: 1.4rem;">Siswa</strong>!</p>
+            <p id="modal-alasan" style="font-size: 1rem; color: #4b5563; margin-bottom: 15px;">Sistem mendeteksi Anda melakukan aktivitas terlarang.</p>
+
+            <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <p style="font-size: 0.9rem; color: #991b1b; font-weight: bold;">TOTAL PELANGGARAN ANDA:</p>
+                <p style="font-size: 3rem; color: #b91c1c; font-weight: 900; line-height: 1;" id="modal-total-curang">0</p>
+                <p style="font-size: 0.8rem; color: #991b1b; margin-top: 5px;">Nilai Anda dipotong otomatis 10 poin per pelanggaran.</p>
+            </div>
+
+            <button onclick="tutupModalDanGantiSoal()" style="background: #dc2626; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s;">Tutup & Kembali Ujian (Soal Diganti!)</button>
+        </div>
+    </div>
+
+    <div id="audit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);">
+        <div style="background: white; border: 4px solid #1e293b; border-radius: 12px; padding: 24px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="color:#1e293b;font-size:1.3rem;">📋 Audit Log Pelanggaran</h2>
+                <button onclick="document.getElementById('audit-modal').style.display='none'" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;">✕</button>
+            </div>
+            <p id="audit-header" style="font-size:0.9rem;color:#475569;margin-bottom:12px;"></p>
+            <div class="table-responsive">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#e2e8f0;">
+                            <th style="padding:8px;border:1px solid #cbd5e1;">No</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Waktu</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Jenis</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Detail</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Soal ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+    </style>
+    <script>
+        document.getElementById('input-tanggal').valueAsDate = new Date();
+
+        function escHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ==========================================
+        // STATE GLOBAL SIMULASI
+        // ==========================================
+        let posPercent = 0;         
+        let baseMass = 1.5;         
+        let volumeBenda = 500;     
+        let densityCairan = 1000;   
+        let liquidColor = 'rgba(14, 165, 233, 0.45)';
+        const gravity = 10;         
+        const baseContainerMass = 5.0; 
+        const baseBeakerMass = 0.5;
+
+        let graphHistory = [];
+        let currentFaNewtonVal = 0; 
+        let spilledWaterMass = 0;   
+        let displaySpilledWaterMass = 0; 
+
+        let isMovingDeeper = false;
+        let lastSliderInputTime = 0;
+        let lastSliderVal = 0;
+
+        let currentSubmergedFraction = 0;
+        let isTouchingBottom = false;
+        let isTaliKendor = false;
+        let gantungMass = 0;
+        let dudukMass = 0;
+        let sampingMass = 0;
+        let currentCubeY = 0;
+        let scaleCenterY = 0;
+        let waterSurfaceY = 0;
+        let isWaterOverflowing = false; 
+
+        const state = { resultLocked: false };
+
+        let waterParticles = [];
+        class WaterParticle {
+            constructor(startX, startY, targetX, targetY) {
+                this.x = startX;
+                this.y = startY;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.progress = 0;
+                this.speed = 0.035 + Math.random() * 0.015;
+                this.size = 2.5 + Math.random() * 1.5;
+                this.currentDrawX = startX;
+                this.currentDrawY = startY;
+            }
+            update() {
+                this.progress += this.speed;
+                let midX = (this.x + this.targetX) / 2;
+                let midY = Math.min(this.y, this.targetY) + 15;
+                
+                let t = this.progress;
+                let u = 1 - t;
+                this.currentDrawX = u * u * this.x + 2 * u * t * midX + t * t * this.targetX;
+                this.currentDrawY = u * u * this.y + 2 * u * t * midY + t * t * this.targetY;
+            }
+        }
+
+        // ==========================================
+        // LOGIKA SIMULASI GAYA APUNG
+        // ==========================================
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const gCtx = graphCanvas.getContext('2d');
+        const resultPanel = document.getElementById('resultPanel');
+
+        const posSlider = document.getElementById('posSlider');
+        const posVal = document.getElementById('posVal');
+        const massSlider = document.getElementById('massSlider');
+        const massVal = document.getElementById('massVal');
+        const volSlider = document.getElementById('volSlider');
+        const volVal = document.getElementById('volVal');
+        const liquidSelect = document.getElementById('liquidSelect');
+
+        function initCanvasSize() {
+            const box = document.getElementById('scene');
+            if (!box) return;
+            const w = box.clientWidth;
+            const h = box.clientHeight;
+            if (w > 0 && h > 0) {
+                canvas.width = w;
+                canvas.height = h;
+            }
+            const gw = graphCanvas.clientWidth;
+            if (gw > 0) {
+                graphCanvas.width = gw;
+                graphCanvas.height = 150;
+            }
+            draw();
+            drawGraph();
+        }
+
+        function resetHistory() {
+            graphHistory = [];
+            recordCurrentState();
+            drawGraph();
+        }
+
+        function recordCurrentState() {
+            if (typeof gantungMass === 'undefined') return;
+            const existingIndex = graphHistory.findIndex(item => Math.abs(item.pos - posPercent) < 0.5);
+            if (existingIndex >= 0) {
+                graphHistory[existingIndex] = { pos: posPercent, gantung: gantungMass, duduk: dudukMass, samping: sampingMass };
+            } else {
+                graphHistory.push({ pos: posPercent, gantung: gantungMass, duduk: dudukMass, samping: sampingMass });
+                graphHistory.sort((a, b) => a.pos - b.pos);
+            }
+        }
+
+        const handleSliderMovement = (val) => {
+            const currentVal = parseFloat(val);
+            if (currentVal > lastSliderVal) {
+                isMovingDeeper = true;
+            } else if (currentVal < lastSliderVal) {
+                isMovingDeeper = false;
+            }
+            lastSliderVal = currentVal;
+            lastSliderInputTime = performance.now();
+            posPercent = currentVal;
+
+            updateState();
+            recordCurrentState();
+            drawGraph();
+        };
+
+        posSlider.addEventListener('input', (e) => { handleSliderMovement(e.target.value); });
+        posSlider.addEventListener('change', (e) => { isMovingDeeper = false; handleSliderMovement(e.target.value); });
+        ['mouseup', 'touchend', 'pointerup'].forEach(evt => {
+            posSlider.addEventListener(evt, () => { isMovingDeeper = false; });
+        });
+
+        massSlider.addEventListener('input', (e) => {
+            baseMass = parseFloat(e.target.value);
+            massVal.innerText = baseMass.toFixed(1);
+            updateState();
+            recordCurrentState();
+            drawGraph();
+        });
+
+        volSlider.addEventListener('input', (e) => {
+            volumeBenda = parseFloat(e.target.value);
+            volVal.innerText = volumeBenda;
+            updateState();
+            recordCurrentState();
+            drawGraph();
+        });
+
+        liquidSelect.addEventListener('change', (e) => {
+            densityCairan = parseFloat(e.target.value);
+            const selectedOption = liquidSelect.options[liquidSelect.selectedIndex];
+            liquidColor = selectedOption.getAttribute('data-color');
+            updateState();
+            resetHistory();
+            drawGraph();
+        });
+
+        function resetSimulation() {
+            posPercent = 0;
+            posSlider.value = 0;
+            posVal.innerText = "0%";
+            lastSliderVal = 0;
+
+            baseMass = 1.5;
+            massSlider.value = 1.5;
+            massVal.innerText = "1.5";
+
+            volumeBenda = 500;
+            volSlider.value = 500;
+            volVal.innerText = "500";
+
+            densityCairan = 1000;
+            liquidSelect.value = "1000";
+            liquidColor = 'rgba(14, 165, 233, 0.45)';
+
+            waterParticles = [];
+            displaySpilledWaterMass = baseBeakerMass;
+            isMovingDeeper = false;
+
+            updateState();
+            resetHistory();
+            draw();
+            drawGraph();
+        }
+
+        function updateState() {
+            const cubeSize = 50 * Math.cbrt(volumeBenda / 1000);
+            const containerHeight = 120;
+            const containerY = 220; 
+            const containerBottomY = containerY + containerHeight; 
+            const hookLength = 160; 
+            const baseWaterSurfaceY = containerY + 25; 
+            
+            const volumeBendaM3 = volumeBenda / 1000000;
+            const densityBenda = baseMass / volumeBendaM3;
+            
+            const isTerapung = densityBenda < densityCairan;
+            const isMelayang = Math.abs(densityBenda - densityCairan) < 1e-5;
+            const isTenggelam = densityBenda > densityCairan;
+
+            waterSurfaceY = baseWaterSurfaceY;
+
+            const scaleAtZero = waterSurfaceY - cubeSize - hookLength;
+            const scaleAtBottomMax = (containerBottomY - cubeSize) - hookLength + 20;
+
+            const tPos = posPercent / 100;
+            scaleCenterY = scaleAtZero + tPos * (scaleAtBottomMax - scaleAtZero);
+
+            const naturalCubeY = scaleCenterY + hookLength;
+            const maxCubeY = containerBottomY - cubeSize / 2;
+
+            if (posPercent === 0) {
+                currentCubeY = scaleAtZero + hookLength;
+                isTouchingBottom = false;
+                isTaliKendor = false;
+            } else if (isTerapung) {
+                const equilibriumSubmergedFraction = baseMass / (densityCairan * volumeBendaM3);
+                const floatingCubeY = waterSurfaceY - cubeSize/2 + (equilibriumSubmergedFraction * cubeSize);
+                currentCubeY = floatingCubeY;
+                isTouchingBottom = false;
+                isTaliKendor = (naturalCubeY > floatingCubeY);
+            } else if (isMelayang) {
+                const floatingCubeY = waterSurfaceY + cubeSize / 2;
+                currentCubeY = floatingCubeY;
+                isTouchingBottom = false;
+                isTaliKendor = (naturalCubeY > floatingCubeY);
+            } else {
+                const fullySubmergedY = waterSurfaceY + cubeSize / 2;
+                if (naturalCubeY <= fullySubmergedY) {
+                    currentCubeY = naturalCubeY;
+                    isTouchingBottom = false;
+                    isTaliKendor = false;
+                } else if (naturalCubeY < maxCubeY) {
+                    currentCubeY = naturalCubeY;
+                    isTouchingBottom = false;
+                    isTaliKendor = false;
+                } else {
+                    currentCubeY = maxCubeY;
+                    isTouchingBottom = true;
+                    isTaliKendor = true;
+                }
+            }
+
+            const cubeBottomY = currentCubeY + cubeSize / 2;
+            let submergedDepth = 0;
+            if (isTouchingBottom || (isTenggelam && cubeBottomY >= waterSurfaceY + cubeSize)) {
+                submergedDepth = cubeSize; 
+            } else if (cubeBottomY > waterSurfaceY) {
+                submergedDepth = Math.min(cubeSize, cubeBottomY - waterSurfaceY);
+            }
+            
+            currentSubmergedFraction = Math.max(0, Math.min(1, submergedDepth / cubeSize));
+
+            const volumeCelupM3 = (currentSubmergedFraction * volumeBenda) / 1000000;
+            currentFaNewtonVal = densityCairan * gravity * volumeCelupM3;
+            const currentFaMassEquivalent = currentFaNewtonVal / gravity;
+
+            spilledWaterMass = currentFaMassEquivalent;
+            
+            if (isMovingDeeper && (performance.now() - lastSliderInputTime > 50)) {
+                isMovingDeeper = false;
+            }
+
+            const isFullySubmergedOrBottom = (currentSubmergedFraction >= 0.999) || isTaliKendor || isTouchingBottom;
+            isWaterOverflowing = (currentSubmergedFraction > 0 && isMovingDeeper && !isFullySubmergedOrBottom);
+
+            if (currentSubmergedFraction === 0) {
+                gantungMass = baseMass;
+                dudukMass = baseContainerMass;
+                sampingMass = baseBeakerMass;
+            } else if (isTaliKendor || isTouchingBottom) {
+                gantungMass = 0.00;
+                dudukMass = baseContainerMass + baseMass - spilledWaterMass; 
+                sampingMass = baseBeakerMass + spilledWaterMass;
+            } else {
+                gantungMass = Math.max(0.00, baseMass - currentFaMassEquivalent);
+                dudukMass = baseContainerMass; 
+                sampingMass = baseBeakerMass + spilledWaterMass;
+            }
+
+            if (currentSubmergedFraction === 0) {
+                posVal.innerText = "0%";
+            } else if (isTouchingBottom) {
+                posVal.innerText = "Dasar";
+            } else {
+                posVal.innerText = Math.round(currentSubmergedFraction * 100) + "%";
+            }
+            
+            if (!state.resultLocked) {
+                const html = `
+                    <h4>📊 Hasil Pembacaan Neraca</h4>
+                    <div class="result-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <div class="result-card c1" style="border-top: 3px solid #ef4444;">
+                            <span class="title">⬆️ Gantung (Atas)</span>
+                            <div class="kv"><span>Berat Semu</span><span>${gantungMass.toFixed(2)} kg</span></div>
+                        </div>
+                        <div class="result-card c2" style="border-top: 3px solid #22c55e;">
+                            <span class="title">⬇️ Duduk (Bawah)</span>
+                            <div class="kv"><span>Total Beban</span><span>${dudukMass.toFixed(3)} kg</span></div>
+                        </div>
+                        <div class="result-card" style="border-top: 3px solid #a855f7;">
+                            <span class="title">↘️ Samping (Pancuran)</span>
+                            <div class="kv"><span>Air Tumpah</span><span>${sampingMass.toFixed(3)} kg</span></div>
+                        </div>
+                    </div>
+                    <div class="result-summary">
+                        Gaya Apung (Fa): <b>${currentFaNewtonVal.toFixed(1)} N</b> &nbsp;|&nbsp; Tercelup: <b>${Math.round(currentSubmergedFraction * 100)}%</b>
+                    </div>
+                `;
+                document.getElementById('resultText').innerHTML = html;
+            }
+        }
+
+        function draw() {
+            if (!canvas.width || !canvas.height) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cubeSize = 50 * Math.cbrt(volumeBenda / 1000);
+            const containerWidth = 150;
+            const containerHeight = 120;
+
+            const scaleCenterX = canvas.width / 2 - 60; 
+            const containerX = scaleCenterX - containerWidth / 2;
+            const containerY = 220; 
+
+            let targetBeakerMass = sampingMass;
+            let diffBeakerMass = targetBeakerMass - displaySpilledWaterMass;
+            displaySpilledWaterMass += diffBeakerMass * 0.15; 
+
+            // 1. Neraca Gantung Atas
+            ctx.fillStyle = '#1e293b';
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(scaleCenterX, scaleCenterY, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            const scaleMaxRange = Math.max(3.0, baseMass) * 1.2;
+            const needleAngle = -Math.PI/2 + (Math.min(1, gantungMass / scaleMaxRange)) * (Math.PI * 1.5);
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(scaleCenterX, scaleCenterY);
+            ctx.lineTo(scaleCenterX + Math.cos(needleAngle) * 21, scaleCenterY + Math.sin(needleAngle) * 21);
+            ctx.stroke();
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(gantungMass.toFixed(2) + " kg", scaleCenterX, scaleCenterY + 42);
+
+            // Tali Penghubung
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(scaleCenterX, scaleCenterY + 30);
+            
+            if (isTaliKendor) {
+                const topHookY = scaleCenterY + 30;
+                const cubeTopHookY = currentCubeY - cubeSize / 2;
+                const slackDistance = Math.max(30, topHookY - cubeTopHookY);
+                ctx.quadraticCurveTo(scaleCenterX + slackDistance * 0.8, (topHookY + cubeTopHookY) / 2, scaleCenterX, cubeTopHookY);
+            } else {
+                ctx.lineTo(scaleCenterX, currentCubeY - cubeSize / 2);
+            }
+            ctx.stroke();
+
+            // 3. Wadah Kaca Utama + Pancuran
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(containerX, containerY);
+            ctx.lineTo(containerX + containerWidth, containerY);
+            ctx.lineTo(containerX + containerWidth + 20, containerY + 12); 
+            ctx.lineTo(containerX + containerWidth, containerY + 26);
+            ctx.lineTo(containerX + containerWidth, containerY + containerHeight);
+            ctx.lineTo(containerX, containerY + containerHeight);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+
+            ctx.fillStyle = liquidColor;
+            ctx.fillRect(containerX + 1.5, waterSurfaceY, containerWidth - 3, (containerY + containerHeight) - waterSurfaceY - 1.5);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(containerX + 2, waterSurfaceY);
+            ctx.lineTo(containerX + containerWidth - 2, waterSurfaceY);
+            ctx.stroke();
+
+            const spoutX = containerX + containerWidth + 20;
+            const spoutY = containerY + 14;
+            
+            const sideScaleX = containerX + containerWidth + 70;
+            const sideScaleY = (containerY + containerHeight + 2) + 4;
+            const beakerW = 50;
+            const beakerH = 50;
+            const beakerX = sideScaleX - beakerW / 2;
+            const beakerY = sideScaleY - beakerH;
+            
+            const targetDropX = beakerX + beakerW / 2;
+            const targetDropY = beakerY + 15; 
+
+            if (isWaterOverflowing) {
+                if (Math.random() < 0.6) {
+                    waterParticles.push(new WaterParticle(spoutX, spoutY, targetDropX, targetDropY));
+                }
+            } else {
+                waterParticles = [];
+            }
+
+            for (let i = waterParticles.length - 1; i >= 0; i--) {
+                let p = waterParticles[i];
+                p.update();
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.beginPath();
+                ctx.arc(p.currentDrawX, p.currentDrawY, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (p.progress >= 1) {
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.arc(targetDropX, targetDropY, 4, 0, Math.PI);
+                    ctx.stroke();
+
+                    waterParticles.splice(i, 1);
+                }
+            }
+
+            // 2. Benda (Kubus)
+            ctx.fillStyle = '#0284c7';
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 2;
+            ctx.fillRect(scaleCenterX - cubeSize / 2, currentCubeY - cubeSize / 2, cubeSize, cubeSize);
+            ctx.strokeRect(scaleCenterX - cubeSize / 2, currentCubeY - cubeSize / 2, cubeSize, cubeSize);
+
+            // 4. Neraca Duduk Utama (Bawah)
+            const scaleBottomY = containerY + containerHeight + 2;
+            const baseWidth = 150;
+            const baseHeight = 35;
+            const baseX = scaleCenterX - baseWidth / 2;
+
+            ctx.fillStyle = '#334155';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.fillRect(baseX, scaleBottomY, baseWidth, baseHeight);
+            ctx.strokeRect(baseX, scaleBottomY, baseWidth, baseHeight);
+
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(scaleCenterX - 40, scaleBottomY + 5, 80, 24);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(scaleCenterX - 40, scaleBottomY + 5, 80, 24);
+
+            ctx.fillStyle = '#4ade80';
+            ctx.font = 'bold 11px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(dudukMass.toFixed(3) + " kg", scaleCenterX, scaleBottomY + 21);
+
+            // 5. Neraca Samping & Gelas Penampung
+            const sideScaleWidth = 100;
+            const sideScaleHeight = 32;
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(beakerX, beakerY);
+            ctx.lineTo(beakerX, beakerY + beakerH);
+            ctx.lineTo(beakerX + beakerW, beakerY + beakerH);
+            ctx.lineTo(beakerX + beakerW, beakerY);
+            ctx.stroke();
+            ctx.fill();
+
+            const currentSpilledPart = Math.max(0, displaySpilledWaterMass - baseBeakerMass);
+            if (currentSpilledPart > 0) {
+                const spilledWaterHeight = Math.min(beakerH - 6, (currentSpilledPart / 1.5) * (beakerH - 10));
+                ctx.fillStyle = liquidColor;
+                ctx.fillRect(beakerX + 2, (beakerY + beakerH) - spilledWaterHeight - 2, beakerW - 4, spilledWaterHeight);
+            }
+
+            ctx.fillStyle = '#334155';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.fillRect(sideScaleX - sideScaleWidth / 2, sideScaleY, sideScaleWidth, sideScaleHeight);
+            ctx.strokeRect(sideScaleX - sideScaleWidth / 2, sideScaleY, sideScaleWidth, sideScaleHeight);
+
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(sideScaleX - 38, sideScaleY + 5, 76, 22);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(sideScaleX - 38, sideScaleY + 5, 76, 22);
+
+            ctx.fillStyle = '#c084fc'; 
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(sampingMass.toFixed(3) + " kg", sideScaleX, sideScaleY + 19);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '9px sans-serif';
+            ctx.fillText("Neraca Samping", sideScaleX, sideScaleY + sideScaleHeight + 12);
+
+            // Status Box Bawah
+            const statusBoxY = 435;
+            const statusBoxWidth = Math.min(570, canvas.width - 20); 
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.90)';
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(canvas.width / 2 - statusBoxWidth / 2, statusBoxY, statusBoxWidth, 28, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#4ade80';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("Gantung: " + gantungMass.toFixed(2) + " kg | Duduk: " + dudukMass.toFixed(3) + " kg | Samping: " + sampingMass.toFixed(3) + " kg | Fa: " + currentFaNewtonVal.toFixed(1) + " N", canvas.width / 2, statusBoxY + 18);
+
+            if (currentSubmergedFraction > 0 && !isTaliKendor) {
+                drawArrow(scaleCenterX + cubeSize/2 + 10, currentCubeY, scaleCenterX + cubeSize/2 + 10, currentCubeY - 26, '#38bdf8', 'Fa');
+            }
+        }
+
+        function drawArrow(fromx, fromy, tox, toy, color, label) {
+            const headlen = 6;
+            const dx = tox - fromx;
+            const dy = toy - fromy;
+            const angle = Math.atan2(dy, dx);
+
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fill();
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(label, tox + 5, (fromy + toy) / 2 + 3);
+        }
+
+        function drawGraph() {
+            if (!gCtx) return;
+            if (!graphCanvas.width || !graphCanvas.height) return;
+            gCtx.clearRect(0, 0, graphCanvas.width, graphCanvas.height);
+
+            const padLeft = 45;
+            const padRight = 15;
+            const padTop = 15;
+            const padBottom = 25;
+
+            const gw = graphCanvas.width - padLeft - padRight;
+            const gh = graphCanvas.height - padTop - padBottom;
+
+            gCtx.fillStyle = '#0f172a';
+            gCtx.fillRect(padLeft, padTop, gw, gh);
+            gCtx.strokeStyle = '#334155';
+            gCtx.lineWidth = 1;
+            gCtx.strokeRect(padLeft, padTop, gw, gh);
+
+            gCtx.strokeStyle = '#1e293b';
+            for (let i = 1; i < 4; i++) {
+                let yPos = padTop + (gh / 4) * i;
+                gCtx.beginPath();
+                gCtx.moveTo(padLeft, yPos);
+                gCtx.lineTo(padLeft + gw, yPos);
+                gCtx.stroke();
+            }
+
+            const maxScaleY = Math.max(8.0, (baseContainerMass + baseMass) * 1.2);
+
+            gCtx.fillStyle = '#94a3b8';
+            gCtx.font = '9px sans-serif';
+            gCtx.textAlign = 'right';
+            gCtx.fillText(maxScaleY.toFixed(1) + 'kg', padLeft - 5, padTop + 8);
+            gCtx.fillText('0 kg', padLeft - 5, padTop + gh + 3);
+            gCtx.textAlign = 'center';
+            gCtx.fillText('0%', padLeft, padTop + gh + 14);
+            gCtx.fillText('100%', padLeft + gw, padTop + gh + 14);
+
+            gCtx.save();
+            gCtx.beginPath();
+            gCtx.rect(padLeft, padTop, gw, gh);
+            gCtx.clip();
+
+            function getBoundedY(val) {
+                let clampedVal = Math.max(0, Math.min(maxScaleY, val));
+                return padTop + gh - (clampedVal / maxScaleY) * gh;
+            }
+
+            if (graphHistory.length > 0) {
+                const pointsGantung = [];
+                const pointsDuduk = [];
+                const pointsSamping = [];
+
+                graphHistory.forEach(item => {
+                    let xCoord = padLeft + (item.pos / 100) * gw;
+                    pointsGantung.push({x: xCoord, y: getBoundedY(item.gantung)});
+                    pointsDuduk.push({x: xCoord, y: getBoundedY(item.duduk)});
+                    pointsSamping.push({x: xCoord, y: getBoundedY(item.samping)});
+                });
+
+                if (pointsGantung.length > 0) {
+                    gCtx.strokeStyle = '#f43f5e';
+                    gCtx.lineWidth = 2;
+                    gCtx.beginPath();
+                    pointsGantung.forEach((pt, idx) => { idx === 0 ? gCtx.moveTo(pt.x, pt.y) : gCtx.lineTo(pt.x, pt.y); });
+                    gCtx.stroke();
+                }
+
+                if (pointsDuduk.length > 0) {
+                    gCtx.strokeStyle = '#4ade80';
+                    gCtx.lineWidth = 2;
+                    gCtx.beginPath();
+                    pointsDuduk.forEach((pt, idx) => { idx === 0 ? gCtx.moveTo(pt.x, pt.y) : gCtx.lineTo(pt.x, pt.y); });
+                    gCtx.stroke();
+                }
+
+                if (pointsSamping.length > 0) {
+                    gCtx.strokeStyle = '#c084fc';
+                    gCtx.lineWidth = 2;
+                    gCtx.beginPath();
+                    pointsSamping.forEach((pt, idx) => { idx === 0 ? gCtx.moveTo(pt.x, pt.y) : gCtx.lineTo(pt.x, pt.y); });
+                    gCtx.stroke();
+                }
+            }
+
+            let curX = padLeft + (posPercent / 100) * gw;
+            gCtx.fillStyle = '#f43f5e'; gCtx.beginPath(); gCtx.arc(curX, getBoundedY(gantungMass), 4, 0, Math.PI * 2); gCtx.fill();
+            gCtx.fillStyle = '#4ade80'; gCtx.beginPath(); gCtx.arc(curX, getBoundedY(dudukMass), 4, 0, Math.PI * 2); gCtx.fill();
+            gCtx.fillStyle = '#c084fc'; gCtx.beginPath(); gCtx.arc(curX, getBoundedY(sampingMass), 4, 0, Math.PI * 2); gCtx.fill();
+
+            gCtx.restore();
+        }
+
+        function startAnimationLoop() {
+            function animate() {
+                draw();
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // ==========================================
+        // TABEL EKSPERIMEN
+        // ==========================================
+        function hitungTabel(inputEl) {
+            const row = inputEl.closest('tr');
+            const wu = Number(row.querySelector('.input-wu').value);
+            const wa = Number(row.querySelector('.input-wa').value);
+
+            const tdFa = row.querySelector('.fa-cell');
+            const tdVol = row.querySelector('.vol-cell');
+
+            const g = 10;
+            const rho = 1000;
+
+            if (!isNaN(wu) && !isNaN(wa)) {
+                let Fa = Math.max(0, wu - wa);
+                tdFa.innerText = Fa.toFixed(1);
+
+                let V = Fa / (rho * g);
+                tdVol.innerText = V.toFixed(4);
+            } else {
+                tdFa.innerText = '–';
+                tdVol.innerText = '–';
+            }
+            hitungNilaiOtomatis();
+        }
+
+        document.querySelectorAll('#tabel-eksperimen input').forEach(inp => {
+            inp.addEventListener('input', () => hitungTabel(inp));
+        });
+
+        function isiDataContoh() {
+            const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+            rows.forEach((row, index) => {
+                if (index === 0) { row.querySelector('.input-wu').value = 10; row.querySelector('.input-wa').value = 6; }
+                if (index === 1) { row.querySelector('.input-wu').value = 20; row.querySelector('.input-wa').value = 17; }
+                if (index === 2) { row.querySelector('.input-wu').value = 5; row.querySelector('.input-wa').value = 0; }
+            });
+            rows.forEach(row => {
+                const input = row.querySelector('.input-wu');
+                if (input.value) hitungTabel(input);
+            });
+        }
+
+        function kosongkanData() {
+            document.querySelectorAll('.input-wu, .input-wa').forEach(inp => inp.value = '');
+            document.querySelectorAll('.fa-cell, .vol-cell').forEach(td => td.innerText = '–');
+            hitungNilaiOtomatis();
+        }
+
+        // ==========================================
+        // PART 4: ANALISIS
+        // ==========================================
+        const sliderMassaAnalisis = document.getElementById('slider-massaAnalisis');
+        const sliderVolAnalisis = document.getElementById('slider-volAnalisis');
+        sliderMassaAnalisis.addEventListener('input', hitungAnalisis);
+        sliderVolAnalisis.addEventListener('input', hitungAnalisis);
+
+        function hitungAnalisis() {
+            const m = parseFloat(sliderMassaAnalisis.value);
+            const V = parseFloat(sliderVolAnalisis.value);
+            const g = 10;
+            const rho_air = 1000;
+
+            const W = m * g;
+            const Fa = rho_air * g * V;
+            const W_semu = Math.max(0, W - Fa);
+            
+            let status = "Tenggelam";
+            if (Fa > W) status = "Terapung";
+            else if (Fa === W) status = "Melayang";
+
+            document.getElementById('label-massaAnalisis').innerText = m.toFixed(1) + ' kg';
+            document.getElementById('label-volAnalisis').innerText = V.toFixed(3) + ' m³';
+            
+            document.getElementById('out-berat').innerText = W.toFixed(1) + ' N';
+            document.getElementById('out-apung').innerText = Fa.toFixed(1) + ' N';
+            document.getElementById('out-semu').innerText = W_semu.toFixed(1) + ' N';
+            
+            const statusEl = document.getElementById('out-status');
+            statusEl.innerText = status;
+            statusEl.style.color = status === 'Terapung' ? '#15803d' : (status === 'Melayang' ? '#0369a1' : '#dc2626');
+        }
+
+        // ==========================================
+        // IDENTITAS & PENILAIAN
+        // ==========================================
+        function updateIdentitas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const judulRekap = document.getElementById('judul-rekap-kelompok');
+
+            if (kelompok) { judulRekap.innerText = `Group Members List (${kelompok})`; }
+            else { judulRekap.innerText = `Group Members List ...`; }
+
+            if (!kelas || !kelompok) {
+                document.getElementById('daftar-teman-kelompok').innerHTML = '<li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please select Class and Group first)</li>';
+                return;
+            }
+
+            const storageKey = `lkpd_apung_kelompok_${kelas}_${kelompok}`;
+            let dataGrup = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            if (nama !== '') {
+                let sessionId = localStorage.getItem('lkpd_apung_session_id');
+                if (!sessionId) {
+                    sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                    localStorage.setItem('lkpd_apung_session_id', sessionId);
+                }
+                let indexSesi = dataGrup.findIndex(item => item.sessionId === sessionId);
+                if (indexSesi !== -1) { dataGrup[indexSesi].nama = nama; }
+                else { dataGrup.push({ sessionId: sessionId, nama: nama, waktu: Date.now() }); }
+                localStorage.setItem(storageKey, JSON.stringify(dataGrup));
+            }
+            renderDaftarAnggota(dataGrup);
+            hitungNilaiOtomatis();
+        }
+
+        function renderDaftarAnggota(dataGrup) {
+            const listEl = document.getElementById('daftar-teman-kelompok');
+            listEl.innerHTML = '';
+            if (!dataGrup || dataGrup.length === 0) {
+                listEl.innerHTML = '<li style="color: var(--text-muted); list-style: none; margin-left: -20px;">No members have joined this group yet.</li>';
+                return;
+            }
+            dataGrup.sort((a, b) => a.waktu - b.waktu);
+            dataGrup.forEach(item => {
+                let li = document.createElement('li');
+                li.textContent = item.nama;
+                listEl.appendChild(li);
+            });
+        }
+
+        function esaiValid(text, minKata, keywordWajib, keywordOpsional) {
+            const t = (text || '').toLowerCase().trim();
+            const kata = t.split(/\s+/).filter(w => w.length > 0);
+            if (kata.length < minKata) return 0;
+            const adaWajib = keywordWajib.every(k => t.includes(k));
+            const adaOpsional = keywordOpsional.some(k => t.includes(k));
+            if (adaWajib && adaOpsional) return 1;
+            if (adaWajib || adaOpsional) return 0.5;
+            return 0.2;
+        }
+
+        function hitungNilaiOtomatis() {
+            let skorTotal = 0;
+
+            const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+            let barisValid = 0;
+            rows.forEach(row => {
+                const wu = parseFloat(row.querySelector('.input-wu').value);
+                const wa = parseFloat(row.querySelector('.input-wa').value);
+                const volTxt = row.querySelector('.vol-cell').innerText;
+                
+                if (!isNaN(wu) && !isNaN(wa) && volTxt !== '–') {
+                    barisValid++;
+                }
+            });
+            if (barisValid >= 3) skorTotal += 25;
+            else if (barisValid > 0) skorTotal += 10;
+
+            const ans = document.querySelectorAll('.ans-field');
+            skorTotal += esaiValid(ans[0]?.value, 10, ['gaya', 'apung'], ['ke atas', 'archimedes', 'fluida', 'mendorong']) * 8;
+            skorTotal += esaiValid(ans[1]?.value, 10, ['volume', 'apung'], ['sebanding', 'archimedes', 'massa jenis', 'tercelup']) * 8;
+            skorTotal += esaiValid(ans[2]?.value, 10, ['volume', 'massa jenis'], ['udara', 'rongga', 'berat', 'total']) * 8;
+            skorTotal += esaiValid(ans[3]?.value, 10, ['gaya', 'apung'], ['gravitasi', 'seimbang', 'berat', 'sama']) * 8;
+            skorTotal += esaiValid(ans[4]?.value, 10, ['gaya', 'apung'], ['archimedes', 'massa jenis', 'berat', 'fluida']) * 8;
+
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            if (!isNaN(refVal) && Math.abs(refVal - 20) <= 0.5) skorTotal += 10;
+
+            const fileInput = document.getElementById('upload-bukti');
+            let fotoUploaded = false;
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                fotoUploaded = true;
+                skorTotal += 12;
+            }
+
+            skorTotal += Math.min(40, skorTantangan);
+            skorTotal -= (peringatanCurang * 10);
+            skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
+
+            if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
+            if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
+
+            document.getElementById('val-score').innerText = skorTotal;
+
+            let predikat = "Needs Improvement";
+            let warna = "#b91c1c";
+            if (skorTotal >= 90) { predikat = "Excellent"; warna = "#15803d"; }
+            else if (skorTotal >= 75) { predikat = "Good"; warna = "#0369a1"; }
+            else if (skorTotal >= 60) { predikat = "Fair"; warna = "#b45309"; }
+
+            let labelPredikat = predikat;
+            if (!fotoUploaded) labelPredikat += " (Foto blm diunggah!)";
+            if (skorTantangan === 0) labelPredikat += " (Tantangan blm dikerjakan!)";
+            if (peringatanCurang > 0) labelPredikat += ` [Curang: -${peringatanCurang*10} poin]`;
+
+            document.getElementById('val-predicate').innerText = labelPredikat;
+            document.getElementById('val-predicate').style.color = warna;
+
+            let reportBox = document.getElementById('report-curang');
+            if (reportBox) {
+                if (peringatanCurang > 0) {
+                    reportBox.style.display = 'block';
+                    let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai telah dipotong otomatis.`;
+                    if (auditLog.length > 0) {
+                        ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
+                        auditLog.forEach(it => {
+                            ringkasan += `<li>[${escHtml(it.waktu)}] ${escHtml(it.detail)} (Soal ID: ${escHtml(it.soalId ?? '—')})</li>`;
+                        });
+                        ringkasan += '</ul>';
+                    }
+                    reportBox.innerHTML = ringkasan;
+                } else {
+                    reportBox.style.display = 'none';
+                }
+            }
+            return { skor: skorTotal, predikat: predikat };
+        }
+
+        document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
+        document.getElementById('input-jawaban-refleksi').addEventListener('input', hitungNilaiOtomatis);
+
+        function previewImage(input) {
+            const container = input.closest('.evidence-box').querySelector('.preview-container');
+            const img = container.querySelector('img');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { img.src = e.target.result; container.style.display = 'block'; };
+                reader.readAsDataURL(input.files[0]);
+            } else { img.src = ''; container.style.display = 'none'; }
+            hitungNilaiOtomatis();
+        }
+
+        function cekPrediksi(pilihan) {
+            const btnK = document.getElementById('opt-berkurang');
+            const btnKe = document.getElementById('opt-kekal');
+            const btnT = document.getElementById('opt-bertambah');
+            const fb = document.getElementById('feedback-box');
+            btnK.className = 'option-btn'; btnKe.className = 'option-btn'; btnT.className = 'option-btn';
+
+            if (pilihan === 'apung') {
+                btnKe.classList.add('selected-correct');
+                fb.className = 'feedback-box correct';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Tepat!</strong> Air memberikan gaya dorong ke atas yang disebut Gaya Apung. Inilah yang membuat berat semu benda berkurang.';
+            } else {
+                if (pilihan === 'massa') btnK.classList.add('selected-wrong');
+                else btnT.classList.add('selected-wrong');
+                fb.className = 'feedback-box wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Belum tepat.</strong> Massa benda dan gravitasi bumi tidak berubah. Yang berubah adalah adanya gaya dorong dari air.';
+            }
+        }
+
+        function cekRefleksi() {
+            const input = document.getElementById('input-jawaban-refleksi').value;
+            const jawaban = parseFloat(input);
+            const fb = document.getElementById('feedback-refleksi');
+            if (isNaN(jawaban)) {
+                fb.className = 'feedback-box wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Oops!</strong> Masukkan angka terlebih dahulu.';
+                return;
+            }
+            if (Math.abs(jawaban - 20) <= 0.5) {
+                fb.className = 'feedback-box correct';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Correct.</strong> Fa = W_udara - W_air = 50 N - 30 N = 20 N.';
+            } else {
+                fb.className = 'feedback-box wrong';
+                fb.style.display = 'block';
+                fb.innerHTML = '<strong>Belum tepat.</strong> Gunakan rumus: Gaya Apung = Berat di Udara - Berat di Air.';
+            }
+            hitungNilaiOtomatis();
+        }
+        // ==========================================
+        // SISTEM GURU & CETAK
+        // ==========================================
+        function validasiIdentitas() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const pesanBox = document.getElementById('pesan-validasi');
+            if (nama === '' || kelas === '' || kelompok === '') {
+                pesanBox.style.display = 'block';
+                document.getElementById('identitas').scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+            pesanBox.style.display = 'none';
+            return true;
+        }
+
+        function prosesCetakPDF() { if (validasiIdentitas()) window.print(); }
+
+        function prosesUnduhWord() {
+            if (!validasiIdentitas()) return;
+            const cloneKonten = document.getElementById('konten-lkpd').cloneNode(true);
+            cloneKonten.querySelectorAll('.no-print, script, #teacher-panel, #teacher-login-section').forEach(el => el.remove());
+            cloneKonten.querySelectorAll('[onclick],[oninput],[onchange]').forEach(el => {
+                el.removeAttribute('onclick');
+                el.removeAttribute('oninput');
+                el.removeAttribute('onchange');
+            });
+            const konten = cloneKonten.innerHTML;
+            const blob = new Blob(['\ufeff<html><head><meta charset="utf-8"></head><body>' + konten + '</body></html>'], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url; link.download = 'Worksheet_9_Gaya_Apung.doc';
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        // ==========================================
+        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws9)
+        // ==========================================
+        function simpanTugasKeSistem(event) {
+            if (!validasiIdentitas()) return;
+            
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('select-kelas').value;
+            const kelompok = document.getElementById('select-kelompok').value;
+            const sekolah = document.getElementById('input-sekolah').value.trim();
+            const tanggal = document.getElementById('input-tanggal').value;
+            const evaluasi = hitungNilaiOtomatis();
+
+            const dataUntukDikirim = {
+                nama: nama,
+                kelas: kelas,
+                sekolah: sekolah,
+                materi: "Worksheet 9 - Gaya Apung & Archimedes",
+                skor: evaluasi.skor,
+                progres: "100%",
+                pelanggaran: peringatanCurang,
+                log: JSON.stringify(auditLog), 
+                benar: 0, 
+                totalSoal: 0, 
+                tipeUjian: "Worksheet"
+            };
+
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+
+            // Ubah tombol jadi loading
+            const btnKirim = event.target;
+            const teksAsli = btnKirim.innerText;
+            btnKirim.innerText = "Mengirim data...";
+            btnKirim.disabled = true;
+
+            // Kirim ke Google Sheets via fetch
+            fetch(URL_GOOGLE_SCRIPT, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
+            })
+            .then(() => {
+                // Simpan juga ke localStorage sebagai backup rekap guru
+                const auditKey = `lkpd_apung_audit_${kelas}_${nama}`;
+                const auditTersimpan = JSON.parse(localStorage.getItem(auditKey)) || [];
+                const gabungan = auditTersimpan.concat(auditLog).filter((v, i, arr) =>
+                    arr.findIndex(x => x.waktu === v.waktu && x.jenis === v.jenis && x.soalId === v.soalId) === i
+                );
+                localStorage.setItem(auditKey, JSON.stringify(gabungan));
+
+                let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_apung_rekap_nilai_guru')) || [];
+                let existingIdx = rekapGlobal.findIndex(item => item.nama === nama && item.kelas === kelas);
+                let dataSiswa = {
+                    nama: nama, kelas: kelas, kelompok: kelompok,
+                    skor: evaluasi.skor, predikat: evaluasi.predikat, tanggal: tanggal,
+                    pelanggaran: peringatanCurang, auditLog: gabungan
+                };
+
+                if (existingIdx !== -1) rekapGlobal[existingIdx] = dataSiswa;
+                else rekapGlobal.push(dataSiswa);
+
+                localStorage.setItem('lkpd_apung_rekap_nilai_guru', JSON.stringify(rekapGlobal));
+
+                alert("✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.");
+                btnKirim.innerText = teksAsli;
+                btnKirim.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("❌ Gagal mengirim data. Pastikan internet lancar.");
+                btnKirim.innerText = teksAsli;
+                btnKirim.disabled = false;
+            });
+        }
+
+        function bukaPanelGuru() {
+            const pin = document.getElementById('input-pin-guru').value;
+            if (pin === '2026') {
+                document.getElementById('teacher-panel').style.display = 'block';
+                muatRekapGuru();
+                document.getElementById('teacher-panel').scrollIntoView({ behavior: 'smooth' });
+            } else alert('PIN Guru Salah! (Gunakan: 2026)');
+        }
+
+        function tutupPanelGuru() { document.getElementById('teacher-panel').style.display = 'none'; }
+
+        function muatRekapGuru() {
+            const kelasFilter = document.getElementById('filter-kelas-guru').value;
+            const tbody = document.getElementById('tabel-rekap-body');
+            tbody.innerHTML = '';
+            let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_apung_rekap_nilai_guru')) || [];
+            let kelasData = rekapGlobal.filter(item => item.kelas === kelasFilter);
+            if (kelasData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8;">Belum ada data siswa untuk kelas ${escHtml(kelasFilter)}</td></tr>`;
+                return;
+            }
+            kelasData.forEach((siswa, index) => {
+                let tr = document.createElement('tr');
+                let pel = (typeof siswa.pelanggaran === 'number') ? siswa.pelanggaran : 0;
+                let warnaPel = pel > 0 ? '#dc2626' : '#22c55e';
+                let punyaLog = pel > 0 && Array.isArray(siswa.auditLog) && siswa.auditLog.length > 0;
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${escHtml(siswa.nama)}</td>
+                    <td>${escHtml(siswa.kelompok)}</td>
+                    <td><b>${siswa.skor}</b></td>
+                    <td><span style="padding: 2px 8px; border-radius: 4px; background: ${getPillColor(siswa.predikat)}; color:white;">${escHtml(siswa.predikat)}</span></td>
+                    <td style="color:${warnaPel}; font-weight: bold;">${pel}</td>
+                    <td>${escHtml(siswa.tanggal)}</td>
+                    <td>${punyaLog ? '<button class="btn btn-outline" style="padding:4px 8px;font-size:0.75rem;width:100%;color:white;border-color:white;" data-kelas="'+escHtml(siswa.kelas)+'" data-nama="'+escHtml(siswa.nama)+'">Lihat Log</button>' : '<span style="color:#64748b;">—</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            tbody.querySelectorAll('button[data-kelas]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tampilkanAuditLog(btn.dataset.kelas, btn.dataset.nama);
+                });
+            });
+        }
+
+        function tampilkanAuditLog(kelas, nama) {
+            const key = `lkpd_apung_audit_${kelas}_${nama}`;
+            let log = JSON.parse(localStorage.getItem(key)) || [];
+            if (log.length === 0) {
+                const rekap = JSON.parse(localStorage.getItem('lkpd_apung_rekap_nilai_guru')) || [];
+                const siswa = rekap.find(x => x.nama === nama && x.kelas === kelas);
+                if (siswa && Array.isArray(siswa.auditLog)) log = siswa.auditLog;
+            }
+            document.getElementById('audit-header').innerText = `Siswa: ${nama} · Kelas: ${kelas} · Total kejadian: ${log.length}`;
+            const tbody = document.getElementById('audit-body');
+            tbody.innerHTML = '';
+            if (log.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:12px;color:#64748b;">Tidak ada pelanggaran tercatat.</td></tr>`;
+            } else {
+                log.forEach((item, i) => {
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${i + 1}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;">${escHtml(item.waktu)}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;"><b>${escHtml(item.jenis)}</b></td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;">${escHtml(item.detail)}</td>
+                        <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${escHtml(item.soalId ?? '—')}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            document.getElementById('audit-modal').style.display = 'flex';
+        }
+
+        function getPillColor(pred) {
+            if (pred === 'Excellent') return '#15803d';
+            if (pred === 'Good') return '#0369a1';
+            if (pred === 'Fair') return '#b45309';
+            return '#b91c1c';
+        }
+
+        function cetakRekapGuru() {
+            document.body.classList.add('print-mode-guru');
+            const bersihkan = () => {
+                document.body.classList.remove('print-mode-guru');
+                window.removeEventListener('afterprint', bersihkan);
+            };
+            window.addEventListener('afterprint', bersihkan);
+            window.print();
+            setTimeout(bersihkan, 5000);
+        }
+
+        // ==========================================
+        // CHALLENGE MODE — 4 SOAL (3 PG + 1 ISIAN), 8 MENIT
+        // ==========================================
+        const bankSoalPG = [
+            {
+                id: 101,
+                tipe: 'pg',
+                teks: "Sebuah benda memiliki berat 50 N di udara. Saat dicelupkan ke air, beratnya menjadi 30 N. Berapa gaya apungnya?",
+                pilihan: ["10 N", "20 N", "30 N", "80 N"],
+                jawaban: 1,
+                pembahasan: "Fa = W_udara − W_air = 50 − 30 = 20 N."
+            },
+            {
+                id: 102,
+                tipe: 'pg',
+                teks: "Balok bervolume 0,002 m³ tercelup seluruhnya dalam air (ρ = 1000 kg/m³, g = 10 m/s²). Berapa gaya apung yang dialami?",
+                pilihan: ["5 N", "10 N", "20 N", "40 N"],
+                jawaban: 2,
+                pembahasan: "Fa = ρ·g·V = 1000 × 10 × 0,002 = 20 N."
+            },
+            {
+                id: 103,
+                tipe: 'pg',
+                teks: "Benda massa jenisnya 800 kg/m³ terapung di air (1000 kg/m³). Berapa persen volume benda yang tercelup?",
+                pilihan: ["20%", "50%", "80%", "100%"],
+                jawaban: 2,
+                pembahasan: "Fraksi tercelup = ρ_benda / ρ_air = 800/1000 = 0,8 = 80%."
+            },
+            {
+                id: 104,
+                tipe: 'pg',
+                teks: "Sebuah benda dicelupkan ke dalam minyak (ρ = 800 kg/m³). Jika volume tercelup 0,005 m³ (g = 10), berapa gaya apungnya?",
+                pilihan: ["20 N", "40 N", "80 N", "100 N"],
+                jawaban: 1,
+                pembahasan: "Fa = ρ·g·V = 800 × 10 × 0,005 = 40 N."
+            },
+            {
+                id: 105,
+                tipe: 'pg',
+                teks: "Benda di udara beratnya 50 N. Saat tercelup di air, beratnya 20 N. Berapa massa jenis benda tersebut? (ρ_air = 1000, g = 10)",
+                pilihan: ["1000 kg/m³", "1667 kg/m³", "2500 kg/m³", "3000 kg/m³"],
+                jawaban: 1,
+                pembahasan: "Fa = 30 N → V = Fa/(ρg) = 30/10000 = 0,003 m³. m = W/g = 5 kg → ρ = 5/0,003 ≈ 1667 kg/m³."
+            }
+        ];
+
+        const bankSoalIsian = [
+            { id: 201, tipe: 'isian', teks: "Benda 2 kg tercelup di air. Jika gaya apung 5 N, berapa berat semu benda? (N, g = 10)", jawaban: 15, satuan: "N", toleransi: 0.2 },
+            { id: 202, tipe: 'isian', teks: "Gaya apung 10 N bekerja pada benda yang tercelup di air (ρ = 1000, g = 10). Berapa volume benda? (m³)", jawaban: 0.001, satuan: "m³", toleransi: 0.0001 },
+            { id: 203, tipe: 'isian', teks: "Es terapung di air. Massa jenis es 900, air 1000. Jika volume es 10 m³, berapa volume es yang muncul di permukaan? (m³)", jawaban: 1, satuan: "m³", toleransi: 0.1 },
+            { id: 204, tipe: 'isian', teks: "Sebuah balon udara memiliki volume 10 m³. Jika massa jenis udara luar 1,2 kg/m³ dan gas dalam balon 0,8 kg/m³, berapa gaya angkat maksimum balon? (N, g = 10)", jawaban: 40, satuan: "N", toleransi: 0.5 },
+            { id: 205, tipe: 'isian', teks: "Sebuah kayu melayang di air (ρ = 1000). Jika 1/4 bagian terapung, berapa massa jenis kayu tersebut? (kg/m³)", jawaban: 750, satuan: "kg/m³", toleransi: 5 }
+        ];
+
+        let timerInterval = null;
+        let waktuSisa = 480; // 8 menit
+        let peringatanCurang = 0;
+        let soalAktif = [];
+        let soalRiwayatId = [];
+        let tantanganSelesai = false;
+        let skorTantangan = 0;
+        let challengeActive = false;
+        let blurGuardTimer = null;
+        let auditLog = [];
+
+        function getWatermarkText() {
+            const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const kelas = document.getElementById('select-kelas').value || '-';
+            const kel = document.getElementById('select-kelompok').value || '-';
+            const tgl = new Date().toLocaleString('id-ID');
+            return `${nama} · ${kelas} · ${kel} · ${tgl}`;
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let curY = y;
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    ctx.fillText(line.trim(), x, curY);
+                    line = words[n] + ' ';
+                    curY += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line.trim(), x, curY);
+            return curY + lineHeight;
+        }
+
+        function renderSoalKeCanvas(soal, index, totalSoal) {
+            const canvasEl = document.createElement('canvas');
+            const dpr = window.devicePixelRatio || 1;
+            const cssW = 700, cssH = 160;
+            canvasEl.width = cssW * dpr;
+            canvasEl.height = cssH * dpr;
+            canvasEl.style.width = '100%';
+            canvasEl.style.height = 'auto';
+            canvasEl.style.display = 'block';
+            canvasEl.style.borderRadius = '8px';
+            canvasEl.style.border = '1px solid #e2e8f0';
+            const c = canvasEl.getContext('2d');
+            c.scale(dpr, dpr);
+
+            c.fillStyle = '#f8fafc';
+            c.fillRect(0, 0, cssW, cssH);
+
+            c.fillStyle = '#b91c1c';
+            c.font = 'bold 16px "Segoe UI", Tahoma, sans-serif';
+            const labelTipe = soal.tipe === 'pg' ? 'Pilihan Ganda' : 'Isian';
+            c.fillText(`Soal ${index + 1} dari ${totalSoal} (${labelTipe}):`, 20, 32);
+
+            c.fillStyle = '#1f2937';
+            c.font = '15px "Segoe UI", Tahoma, sans-serif';
+            wrapText(c, soal.teks, 20, 62, cssW - 40, 22);
+
+            c.save();
+            c.globalAlpha = 0.10;
+            c.fillStyle = '#dc2626';
+            c.font = 'bold 26px "Segoe UI", Tahoma, sans-serif';
+            c.translate(cssW / 2, cssH / 2);
+            c.rotate(-0.35);
+            c.textAlign = 'center';
+            c.fillText(getWatermarkText(), 0, 0);
+            c.restore();
+
+            c.strokeStyle = '#e2e8f0';
+            c.lineWidth = 1;
+            c.strokeRect(0.5, 0.5, cssW - 1, cssH - 1);
+
+            return canvasEl;
+        }
+
+        function renderPilihanPG(soal, index) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'pg-options';
+            const letters = ['A', 'B', 'C', 'D'];
+            soal.pilihan.forEach((p, i) => {
+                const label = document.createElement('label');
+                label.className = 'pg-option';
+                label.innerHTML = `
+                    <input type="radio" name="pg-soal-${index}" value="${i}" onchange="pilihPG(${index}, ${i})">
+                    <span class="pg-letter">${letters[i]}.</span>
+                    <span>${p}</span>
+                `;
+                wrapper.appendChild(label);
+            });
+            return wrapper;
+        }
+
+        function pilihPG(index, val) {
+            document.querySelectorAll(`input[name="pg-soal-${index}"]`).forEach(r => {
+                r.closest('.pg-option').classList.remove('selected');
+            });
+            const selected = document.querySelector(`input[name="pg-soal-${index}"][value="${val}"]`);
+            if (selected) selected.closest('.pg-option').classList.add('selected');
+        }
+
+        function renderSoalAktif(notifText) {
+            const container = document.getElementById('soal-container');
+            container.innerHTML = '';
+
+            if (notifText) {
+                const notif = document.createElement('div');
+                notif.style.cssText = 'background:#fef3c7;color:#92400e;padding:10px;border-radius:6px;font-size:0.85rem;font-weight:bold;margin-bottom:10px;text-align:center;';
+                notif.innerText = notifText;
+                container.appendChild(notif);
+            }
+
+            soalAktif.forEach((soal, index) => {
+                const wrap = document.createElement('div');
+                wrap.style.position = 'relative';
+                wrap.style.marginBottom = '18px';
+                wrap.style.padding = '10px';
+                wrap.style.background = '#ffffff';
+                wrap.style.border = '1px solid #e2e8f0';
+                wrap.style.borderRadius = '8px';
+
+                wrap.appendChild(renderSoalKeCanvas(soal, index, soalAktif.length));
+
+                if (soal.tipe === 'pg') {
+                    wrap.appendChild(renderPilihanPG(soal, index));
+                } else {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-top:10px;';
+                    row.innerHTML = `
+                        <input type="number" id="jawab-soal-${index}" class="table-input" style="width:120px;padding:10px;" placeholder="Jawaban" autocomplete="off">
+                        <span style="font-weight: bold;">${escHtml(soal.satuan || '')}</span>
+                    `;
+                    wrap.appendChild(row);
+                }
+
+                container.appendChild(wrap);
+            });
+
+            let wm = document.getElementById('wm-soal');
+            if (!wm) {
+                wm = document.createElement('div');
+                wm.id = 'wm-soal';
+                container.appendChild(wm);
+            }
+            wm.innerText = getWatermarkText();
+
+            const area = document.getElementById('challenge-area');
+            if (area) area.classList.add('protected');
+        }
+
+        // Pilih 4 soal: 3 PG + 1 isian (acak)
+        function pilihSoalBaru() {
+            const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
+            const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
+            const dipilih = [
+                shuffledPG[0],
+                shuffledPG[1],
+                shuffledPG[2],
+                shuffledIsian[0]
+            ];
+            return dipilih.sort(() => 0.5 - Math.random());
+        }
+
+        function catatPelanggaran(reason) {
+            if (!challengeActive || tantanganSelesai) return;
+            peringatanCurang++;
+
+            const detailMap = {
+                'tab': 'Meninggalkan halaman ujian (pindah tab / minimize)',
+                'blur': 'Jendela browser kehilangan fokus (Snipping Tool / aplikasi lain)',
+                'printscreen': 'Menekan tombol PrintScreen',
+                'shortcut': 'Menekan shortcut copy/select/print/save (Ctrl+C/A/P/S/U)'
+            };
+            const soalSaatIni = (soalAktif && soalAktif[0]) ? soalAktif[0].id : null;
+            auditLog.push({
+                waktu: new Date().toLocaleString('id-ID'),
+                jenis: reason,
+                detail: detailMap[reason] || 'Aktivitas terlarang',
+                soalId: soalSaatIni,
+                totalKejadian: peringatanCurang
+            });
+
+            const cheatCountEl = document.getElementById('cheat-count');
+            if (cheatCountEl) cheatCountEl.innerText = peringatanCurang;
+
+            const namaSiswa = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            document.getElementById('modal-nama-siswa').innerText = namaSiswa;
+            document.getElementById('modal-total-curang').innerText = peringatanCurang;
+
+            const alasanMap = {
+                'tab': 'Sistem mendeteksi Anda meninggalkan halaman ujian.',
+                'blur': 'Sistem mendeteksi Anda membuka jendela/aplikasi lain. Dilarang keluar dari halaman ujian!',
+                'printscreen': 'Sistem mendeteksi Anda menekan tombol PrintScreen. Screenshot dilarang!',
+                'shortcut': 'Sistem mendeteksi Anda menekan shortcut copy/select/print/save. Menyalin soal dilarang!'
+            };
+            document.getElementById('modal-alasan').innerText = alasanMap[reason] || 'Sistem mendeteksi aktivitas terlarang selama ujian.';
+            document.getElementById('cheat-modal').style.display = 'flex';
+
+            hitungNilaiOtomatis();
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden && challengeActive && !tantanganSelesai) {
+                catatPelanggaran('tab');
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            if (!challengeActive || tantanganSelesai) return;
+            clearTimeout(blurGuardTimer);
+            blurGuardTimer = setTimeout(() => {
+                if (!document.hasFocus() && challengeActive && !tantanganSelesai) {
+                    catatPelanggaran('blur');
+                }
+            }, 300);
+        });
+
+        window.addEventListener('focus', () => {
+            clearTimeout(blurGuardTimer);
+        });
+
+        (function pasangProteksiSeleksi() {
+            const target = document.getElementById('challenge-area');
+            if (!target) return;
+            ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(evt => {
+                target.addEventListener(evt, e => {
+                    if (challengeActive && !tantanganSelesai) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            });
+        })();
+
+        document.addEventListener('keydown', e => {
+            if (!challengeActive || tantanganSelesai) return;
+            const key = (e.key || '').toLowerCase();
+            if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+                e.preventDefault();
+                try { navigator.clipboard.writeText(''); } catch (err) {}
+                catatPelanggaran('printscreen');
+                return;
+            }
+            if ((e.ctrlKey || e.metaKey) && ['c', 'a', 'p', 's', 'u'].includes(key)) {
+                e.preventDefault();
+                catatPelanggaran('shortcut');
+                return;
+            }
+        });
+
+        function tutupModalDanGantiSoal() {
+            document.getElementById('cheat-modal').style.display = 'none';
+            if (challengeActive && !tantanganSelesai) {
+                soalAktif = pilihSoalBaru();
+                renderSoalAktif('⚠️ Karena terdeteksi pelanggaran, soal Anda telah DIGANTI dengan 4 soal baru!');
+            }
+        }
+
+        function mulaiTantangan() {
+            document.getElementById('challenge-start-box').style.display = 'none';
+            document.getElementById('challenge-area').style.display = 'block';
+            soalAktif = pilihSoalBaru();
+            renderSoalAktif(null);
+
+            waktuSisa = 480; // 8 menit
+            peringatanCurang = 0;
+            tantanganSelesai = false;
+            challengeActive = true;
+            skorTantangan = 0;
+            auditLog = [];
+            document.getElementById('cheat-count').innerText = "0";
+
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                waktuSisa--;
+                updateTimerDisplay();
+                if (waktuSisa <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis! Jawaban Anda akan dikumpulkan secara otomatis.");
+                    selesaiTantangan();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let menit = Math.floor(waktuSisa / 60);
+            let detik = waktuSisa % 60;
+            document.getElementById('timer-display').innerText =
+                `${String(menit).padStart(2, '0')}:${String(detik).padStart(2, '0')}`;
+        }
+
+        function selesaiTantangan() {
+            if (tantanganSelesai) return;
+            tantanganSelesai = true;
+            challengeActive = false;
+            clearInterval(timerInterval);
+
+            let benar = 0;
+            const detailJawaban = [];
+
+            soalAktif.forEach((soal, index) => {
+                if (soal.tipe === 'pg') {
+                    const selected = document.querySelector(`input[name="pg-soal-${index}"]:checked`);
+                    const val = selected ? parseInt(selected.value) : -1;
+                    const isBenar = (val === soal.jawaban);
+                    if (isBenar) benar++;
+                    detailJawaban.push({
+                        no: index + 1,
+                        tipe: 'PG',
+                        jawaban: val >= 0 ? String.fromCharCode(65 + val) : '—',
+                        kunci: String.fromCharCode(65 + soal.jawaban),
+                        benar: isBenar
+                    });
+                } else {
+                    const el = document.getElementById(`jawab-soal-${index}`);
+                    const val = el ? parseFloat(el.value) : NaN;
+                    const isBenar = (!isNaN(val) && Math.abs(val - soal.jawaban) <= soal.toleransi);
+                    if (isBenar) benar++;
+                    detailJawaban.push({
+                        no: index + 1,
+                        tipe: 'Isian',
+                        jawaban: isNaN(val) ? '—' : val,
+                        kunci: soal.jawaban,
+                        benar: isBenar
+                    });
+                }
+            });
+
+            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
+            skorTantangan = benar * 10;
+
+            let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
+            detailJawaban.forEach(d => {
+                pesan += `${d.no}. [${d.tipe}] Jawaban Anda: ${d.jawaban} | Kunci: ${d.kunci} → ${d.benar ? '✔ Benar' : '✘ Salah'}\n`;
+            });
+            if (peringatanCurang > 0) {
+                pesan += `\n⚠️ ANDA TERDETEKSI MELAKUKAN ${peringatanCurang} PELANGGARAN. Nilai akhir akan dipotong.`;
+            }
+            alert(pesan);
+            hitungNilaiOtomatis();
+        }
+
+        // ==========================================
+        // KALKULATOR AMAN
+        // ==========================================
+        let calcExp = "";
+
+        function calcInput(val) {
+            if (val === 'sin' || val === 'cos' || val === 'tan') calcExp += val + "(";
+            else calcExp += val;
+            document.getElementById('calc-display').value = calcExp;
+        }
+        function calcClear() {
+            calcExp = "";
+            document.getElementById('calc-display').value = "";
+        }
+
+        function safeCalc(expr) {
+            expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/\s+/g, '');
+            if (!/^[0-9+\-*/().sincota]+$/.test(expr)) throw new Error('Karakter tidak valid');
+
+            const tokens = [];
+            let i = 0;
+            while (i < expr.length) {
+                const c = expr[i];
+                if (/[0-9.]/.test(c)) {
+                    let num = c; i++;
+                    while (i < expr.length && /[0-9.]/.test(expr[i])) { num += expr[i]; i++; }
+                    tokens.push({ type: 'num', val: parseFloat(num) });
+                } else if (/[a-z]/.test(c)) {
+                    let name = c; i++;
+                    while (i < expr.length && /[a-z]/.test(expr[i])) { name += expr[i]; i++; }
+                    if (!['sin','cos','tan'].includes(name)) throw new Error('Fungsi tidak dikenal: ' + name);
+                    tokens.push({ type: 'func', val: name });
+                } else if ('+-*/()'.includes(c)) {
+                    tokens.push({ type: 'op', val: c }); i++;
+                } else {
+                    throw new Error('Karakter tidak valid: ' + c);
+                }
+            }
+
+            const prec = { '+': 1, '-': 1, '*': 2, '/': 2 };
+            const output = [];
+            const ops = [];
+            for (const t of tokens) {
+                if (t.type === 'num') output.push(t);
+                else if (t.type === 'func') ops.push(t);
+                else if (t.val === '(') ops.push(t);
+                else if (t.val === ')') {
+                    while (ops.length && ops[ops.length - 1].val !== '(') output.push(ops.pop());
+                    if (!ops.length) throw new Error('Kurung tidak seimbang');
+                    ops.pop();
+                    if (ops.length && ops[ops.length - 1].type === 'func') output.push(ops.pop());
+                } else {
+                    while (ops.length && ops[ops.length - 1].type === 'op' &&
+                           prec[ops[ops.length - 1].val] >= prec[t.val]) {
+                        output.push(ops.pop());
+                    }
+                    ops.push(t);
+                }
+            }
+            while (ops.length) {
+                const o = ops.pop();
+                if (o.val === '(') throw new Error('Kurung tidak seimbang');
+                output.push(o);
+            }
+
+            const stack = [];
+            for (const t of output) {
+                if (t.type === 'num') stack.push(t.val);
+                else if (t.type === 'func') {
+                    if (!stack.length) throw new Error('Argumen fungsi kosong');
+                    const x = stack.pop();
+                    const rad = x * Math.PI / 180;
+                    if (t.val === 'sin') stack.push(Math.sin(rad));
+                    else if (t.val === 'cos') stack.push(Math.cos(rad));
+                    else stack.push(Math.tan(rad));
+                } else {
+                    if (stack.length < 2) throw new Error('Operand kurang');
+                    const b = stack.pop(), a = stack.pop();
+                    if (t.val === '+') stack.push(a + b);
+                    else if (t.val === '-') stack.push(a - b);
+                    else if (t.val === '*') stack.push(a * b);
+                    else {
+                        if (b === 0) throw new Error('Bagi nol');
+                        stack.push(a / b);
+                    }
+                }
+            }
+            if (stack.length !== 1) throw new Error('Ekspresi tidak valid');
+            return stack[0];
+        }
+
+        function calcSolve() {
+            try {
+                let openParen = (calcExp.match(/\(/g) || []).length;
+                let closeParen = (calcExp.match(/\)/g) || []).length;
+                for (let i = 0; i < openParen - closeParen; i++) calcExp += ")";
+
+                const result = safeCalc(calcExp);
+                const finalResult = Math.round(result * 10000) / 10000;
+                document.getElementById('calc-display').value = finalResult;
+                calcExp = finalResult.toString();
+            } catch (e) {
+                document.getElementById('calc-display').value = "Format Salah";
+                calcExp = "";
+            }
+        }
+
+        // ==========================================
+        // INISIALISASI
+        // ==========================================
+        window.addEventListener('load', () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    initCanvasSize();
+                    resetHistory();
+                    updateState();
+                    draw();
+                    drawGraph();
+                });
+            });
+            hitungAnalisis();
+            startAnimationLoop();
+        });
+
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                initCanvasSize();
+                draw();
+                drawGraph();
+            }, 150);
+        });
+    </script>
+</body>
+</html>

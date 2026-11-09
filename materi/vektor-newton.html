@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 1: Vektor dan Hukum Newton</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+    }
+
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+
+    /* HEADER */
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    /* KONTEN */
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+
+    /* RUMUS BOX */
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.1rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* SVG VEKTOR */
+    .vektor-svg-container {
+        background: #f8fafc; border: 1px solid var(--border); border-radius: 12px;
+        padding: 15px; margin: 15px 0; display: flex; justify-content: center; align-items: center; flex-direction: column;
+    }
+    svg { max-width: 100%; height: auto; }
+
+    /* SIMULASI */
+    .simulasi-container { background: #1e293b; border-radius: 12px; padding: 20px; color: white; margin-top: 15px; }
+    .kanvas-area { position: relative; height: 160px; background: #0f172a; border-radius: 8px; margin-bottom: 15px; overflow: hidden; border-bottom: 4px solid #475569; }
+    .jalan { position: absolute; bottom: 0; width: 100%; height: 30px; background: #334155; border-top: 3px dashed #64748b; }
+    
+    .mobil { position: absolute; bottom: 30px; left: 20px; width: 80px; height: 40px; }
+    .mobil-body { width: 80px; height: 25px; background: var(--teal); border-radius: 5px; position: absolute; bottom: 10px; display: flex; justify-content: center; align-items: center;}
+    .mobil-cabin { width: 40px; height: 15px; background: var(--teal); border-radius: 5px 5px 0 0; position: absolute; bottom: 35px; left: 15px; }
+    .roda { width: 18px; height: 18px; background: #1e293b; border: 3px solid #cbd5e1; border-radius: 50%; position: absolute; bottom: 0; }
+    .roda.depan { right: 10px; } .roda.belakang { left: 10px; }
+
+    .panah-gaya { position: absolute; bottom: 45px; left: 100px; height: 8px; background: var(--accent-yellow); border-radius: 4px; display: flex; align-items: center; }
+    .panah-gaya::after { content: 'F'; position: absolute; right: -25px; color: var(--accent-yellow); font-weight: bold; font-family: monospace; }
+    .panah-gaya::before { content: ''; position: absolute; right: -12px; border-left: 15px solid var(--accent-yellow); border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+
+    /* GRAFIK */
+    .grafik-area { background: #0f172a; border-radius: 8px; padding: 10px; border: 1px solid #334155; position: relative; }
+    canvas { width: 100%; height: 180px; display: block; }
+
+    /* KONTROL */
+    .kontrol-simulasi { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+    .kontrol-simulasi label { display: flex; justify-content: space-between; font-size: 0.9rem; color: #cbd5e1; }
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); }
+    .hasil-hitung { margin-top: 15px; padding: 12px; background: rgba(45, 212, 191, 0.1); border: 1px solid var(--teal); border-radius: 8px; font-family: monospace; text-align: center; color: var(--teal); font-size: 1rem; }
+
+    /* KUIS INTERAKTIF */
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); }
+    
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.95rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    
+    .pembahasan {
+        display: none; margin-top: 15px; padding: 15px;
+        background: #f0fdf4; border-left: 4px solid var(--green-success);
+        border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #166534;
+    }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Materi 1: <span>Vektor & Hukum Newton</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- BAGIAN A: VEKTOR -->
+        <div class="card">
+            <h2>A. Besaran Vektor</h2>
+            <p>Dalam fisika, besaran dibagi menjadi dua: <strong>Besaran Skalar</strong> (hanya memiliki nilai, contoh: massa, waktu, suhu) dan <strong>Besaran Vektor</strong> (memiliki nilai dan arah, contoh: kecepatan, percepatan, gaya).</p>
+            <p>Vektor digambarkan sebagai anak panah. Panjang panah menunjukkan nilai (magnitudo), dan ujung panah menunjukkan arah.</p>
+
+            <h3>1. Penjumlahan Vektor (Resultan)</h3>
+            <p>Jika dua vektor atau lebih bekerja pada satu benda, kita dapat mencari resultannya. Salah satu metode grafis yang umum adalah <strong>Metode Poligon (Ujung-ke-Ujung)</strong>.</p>
+            <div class="vektor-svg-container">
+                <svg width="300" height="160" viewBox="0 0 300 160">
+                    <text x="10" y="20" font-size="12" fill="#334155" font-weight="bold">Metode Poligon</text>
+                    <line x1="20" y1="120" x2="100" y2="120" stroke="#3b82f6" stroke-width="4" />
+                    <polygon points="100,115 110,120 100,125" fill="#3b82f6" />
+                    <text x="55" y="110" font-size="14" fill="#3b82f6" font-weight="bold">A</text>
+                    <line x1="100" y1="120" x2="160" y2="50" stroke="#f2c94c" stroke-width="4" />
+                    <polygon points="155,55 165,45 165,55" fill="#f2c94c" />
+                    <text x="140" y="75" font-size="14" fill="#f2c94c" font-weight="bold">B</text>
+                    <line x1="20" y1="120" x2="160" y2="50" stroke="#ef4444" stroke-width="3" stroke-dasharray="5,5" />
+                    <polygon points="155,55 165,45 160,58" fill="#ef4444" />
+                    <text x="80" y="80" font-size="14" fill="#ef4444" font-weight="bold">R = A + B</text>
+                </svg>
+            </div>
+            <p>Secara matematis, jika dua vektor membentuk sudut θ, resultannya dirumuskan:</p>
+            <div class="rumus-box">R = √(A² + B² + 2.A.B.cos θ)</div>
+
+            <h3>2. Perkalian Vektor</h3>
+            <p><strong>a. Perkalian Titik (Dot Product)</strong> menghasilkan besaran skalar.</p>
+            <div class="rumus-box">A · B = |A| |B| cos θ</div>
+            <p><strong>b. Perkalian Silang (Cross Product)</strong> menghasilkan besaran vektor baru.</p>
+            <div class="rumus-box">|A × B| = |A| |B| sin θ</div>
+        </div>
+
+        <!-- BAGIAN B: HUKUM NEWTON & SIMULASI -->
+        <div class="card">
+            <h2>B. Hukum Newton tentang Gerak</h2>
+            
+            <h3>1. Hukum I Newton (Kelembaman)</h3>
+            <p>"Jika resultan gaya yang bekerja pada suatu benda sama dengan nol, maka benda yang diam akan tetap diam, dan benda yang bergerak akan terus bergerak dengan kecepatan konstan."</p>
+            <div class="rumus-box">ΣF = 0</div>
+
+            <h3>2. Hukum II Newton</h3>
+            <p>"Percepatan sebuah benda berbanding lurus dengan resultan gaya yang bekerja padanya, dan berbanding terbalik dengan massanya."</p>
+            <div class="rumus-box">a = ΣF / m &nbsp; atau &nbsp; ΣF = m × a</div>
+
+            <h3>3. Hukum III Newton (Aksi-Reaksi)</h3>
+            <p>"Untuk setiap aksi, selalu ada reaksi yang sama besar tetapi berlawanan arah."</p>
+            <div class="rumus-box">F_aksi = - F_reaksi</div>
+
+            <h3>4. Simulasi Dinamis Hukum II Newton</h3>
+            <div class="simulasi-container">
+                <div class="kanvas-area" id="kanvas-area">
+                    <div class="jalan"></div>
+                    <div class="mobil" id="mobil">
+                        <div class="mobil-body"><span style="font-size: 10px; font-weight: bold; color: #0f172a;">🚗</span></div>
+                        <div class="mobil-cabin"></div>
+                        <div class="roda belakang"></div>
+                        <div class="roda depan"></div>
+                    </div>
+                    <div class="panah-gaya" id="panah-gaya" style="width: 0px;"></div>
+                </div>
+
+                <div class="grafik-area">
+                    <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">Grafik v - t (Kecepatan vs Waktu)</div>
+                    <canvas id="grafikCanvas"></canvas>
+                </div>
+
+                <div class="kontrol-simulasi">
+                    <div>
+                        <label>Gaya Dorong (F) <span id="label-gaya">10 N</span></label>
+                        <input type="range" id="slider-gaya" min="0" max="50" value="10" oninput="updateParameter()">
+                    </div>
+                    <div>
+                        <label>Massa Mobil (m) <span id="label-massa">2 kg</span></label>
+                        <input type="range" id="slider-massa" min="1" max="20" value="2" oninput="updateParameter()">
+                    </div>
+                </div>
+
+                <div class="hasil-hitung" id="hasil-hitung">Percepatan (a) = 5 m/s²</div>
+                <button onclick="resetSimulasi()" style="margin-top: 15px; background: #475569; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">🔄 Reset Manual</button>
+            </div>
+        </div>
+
+        <!-- BAGIAN C: CONTOH SOAL INTERAKTIF -->
+        <div class="card">
+            <h2>C. Uji Pemahaman Interaktif</h2>
+            <p>Pilih jawaban yang paling tepat. Sistem akan langsung memeriksa jawabanmu!</p>
+
+            <div class="kuis-box">
+                <!-- Soal 1: Hukum I Newton -->
+                <div class="soal" id="soal1">
+                    <div class="soal-teks">1. Sebuah buku diletakkan di atas meja yang licin. Tiba-tiba meja tersebut ditarik dengan sangat cepat. Buku tersebut akan...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'B')">A. Ikut bergerak bersama meja</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'B')">B. Tetap diam di tempatnya</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'B')">C. Bergerak berlawanan arah dengan meja</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'B')">D. Langsung jatuh ke bawah meja</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal1">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Ini adalah penerapan <strong>Hukum I Newton (Kelembaman)</strong>. Benda cenderung mempertahankan keadaannya. Karena gaya gesek antara buku dan meja sangat kecil, buku akan tetap diam di tempatnya saat meja ditarik cepat.
+                    </div>
+                </div>
+
+                <!-- Soal 2: Hukum II Newton -->
+                <div class="soal" id="soal2">
+                    <div class="soal-teks">2. Sebuah balok bermassa 5 kg didorong dengan gaya sebesar 20 N. Berapakah percepatan yang dialami balok tersebut?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'C')">A. 100 m/s²</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'C')">B. 0,25 m/s²</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'C')">C. 4 m/s²</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'C')">D. 25 m/s²</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal2">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Menggunakan <strong>Hukum II Newton</strong>:<br>
+                        a = F / m<br>
+                        a = 20 N / 5 kg<br>
+                        a = <strong>4 m/s²</strong>
+                    </div>
+                </div>
+
+                <!-- Soal 3: Hukum III Newton -->
+                <div class="soal" id="soal3">
+                    <div class="soal-teks">3. Saat kamu melompat dari atas perahu kecil, perahu tersebut akan terdorong ke belakang. Peristiwa ini terjadi karena...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'D')">A. Gaya gesek air lebih besar dari gaya lompatan</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'D')">B. Massa perahu lebih ringan dari massa air</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'D')">C. Gaya aksi yang kamu berikan lebih kecil</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'D')">D. Ada gaya reaksi yang sama besar namun berlawanan arah</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal3">
+                        <strong>Benar! Jawaban: D.</strong><br>
+                        Sesuai <strong>Hukum III Newton (Aksi-Reaksi)</strong>, saat kamu mendorong perahu ke belakang (aksi), perahu akan mendorongmu ke depan (reaksi). Begitu juga sebaliknya, dorongan kakimu ke perahu membuat perahu terdorong ke belakang.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================= LOGIKA KUIS INTERAKTIF =================
+        function cekKuis(idSoal, jawabanDipilih, jawabanBenar) {
+            const soalContainer = document.getElementById(idSoal);
+            const buttons = soalContainer.querySelectorAll('.opsi-btn');
+            const pembahasan = document.getElementById('pembahasan-' + idSoal);
+
+            // Loop semua tombol di soal ini
+            buttons.forEach(btn => {
+                // Jika teks tombol diawali dengan huruf yang dipilih
+                if (btn.innerText.startsWith(jawabanDipilih)) {
+                    if (jawabanDipilih === jawabanBenar) {
+                        btn.classList.add('benar');
+                    } else {
+                        btn.classList.add('salah');
+                    }
+                }
+                // Tandai jawaban yang benar agar selalu terlihat
+                if (btn.innerText.startsWith(jawabanBenar)) {
+                    btn.classList.add('benar');
+                }
+                // Matikan klik setelah menjawab
+                btn.disabled = true;
+                btn.style.cursor = 'default';
+            });
+
+            // Tampilkan pembahasan
+            pembahasan.style.display = 'block';
+        }
+
+        // ================= VARIABEL SIMULASI =================
+        let waktuFisika = 0; 
+        let kecepatanFisika = 0; 
+        let posisiX = 20; 
+        let batasWaktuLoop = 1;
+
+        let lastTime = 0;
+        let animasiId = null;
+        
+        let dataWaktu = [];
+        let dataKecepatan = [];
+
+        const canvas = document.getElementById('grafikCanvas');
+        const ctx = canvas.getContext('2d');
+        const kanvasArea = document.getElementById('kanvas-area');
+        const mobil = document.getElementById('mobil');
+        const panah = document.getElementById('panah-gaya');
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width - 20; 
+            canvas.height = 180; 
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function updateParameter() {
+            const F = parseInt(document.getElementById('slider-gaya').value);
+            const m = parseInt(document.getElementById('slider-massa').value);
+            
+            document.getElementById('label-gaya').innerText = F + " N";
+            document.getElementById('label-massa').innerText = m + " kg";
+
+            const a = F / m;
+            document.getElementById('hasil-hitung').innerText = `Percepatan (a) = F / m = ${F} / ${m} = ${a.toFixed(2)} m/s²`;
+
+            panah.style.width = (F * 2.5) + 'px';
+            panah.style.left = (posisiX + 80) + 'px';
+
+            // Sinkronisasi waktu mobil sampai ujung layar
+            const jarakLayar = kanvasArea.clientWidth - 100; 
+            const jarakMeter = jarakLayar / 15; 
+            
+            if (a > 0) {
+                batasWaktuLoop = Math.sqrt((2 * jarakMeter) / a);
+            } else {
+                batasWaktuLoop = 1; 
+            }
+
+            if (!animasiId) {
+                lastTime = performance.now();
+                animasiId = requestAnimationFrame(loopSimulasi);
+            }
+        }
+
+        function loopSimulasi(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            let deltaTime = (timestamp - lastTime) / 1000; 
+            lastTime = timestamp;
+            if (deltaTime > 0.1) deltaTime = 0.1;
+
+            const F = parseInt(document.getElementById('slider-gaya').value);
+            const m = parseInt(document.getElementById('slider-massa').value);
+            const a = F / m;
+
+            kecepatanFisika += a * deltaTime;
+            waktuFisika += deltaTime;
+            
+            const persentaseWaktu = waktuFisika / batasWaktuLoop;
+            posisiX = 20 + (persentaseWaktu * (kanvasArea.clientWidth - 100));
+
+            if (waktuFisika >= batasWaktuLoop || posisiX > kanvasArea.clientWidth) {
+                posisiX = 20; 
+                kecepatanFisika = 0; 
+                waktuFisika = 0; 
+                dataWaktu = []; 
+                dataKecepatan = []; 
+            }
+
+            mobil.style.left = posisiX + 'px';
+            panah.style.left = (posisiX + 80) + 'px';
+
+            if (dataWaktu.length === 0 || waktuFisika - dataWaktu[dataWaktu.length - 1] > 0.02) {
+                dataWaktu.push(waktuFisika);
+                dataKecepatan.push(kecepatanFisika);
+            }
+
+            gambarGrafik();
+            animasiId = requestAnimationFrame(loopSimulasi);
+        }
+
+        function gambarGrafik() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const padding = { left: 40, right: 30, top: 20, bottom: 30 };
+            
+            ctx.clearRect(0, 0, w, h);
+
+            const maxX = batasWaktuLoop; 
+            const maxY = Math.max(5, Math.ceil(Math.max(...dataKecepatan, 0) * 1.1));
+
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i <= 4; i++) {
+                let y = h - padding.bottom - (i * (h - padding.bottom - padding.top) / 4);
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(w - padding.right, y);
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px monospace';
+                ctx.fillText((i * maxY / 4).toFixed(0), 5, y + 3);
+            }
+            for (let i = 0; i <= 5; i++) {
+                let x = padding.left + (i * (w - padding.left - padding.right) / 5);
+                ctx.moveTo(x, padding.top);
+                ctx.lineTo(x, h - padding.bottom);
+                if (i > 0) {
+                    ctx.fillStyle = '#64748b';
+                    ctx.fillText((i * maxX / 5).toFixed(1), x - 10, h - 10);
+                }
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top); 
+            ctx.lineTo(padding.left, h - padding.bottom);
+            ctx.lineTo(w - padding.right, h - padding.bottom); 
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 11px monospace';
+            ctx.fillText('v (m/s)', 5, 12);
+            ctx.fillText('t (s)', w - 30, h - 10);
+            ctx.fillText("0", padding.left - 12, h - padding.bottom + 15);
+
+            if (dataWaktu.length > 1) {
+                ctx.strokeStyle = '#2dd4bf';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                for (let i = 0; i < dataWaktu.length; i++) {
+                    let x = padding.left + (dataWaktu[i] / maxX) * (w - padding.left - padding.right);
+                    let y = (h - padding.bottom) - (dataKecepatan[i] / maxY) * (h - padding.bottom - padding.top);
+                    
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+
+                let lastX = padding.left + (dataWaktu[dataWaktu.length - 1] / maxX) * (w - padding.left - padding.right);
+                let lastY = (h - padding.bottom) - (dataKecepatan[dataKecepatan.length - 1] / maxY) * (h - padding.bottom - padding.top);
+                
+                ctx.fillStyle = '#f2c94c';
+                ctx.beginPath();
+                ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#f2c94c';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillText(kecepatanFisika.toFixed(1) + ' m/s', lastX - 20, lastY - 15);
+            }
+        }
+
+        function resetSimulasi() {
+            cancelAnimationFrame(animasiId);
+            animasiId = null;
+            posisiX = 20;
+            kecepatanFisika = 0;
+            waktuFisika = 0;
+            dataWaktu = [];
+            dataKecepatan = [];
+            lastTime = 0;
+            
+            mobil.style.left = posisiX + 'px';
+            panah.style.left = (posisiX + 80) + 'px';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            updateParameter();
+        }
+
+        window.onload = updateParameter;
+    </script>
+</body>
+</html>

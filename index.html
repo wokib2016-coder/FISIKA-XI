@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics XI - Phase F</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    :root {
+        --dark-green: #1a3c34;
+        --accent-yellow: #f2c94c;
+        --teal: #2dd4bf;
+        --blue-link: #3b82f6;
+        --bg-light: #f4f6fb;
+        --text-dark: #1f2937;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* --- HEADER --- */
+    header {
+        background-color: var(--dark-green);
+        color: white;
+        padding: 20px;
+        position: relative;
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .brand-left, .brand-right { display: flex; flex-direction: column; }
+    .brand-right { text-align: right; }
+
+    .brand-title {
+        font-size: 1.1rem; font-weight: 700; color: var(--accent-yellow);
+        text-decoration: underline; text-decoration-color: var(--blue-link);
+        text-underline-offset: 4px; text-decoration-thickness: 2px; letter-spacing: 1px;
+    }
+
+    .brand-subtitle {
+        font-size: 0.85rem; font-weight: 600; color: var(--teal);
+        margin-top: 4px; letter-spacing: 0.5px;
+    }
+
+    /* --- JUDUL HEADER & TAGLINE (RATA KIRI) --- */
+    .header-title-box {
+        text-align: left; 
+        margin-top: 10px;
+    }
+
+    .header h1 { 
+        font-size: 1.6rem; 
+        line-height: 1.2; 
+        margin-bottom: 2px; 
+    }
+    .header h1 span { color: var(--accent-yellow); }
+    
+    .header-tagline {
+        font-size: 0.95rem;
+        font-style: italic;
+        color: #cbd5e1;
+        letter-spacing: 0.5px;
+        margin: 0; 
+    }
+
+    /* --- KONTEN UTAMA --- */
+    .main-container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 0 15px;
+        width: 100%;
+        flex: 1;
+    }
+
+    /* --- KOTAK LOGIN --- */
+    .login-card {
+        background: var(--card-bg); border-radius: 12px; padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+        border-top: 4px solid var(--accent-yellow);
+        height: 100%; 
+    }
+
+    .login-card h2 { font-size: 1.2rem; color: var(--dark-green); margin-bottom: 15px; text-align: center; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 5px; }
+    .form-group input, .form-group select {
+        width: 100%; padding: 10px 12px; border: 1px solid #d1d5db;
+        border-radius: 8px; font-size: 0.95rem; outline: none;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--blue-link); }
+
+    /* --- TOMBOL SEMESTER (DEPAN) --- */
+    .semester-buttons { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 15px; 
+        height: 100%; 
+        justify-content: center; 
+    }
+    
+    .btn-semester {
+        background: var(--dark-green); color: white; padding: 20px;
+        border: none; border-radius: 12px; font-size: 1.1rem;
+        font-weight: bold; cursor: pointer; text-align: center; transition: 0.2s;
+        box-shadow: 0 4px 12px rgba(26, 60, 52, 0.2);
+    }
+    .btn-semester:hover { background: #2a5c52; transform: translateY(-2px); }
+
+    /* --- STYLING TOMBOL OPERATOR --- */
+    .operator-box {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+    .operator-box p {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+    .btn-operator {
+        background: #0284c7;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1rem;
+        transition: 0.2s;
+    }
+    .btn-operator:hover { background: #0369a1; }
+
+    #form-operator-dropdown {
+        display: none; 
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    /* --- LAYOUT 2 KOLOM UNTUK HALAMAN DEPAN --- */
+    .login-layout {
+        display: grid;
+        grid-template-columns: 1fr; 
+        gap: 20px;
+        align-items: stretch;
+    }
+
+    /* ================= LAYOUT SEMESTER (2 KOLOM) ================= */
+    #halaman-semester { display: none; }
+    
+    .semester-header {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+    }
+    .semester-title { font-size: 1.3rem; color: var(--dark-green); font-weight: bold; }
+    .btn-kembali {
+        background: #64748b; color: white; border: none; padding: 8px 15px;
+        border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold;
+    }
+    .btn-kembali:hover { background: #475569; }
+
+    .grid-2-col {
+        display: grid; grid-template-columns: 1fr; gap: 15px;
+    }
+
+    .col-kiri, .col-kanan {
+        background: var(--card-bg); padding: 15px; border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* TOMBOL MENU KIRI */
+    .menu-btn {
+        width: 100%; padding: 12px 15px; margin-bottom: 8px; border: none;
+        border-radius: 8px; background: #f1f5f9; color: var(--text-dark);
+        font-size: 0.95rem; font-weight: 600; cursor: pointer; text-align: left;
+        transition: background 0.2s;
+    }
+    .menu-btn:hover { background: #e2e8f0; }
+    .menu-btn.active { background: var(--dark-green); color: white; }
+
+    /* SUB-MENU (MATERI / WORKSHEET / NESTED) */
+    .sub-menu { padding-left: 10px; margin-bottom: 10px; display: none; }
+    .sub-btn {
+        width: 100%; padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border);
+        border-radius: 6px; background: white; color: #475569;
+        font-size: 0.85rem; cursor: pointer; text-align: left;
+        position: relative; transition: 0.2s;
+    }
+    .sub-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+    
+    .sub-btn.kategori { background: #e0f2fe; color: #0369a1; font-weight: bold; border-color: #bae6fd; }
+    .sub-btn.kategori:hover { background: #bae6fd; }
+    .sub-btn.kategori.active { background: #0ea5e9; color: white; border-color: #0ea5e9; }
+
+    .sub-sub-menu {
+        padding-left: 15px; margin-top: -5px; margin-bottom: 10px; display: none;
+        border-left: 2px solid #cbd5e1; margin-left: 10px;
+    }
+    .item-btn {
+        width: 100%; padding: 8px 10px; margin-bottom: 4px; border: none;
+        background: transparent; color: #475569; font-size: 0.8rem;
+        cursor: pointer; text-align: left; border-radius: 4px;
+    }
+    .item-btn:hover { background: #f1f5f9; color: var(--blue-link); }
+
+    /* PANEL KANAN (KONTEN) */
+    .col-kanan h2 { font-size: 1.2rem; color: var(--dark-green); margin-bottom: 10px; }
+    .col-kanan h3 { font-size: 1rem; color: var(--blue-link); margin: 15px 0 8px 0; }
+    .col-kanan p { font-size: 0.95rem; line-height: 1.6; color: #334155; margin-bottom: 10px; }
+    .col-kanan ul { padding-left: 20px; margin-bottom: 10px; font-size: 0.95rem; }
+    .col-kanan li { margin-bottom: 5px; }
+
+    /* RESPONSIF LAYAR LEBAR */
+    @media (min-width: 768px) {
+        .header h1 { font-size: 2.2rem; }
+        .header-tagline { font-size: 1.1rem; }
+        .login-layout { grid-template-columns: 1.2fr 1fr; } 
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group.full-width { grid-column: span 2; }
+        .grid-2-col { grid-template-columns: 1fr 1.5fr; }
+    }
+</style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-top">
+            <div class="brand-left">
+                <span class="brand-title">Wokib</span>
+                <span class="brand-subtitle">Deep Learning</span>
+            </div>
+            <div class="brand-right">
+                <span class="brand-title">2026</span>
+                <span class="brand-subtitle">STEM</span>
+            </div>
+        </div>
+        
+        <!-- JUDUL & TAGLINE (RATA KIRI) -->
+        <div class="header-title-box">
+            <h1>Physics XI - <span>Phase F</span></h1>
+            <p class="header-tagline">Let's master the concepts, understand the context, and prove the truth.</p>
+        </div>
+        
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <div class="main-container">
+        
+        <!-- ================= HALAMAN DEPAN (LOGIN) ================= -->
+        <div id="halaman-depan">
+            
+            <!-- Pembungkus 2 Kolom -->
+            <div class="login-layout">
+                
+                <!-- KOLOM KIRI: FORM LOGIN (SISWA & GURU) -->
+                <div class="login-card">
+                    <h2>Masuk ke Sistem</h2>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Masuk Sebagai:</label>
+                            <select id="peran" onchange="aturFormLogin()">
+                                <option value="siswa">Siswa</option>
+                                <option value="guru">Guru</option>
+                            </select>
+                        </div>
+
+                        <div id="form-siswa" class="form-group full-width" style="display: block;">
+                            <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="Ketik nama lengkapmu..."></div>
+                            
+                            <!-- DROPDOWN KELAS -->
+                            <div class="form-group">
+                                <label>Kelas</label>
+                                <select id="kelas">
+                                    <option value="" disabled selected>-- Pilih Kelas --</option>
+                                    <option value="XI-A">XI-A</option>
+                                    <option value="XI-B">XI-B</option>
+                                    <option value="XI-C">XI-C</option>
+                                    <option value="XI-D">XI-D</option>
+                                    <option value="XI-E">XI-E</option>
+                                    <option value="XI-F">XI-F</option>
+                                    <option value="XI-G">XI-G</option>
+                                    <option value="XI-H">XI-H</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group"><label>Asal Sekolah</label><input type="text" id="sekolah" placeholder="Ketik nama sekolah..."></div>
+                        </div>
+
+                        <div id="form-guru" class="form-group full-width" style="display: none;">
+                            <div class="form-group"><label>PIN Guru</label><input type="password" id="pin-guru" placeholder="PIN (Default: 2026)"></div>
+                            <p style="font-size: 0.8rem; color: #ef4444;" id="pesan-error-guru"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KOLOM KANAN: MENU OPERATOR & TOMBOL SEMESTER -->
+                <div class="semester-buttons">
+                    
+                    <!-- TOMBOL OPERATOR ABSENSI -->
+                    <div class="operator-box">
+                        <p>Akses Khusus Operator Kelas</p>
+                        <button type="button" class="btn-operator" onclick="toggleFormOperator()">🔑 Masuk Operator Absensi</button>
+                        
+                        <!-- Form Input Token (Tersembunyi) -->
+                        <div id="form-operator-dropdown">
+                            <div class="form-group" style="margin-top: 10px; text-align: left;">
+                                <label>Token Kelas</label>
+                                <input type="text" id="token-operator" placeholder="Contoh: XIA" style="width:100%; padding: 8px; border-radius:6px; border:1px solid #cbd5e1;">
+                                <p style="font-size: 0.75rem; color: #ef4444; margin-top: 5px; text-align:left;" id="pesan-error-operator"></p>
+                            </div>
+                            <button type="button" class="btn-semester" style="padding: 10px; font-size: 1rem; background:#0f172a;" onclick="loginOperator()">Masuk Form Absensi</button>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Semester 1 -->
+                    <button class="btn-semester" onclick="masukSistem('s1')">
+                        <span style="font-size: 0.9rem; display: block; margin-bottom: 5px; color: #a7f3d0;">Pilih Kelas</span>
+                        SEMESTER 1
+                    </button>
+                    
+                    <!-- Tombol Semester 2 -->
+                    <button class="btn-semester" onclick="masukSistem('s2')">
+                        <span style="font-size: 0.9rem; display: block; margin-bottom: 5px; color: #a7f3d0;">Pilih Kelas</span>
+                        SEMESTER 2
+                    </button>
+                </div>
+
+            </div>
+            <!-- Akhir Pembungkus 2 Kolom -->
+
+        </div>
+
+        <!-- ================= HALAMAN SEMESTER (2 KOLOM) ================= -->
+        <div id="halaman-semester">
+            <div class="semester-header">
+                <div class="semester-title" id="judul-semester">SEMESTER 1</div>
+                <button class="btn-kembali" onclick="kembaliKeDepan()">← Kembali</button>
+            </div>
+            
+            <div class="grid-2-col">
+                <!-- KOLOM KIRI (MENU) -->
+                <div class="col-kiri">
+                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;" id="info-siswa-kiri">Siswa: -</p>
+                    
+                    <!-- Tombol Materi -->
+                    <button class="menu-btn" id="btn-materi" onclick="toggleMenu('materi')">📚 Materi</button>
+                    <div class="sub-menu" id="sub-materi"></div>
+
+                    <!-- Tombol Worksheet -->
+                    <button class="menu-btn" id="btn-worksheet" onclick="toggleMenu('worksheet')">📝 Worksheet</button>
+                    <div class="sub-menu" id="sub-worksheet"></div>
+
+                    <!-- Tombol Test -->
+                    <button class="menu-btn" id="btn-test" onclick="bukaTest()">📋 Test</button>
+
+                    <!-- Tombol UAS (Hanya Semester 2) -->
+                    <button class="menu-btn" id="btn-uas" onclick="bukaUAS()" style="display: none;">🎓 UAS</button>
+
+                    <!-- Tombol Penilaian -->
+                    <button class="menu-btn" id="btn-penilaian" onclick="bukaPenilaian()">📊 Penilaian</button>
+                </div>
+
+                <!-- KOLOM KANAN (KONTEN / HOOK) -->
+                <div class="col-kanan" id="panel-konten"></div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // ================= DATA KONTEN =================
+        const dataSemester = {
+            s1: {
+                judul: "SEMESTER 1",
+                hook: `
+                    <h2>Dinamika dan Fluida</h2>
+                    <p>Pada semester ini kita akan membangun fondasi mekanika: bagaimana benda bergerak, apa yang menyebabkan gerak itu berubah, bagaimana energi berperan, serta bagaimana fluida berperilaku dalam kehidupan sehari-hari.</p>
+                    <h3>Capaian Pembelajaran (CP)</h3>
+                    <p>Menganalisis hubungan gerak dan gaya serta pemanfaatannya untuk menjelaskan fenomena alam, desain, atau rekayasa struktur. Membuat karya yang menunjukkan penerapan hukum fluida dalam kehidupan sehari-hari.</p>
+                    <h3>Silakan pilih materi di menu sebelah kiri.</h3>
+                `,
+                // STRUKTUR MATERI BERTINGKAT
+                materi: [
+                    {
+                        tipe: "kategori",
+                        nama: "Dinamika",
+                        sub: [
+                            { nama: "Vektor dan Hukum Newton tentang Gerak", link: "materi/vektor-newton.html" },
+                            { nama: "Gaya Berat dan Normal", link: "materi/gaya-berat-normal.html" },
+                            { nama: "Gaya Gesek dan Sentripetal", link: "materi/gaya-gesek-sentripetal.html" },
+                            { nama: "Gravitasi", link: "materi/gravitasi.html" },
+                            { nama: "Usaha dan Energi", link: "materi/usaha-energi.html" },
+                            { nama: "Momentum dan Impuls", link: "materi/momentum-impuls.html" },
+                            { nama: "Rotasi dan Kesetimbangan Benda Tegar", link: "materi/rotasi.html" },
+                            { nama: "Elastisitas", link: "materi/elastisitas.html" }
+                        ]
+                    },
+                    {
+                        tipe: "kategori",
+                        nama: "Fluida",
+                        sub: [
+                            {
+                                nama: "Statis",
+                                sub: [
+                                    { nama: "Tekanan", link: "materi/fluida-statis-tekanan.html" },
+                                    { nama: "Hukum Pascal", link: "materi/fluida-statis-pascal.html" },
+                                    { nama: "Hukum Archimedes", link: "materi/fluida-statis-archimedes.html" },
+                                    { nama: "Viskositas dan Gejala Kapilaritas", link: "materi/fluida-statis-viskositas.html" }
+                                ]
+                            },
+                            {
+                                nama: "Dinamis",
+                                sub: [
+                                    { nama: "Fluida Ideal dan Debit", link: "materi/fluida-dinamis-debit.html" },
+                                    { nama: "Persamaan Bernoulli", link: "materi/fluida-dinamis-bernoulli.html" },
+                                    { nama: "Aplikasi Persamaan Bernoulli", link: "materi/fluida-dinamis-aplikasi.html" }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                folderWorksheet: "ws1/",
+                fileTest: "test-s1.html"
+            },
+            s2: {
+                judul: "SEMESTER 2",
+                hook: `
+                    <h2>Kalor, Termodinamika, dan Gelombang</h2>
+                    <p>Semester ini mengajak kita menyelami konsep kalor dan termodinamika untuk memahami fenomena perubahan iklim, hingga menganalisis gejala gelombang, bunyi, dan cahaya serta penerapannya dalam kehidupan sehari-hari.</p>
+                    <h3>Capaian Pembelajaran (CP)</h3>
+                    <p>Menganalisis konsep kalor dan termodinamika serta penerapannya untuk mengidentifikasi fenomena perubahan iklim; menganalisis gejala gelombang, bunyi, dan cahaya serta penerapannya dalam kehidupan sehari-hari.</p>
+                    <h3>Silakan pilih materi di menu sebelah kiri.</h3>
+                `,
+                materi: [
+                    { nama: "Kalor", link: "materi/kalor.html" },
+                    { nama: "Termodinamika", link: "materi/termodinamika.html" },
+                    { nama: "Gejala Gelombang", link: "materi/gelombang.html" },
+                    { nama: "Bunyi", link: "materi/bunyi.html" },
+                    { nama: "Cahaya", link: "materi/cahaya.html" }
+                ],
+                folderWorksheet: "ws2/",
+                fileTest: "test-s2.html"
+            }
+        };
+
+        let semesterAktif = 's1';
+        let identitasSiswa = {};
+
+        // ================= FUNGSI LOGIN & NAVIGASI =================
+        function aturFormLogin() {
+            const peran = document.getElementById('peran').value;
+            document.getElementById('form-siswa').style.display = peran === 'siswa' ? 'block' : 'none';
+            document.getElementById('form-guru').style.display = peran === 'guru' ? 'block' : 'none';
+        }
+
+        // ================= FUNGSI OPERATOR ABSENSI =================
+        function toggleFormOperator() {
+            const form = document.getElementById('form-operator-dropdown');
+            if (form.style.display === 'block') {
+                form.style.display = 'none';
+            } else {
+                form.style.display = 'block';
+            }
+        }
+
+        function loginOperator() {
+            const token = document.getElementById('token-operator').value.trim().toUpperCase();
+            const kelasValid = ["XIA", "XIB", "XIC", "XID", "XIE", "XIF", "XIG", "XIH"];
+            
+            if (kelasValid.includes(token)) {
+                alert(`Login Operator Berhasil! Membuka form absensi untuk kelas ${token}.`);
+                localStorage.setItem('kelas_operator', token);
+                window.location.href = "form-absensi.html"; // Mengarahkan ke file form absensi
+            } else {
+                document.getElementById('pesan-error-operator').innerText = "Token Kelas Tidak Valid! (Contoh: XIA, XIB)";
+            }
+        }
+
+        function masukSistem(semester) {
+            const peran = document.getElementById('peran').value;
+
+            if (peran === 'guru') {
+                const pin = document.getElementById('pin-guru').value;
+                if (pin === '2026') {
+                    alert("Login Guru Berhasil! Anda akan diarahkan ke Dashboard.");
+                    window.location.href = "dashboard-guru.html";
+                } else {
+                    document.getElementById('pesan-error-guru').innerText = "PIN Salah! Silakan coba lagi.";
+                }
+            } else {
+                // Logika untuk Siswa
+                const nama = document.getElementById('nama').value.trim();
+                const kelas = document.getElementById('kelas').value;
+                const sekolah = document.getElementById('sekolah').value.trim();
+
+                if (!nama || !kelas || !sekolah) {
+                    alert("Mohon lengkapi Nama, Kelas, dan Asal Sekolah!");
+                    return;
+                }
+
+                identitasSiswa = { nama, kelas, sekolah };
+                localStorage.setItem('identitas_siswa', JSON.stringify(identitasSiswa));
+
+                semesterAktif = semester;
+                document.getElementById('halaman-depan').style.display = 'none';
+                document.getElementById('halaman-semester').style.display = 'block';
+                
+                document.getElementById('info-siswa-kiri').innerHTML = `<strong>${nama}</strong> (${kelas})`;
+
+                if (semester === 's2') {
+                    document.getElementById('btn-uas').style.display = 'block';
+                } else {
+                    document.getElementById('btn-uas').style.display = 'none';
+                }
+
+                document.getElementById('judul-semester').innerText = dataSemester[semester].judul;
+                document.getElementById('panel-konten').innerHTML = dataSemester[semester].hook;
+                renderMenuKiri(semester);
+            }
+        }
+
+        function kembaliKeDepan() {
+            document.getElementById('halaman-semester').style.display = 'none';
+            document.getElementById('halaman-depan').style.display = 'block';
+            tutupSemuaSubMenu();
+        }
+
+        // ================= FUNGSI MENU SEMESTER (NESTED LOGIC) =================
+        function renderMenuKiri(semester) {
+            const data = dataSemester[semester];
+            const subMateri = document.getElementById('sub-materi');
+            subMateri.innerHTML = '';
+
+            // Render Materi
+            if (semester === 's1') {
+                // Render Khusus Semester 1 (Bertingkat)
+                data.materi.forEach(kategori => {
+                    const btnKategori = document.createElement('button');
+                    btnKategori.className = 'sub-btn kategori';
+                    btnKategori.innerText = (kategori.nama === 'Dinamika' ? '⚙️ ' : '💧 ') + kategori.nama;
+                    
+                    const divSub = document.createElement('div');
+                    divSub.className = 'sub-sub-menu';
+
+                    kategori.sub.forEach(subItem => {
+                        if (subItem.sub) {
+                            const btnSubKategori = document.createElement('button');
+                            btnSubKategori.className = 'sub-btn';
+                            btnSubKategori.style.marginTop = '5px';
+                            btnSubKategori.innerText = '▶ ' + subItem.nama;
+                            
+                            const divSubSub = document.createElement('div');
+                            divSubSub.className = 'sub-sub-menu';
+
+                            subItem.sub.forEach(item => {
+                                const btnItem = document.createElement('button');
+                                btnItem.className = 'item-btn';
+                                btnItem.innerText = item.nama;
+                                btnItem.onclick = () => window.open(item.link, '_blank');
+                                divSubSub.appendChild(btnItem);
+                            });
+
+                            btnSubKategori.onclick = () => {
+                                if (divSubSub.style.display === 'block') {
+                                    divSubSub.style.display = 'none';
+                                    btnSubKategori.innerText = '▶ ' + subItem.nama;
+                                    btnSubKategori.style.background = 'transparent';
+                                } else {
+                                    divSubSub.style.display = 'block';
+                                    btnSubKategori.innerText = '▼ ' + subItem.nama;
+                                    btnSubKategori.style.background = '#f0f9ff';
+                                }
+                            };
+
+                            divSub.appendChild(btnSubKategori);
+                            divSub.appendChild(divSubSub);
+
+                        } else {
+                            const btnItem = document.createElement('button');
+                            btnItem.className = 'item-btn';
+                            btnItem.innerText = subItem.nama;
+                            btnItem.onclick = () => window.open(subItem.link, '_blank');
+                            divSub.appendChild(btnItem);
+                        }
+                    });
+
+                    btnKategori.onclick = () => {
+                        if (divSub.style.display === 'block') {
+                            divSub.style.display = 'none';
+                            btnKategori.classList.remove('active');
+                        } else {
+                            divSub.style.display = 'block';
+                            btnKategori.classList.add('active');
+                        }
+                    };
+
+                    subMateri.appendChild(btnKategori);
+                    subMateri.appendChild(divSub);
+                });
+
+            } else {
+                // Render Khusus Semester 2 (Datar)
+                data.materi.forEach(m => {
+                    const btn = document.createElement('button');
+                    btn.className = 'sub-btn';
+                    btn.innerText = m.nama;
+                    btn.onclick = () => window.open(m.link, '_blank'); 
+                    subMateri.appendChild(btn);
+                });
+            }
+
+            // ================== BAGIAN WORKSHEET ==================
+            const subWorksheet = document.getElementById('sub-worksheet');
+            subWorksheet.innerHTML = '';
+            
+            const totalWorksheet = 15; 
+            
+            for (let i = 1; i <= totalWorksheet; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'sub-btn';
+                btn.innerText = `Worksheet ${i}`;
+                
+                btn.onclick = () => window.open(`${data.folderWorksheet}ws${i}.html`, '_blank');
+                
+                subWorksheet.appendChild(btn);
+            }
+        }
+
+        function toggleMenu(menu) {
+            const subMateri = document.getElementById('sub-materi');
+            const subWorksheet = document.getElementById('sub-worksheet');
+            const btnMateri = document.getElementById('btn-materi');
+            const btnWorksheet = document.getElementById('btn-worksheet');
+            const btnTest = document.getElementById('btn-test');
+            const btnUAS = document.getElementById('btn-uas');
+            const btnPenilaian = document.getElementById('btn-penilaian');
+
+            btnMateri.classList.remove('active');
+            btnWorksheet.classList.remove('active');
+            btnTest.classList.remove('active');
+            btnUAS.classList.remove('active');
+            btnPenilaian.classList.remove('active');
+
+            if (menu === 'materi') {
+                if (subMateri.style.display === 'block') {
+                    subMateri.style.display = 'none';
+                    btnMateri.classList.remove('active');
+                } else {
+                    tutupSemuaSubMenu();
+                    subMateri.style.display = 'block';
+                    btnMateri.classList.add('active');
+                }
+            } else if (menu === 'worksheet') {
+                if (subWorksheet.style.display === 'block') {
+                    subWorksheet.style.display = 'none';
+                    btnWorksheet.classList.remove('active');
+                } else {
+                    tutupSemuaSubMenu();
+                    subWorksheet.style.display = 'block';
+                    btnWorksheet.classList.add('active');
+                }
+            }
+        }
+
+        function tutupSemuaSubMenu() {
+            document.getElementById('sub-materi').style.display = 'none';
+            document.getElementById('sub-worksheet').style.display = 'none';
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        // ================= FUNGSI KONTEN KANAN =================
+        function bukaTest() {
+            tutupSemuaSubMenu();
+            document.getElementById('btn-test').classList.add('active');
+
+            const panel = document.getElementById('panel-konten');
+            const fileTest = dataSemester[semesterAktif].fileTest;
+            
+            panel.innerHTML = `
+                <h2>📋 Test / Ujian</h2>
+                <p>Selamat datang di bagian Test. Di sini kamu akan mengerjakan soal-soal ujian untuk mengevaluasi pemahamanmu.</p>
+                <div style="margin-top: 20px; padding: 20px; background: #fff1f2; border-radius: 8px; border: 1px solid #fda4af; text-align: center;">
+                    <p style="color: #be123c; font-weight: bold; margin-bottom: 15px;">Perhatian: Test akan diproteksi layar penuh (anti-curang).</p>
+                    <button style="background: #e11d48; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;" onclick="window.open('${fileTest}', '_blank')">Mulai Test</button>
+                </div>
+            `;
+        }
+
+        function bukaUAS() {
+            tutupSemuaSubMenu();
+            document.getElementById('btn-uas').classList.add('active');
+
+            const panel = document.getElementById('panel-konten');
+            panel.innerHTML = `
+                <h2>🎓 Ujian Akhir Semester (UAS)</h2>
+                <p>Ujian Akhir Semester (UAS) mencakup seluruh materi dari Semester 1 hingga Semester 2. Pastikan kamu sudah belajar dengan baik.</p>
+                <div style="margin-top: 20px; padding: 20px; background: #fffbeb; border-radius: 8px; border: 1px solid #fde68a; text-align: center;">
+                    <p style="color: #b45309; font-weight: bold; margin-bottom: 15px;">Perhatian: UAS akan diproteksi ketat (anti-curang).</p>
+                    <button style="background: #d97706; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;" onclick="window.open('uas.html', '_blank')">Mulai UAS</button>
+                </div>
+            `;
+        }
+
+        function bukaPenilaian() {
+            tutupSemuaSubMenu();
+            document.getElementById('btn-penilaian').classList.add('active');
+
+            const panel = document.getElementById('panel-konten');
+            panel.innerHTML = `
+                <h2>📊 Penilaian ${dataSemester[semesterAktif].judul}</h2>
+                <p>Di halaman ini, siswa dapat melihat rincian nilai mereka.</p>
+                
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin-top: 15px;">
+                    <h3 style="margin-top: 0; color: #166534;">Nilai Kamu</h3>
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #dcfce7; padding: 8px 0;">
+                        <span>Rata-rata Kuis:</span> <strong style="font-size: 1.2rem; color: #15803d;">- (Belum ada)</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                        <span>Total Pelanggaran:</span> <strong style="color: #dc2626;">0</strong>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

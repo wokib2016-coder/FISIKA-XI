@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 6: Elastisitas & Hukum Hooke</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+    }
+
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+
+    /* HEADER */
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    /* KONTEN */
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+
+    /* RUMUS BOX */
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.1rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* SVG SUSUNAN PEGAS */
+    .svg-susunan {
+        display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;
+        background: #f8fafc; border: 1px solid var(--border); border-radius: 12px;
+        padding: 20px; margin: 15px 0;
+    }
+    .svg-item { text-align: center; }
+    .svg-item p { font-size: 0.85rem; margin-top: 10px; font-weight: bold; }
+
+    /* SIMULASI PEGAS */
+    .simulasi-container { background: #0f172a; border-radius: 12px; padding: 15px; color: white; margin-top: 15px; }
+    
+    .panel-atas {
+        display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;
+        background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155;
+    }
+
+    /* Area Pegas Elegan */
+    .area-pegas {
+        position: relative; height: 280px; background: #0f172a; border-radius: 8px;
+        overflow: hidden; display: flex; flex-direction: column; align-items: center;
+    }
+
+    .tiang-atas {
+        width: 100%; height: 16px; background: linear-gradient(to bottom, #475569, #334155); 
+        border-bottom: 2px solid #1e293b; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;
+    }
+
+    /* SVG Pegas */
+    .pegas-svg-container {
+        position: absolute; top: 16px; display: flex; flex-direction: column; align-items: center;
+    }
+    
+    /* Beban */
+    .beban {
+        position: absolute; width: 65px; height: 65px; 
+        background: linear-gradient(135deg, #fcd34d, #f59e0b);
+        border-radius: 8px; display: flex; justify-content: center; align-items: center;
+        font-weight: bold; color: #78350f; font-size: 1.2rem;
+        box-shadow: inset -2px -2px 5px rgba(0,0,0,0.3), 0 5px 15px rgba(0,0,0,0.4); 
+        border: 1px solid #b45309; z-index: 5;
+    }
+
+    .garis-ukur {
+        position: absolute; right: 15px; top: 20px; bottom: 20px;
+        border-left: 2px dashed #475569; width: 1px;
+    }
+    .label-ukur {
+        position: absolute; right: 20px; font-size: 0.75rem; color: #94a3b8;
+        background: #0f172a; padding: 2px 5px; border-radius: 3px;
+    }
+
+    /* Grafik F - deltaX */
+    .grafik-area {
+        background: #0f172a; border-radius: 8px; padding: 10px; border: 1px solid #334155;
+        position: relative; height: 150px;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+
+    /* Data Readout */
+    .data-readout {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155;
+        margin-bottom: 10px;
+    }
+    .data-box { text-align: center; border-right: 1px solid #334155; }
+    .data-box:last-child { border-right: none; }
+    .data-box span { display: block; font-size: 0.75rem; color: #94a3b8; }
+    .data-box strong { font-size: 1.1rem; color: var(--accent-yellow); font-family: monospace; }
+
+    /* Kontrol */
+    .panel-bawah { display: flex; flex-direction: column; gap: 15px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
+    .kontrol-simulasi label { display: flex; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px;}
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); margin-bottom: 5px; }
+
+    /* KUIS */
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); font-size: 0.95rem;}
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    .pembahasan { display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid var(--green-success); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #065f46; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Materi 6: <span>Elastisitas & Hooke</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- PENGANTAR -->
+        <div class="card">
+            <h2>A. Elastisitas dan Hukum Hooke</h2>
+            <p><strong>Elastisitas</strong> adalah kemampuan suatu benda untuk kembali ke bentuk semula setelah gaya yang diberikan dihilangkan.</p>
+            <p>Robert Hooke menemukan hubungan antara gaya yang diberikan pada pegas dengan pertambahan panjangnya:</p>
+            <div class="rumus-box">F = k × Δx</div>
+            <p>Keterangan:<br>
+            F = Gaya tarik/tekan (Newton)<br>
+            k = Konstanta pegas (N/m) - menunjukkan kekakuan pegas<br>
+            Δx = Pertambahan panjang pegas (meter)</p>
+        </div>
+
+        <!-- SUSUNAN PEGAS -->
+        <div class="card">
+            <h2>B. Susunan Pegas (Seri dan Paralel)</h2>
+            <p>Dalam kehidupan nyata, pegas sering disusun lebih dari satu. Cara penyusunannya sangat mempengaruhi tingkat kekakuan total (konstanta pegas pengganti).</p>
+
+            <div class="svg-susunan">
+                <!-- Seri -->
+                <div class="svg-item">
+                    <svg width="100" height="150" viewBox="0 0 100 150">
+                        <line x1="10" y1="10" x2="90" y2="10" stroke="#475569" stroke-width="4"/>
+                        <path d="M 50 10 L 50 25 Q 70 30 50 40 Q 30 50 50 60 Q 70 70 50 80 Q 30 90 50 100 L 50 115" fill="none" stroke="#3b82f6" stroke-width="3"/>
+                        <rect x="35" y="115" width="30" height="20" fill="#3b82f6" rx="3"/>
+                        <path d="M 50 135 L 50 150" stroke="#475569" stroke-width="3" stroke-dasharray="4,4"/>
+                    </svg>
+                    <p>Susunan Seri</p>
+                </div>
+                <!-- Paralel -->
+                <div class="svg-item">
+                    <svg width="100" height="150" viewBox="0 0 100 150">
+                        <line x1="10" y1="10" x2="90" y2="10" stroke="#475569" stroke-width="4"/>
+                        <path d="M 30 10 L 30 25 Q 45 30 30 40 Q 15 50 30 60 Q 45 70 30 80 L 30 100" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+                        <path d="M 70 10 L 70 25 Q 85 30 70 40 Q 55 50 70 60 Q 85 70 70 80 L 70 100" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+                        <rect x="15" y="100" width="70" height="20" fill="#2dd4bf" rx="3"/>
+                        <path d="M 50 120 L 50 150" stroke="#475569" stroke-width="3" stroke-dasharray="4,4"/>
+                    </svg>
+                    <p>Susunan Paralel</p>
+                </div>
+            </div>
+
+            <h3>1. Susunan Seri</h3>
+            <p>Pegas disusun berurutan (ujung pegas pertama disambung ke pangkal pegas kedua). Pada susunan seri, <strong>gaya (F) yang dialami setiap pegas sama</strong>, namun pertambahan panjangnya total.</p>
+            <p>Sifat: Susunan seri membuat pegas menjadi <strong>lebih lentur</strong> (konstanta total mengecil).</p>
+            <div class="rumus-box">1/k_total = 1/k1 + 1/k2 + ...</div>
+
+            <h3>2. Susunan Paralel</h3>
+            <p>Pegas disusun berdampingan (ujung-ujungnya diikat pada batang yang sama). Pada susunan paralel, <strong>pertambahan panjang (Δx) setiap pegas sama</strong>.</p>
+            <p>Sifat: Susunan paralel membuat pegas menjadi <strong>lebih kaku</strong> (konstanta total membesar).</p>
+            <div class="rumus-box">k_total = k1 + k2 + ...</div>
+        </div>
+
+        <!-- SIMULASI PEGAS -->
+        <div class="card">
+            <h2>C. Simulasi Pegas & Hukum Hooke</h2>
+            <p>Atur besarnya massa beban dan konstanta pegas (k). Amati pertambahan panjang pegas yang terjadi.</p>
+            
+            <div class="simulasi-container">
+                <div class="panel-atas">
+                    
+                    <div class="data-readout">
+                        <div class="data-box">
+                            <span>Gaya Tarik (F = m.g)</span>
+                            <strong id="readout-F">0 N</strong>
+                        </div>
+                        <div class="data-box">
+                            <span>Pertambahan Panjang (Δx)</span>
+                            <strong id="readout-x">0.00 m</strong>
+                        </div>
+                    </div>
+
+                    <div class="area-pegas" id="area-pegas">
+                        <div class="tiang-atas"></div>
+                        
+                        <!-- Pegas SVG Natural -->
+                        <div class="pegas-svg-container" id="pegas-container">
+                            <svg id="svg-pegas" width="40" height="100" viewBox="0 0 40 100">
+                                <!-- Garis koil akan digenerate lewat JS -->
+                                <path id="path-pegas" d="" fill="none" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0px 3px 3px rgba(0,0,0,0.4))"/>
+                            </svg>
+                        </div>
+
+                        <div class="beban" id="beban-visual" style="top: 116px;">0</div>
+                        
+                        <div class="garis-ukur"></div>
+                        <div class="label-ukur" style="top: 10px;">Panjang awal</div>
+                    </div>
+
+                    <!-- Grafik F - deltaX -->
+                    <div class="grafik-area">
+                        <canvas id="grafikCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel-bawah kontrol-simulasi">
+                    <div>
+                        <label>Massa Beban (kg) <span id="label-massa">1.0 kg</span></label>
+                        <input type="range" id="slider-massa" min="0" max="5" step="0.1" value="1" oninput="updatePegas()">
+                    </div>
+                    <div>
+                        <label>Konstanta Pegas (k) <span id="label-k">100 N/m</span></label>
+                        <input type="range" id="slider-k" min="50" max="200" step="10" value="100" oninput="updatePegas()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KUIS INTERAKTIF HOTS -->
+        <div class="card">
+            <h2>D. Uji Pemahaman Interaktif (HOTS)</h2>
+            <div class="kuis-box">
+                
+                <div class="soal" id="soal1">
+                    <div class="soal-teks">1. Sebuah pegas dengan konstanta 200 N/m ditarik dengan gaya 40 N. Berapakah pertambahan panjang pegas tersebut?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'B')">A. 0,1 m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'B')">B. 0,2 m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'B')">C. 5 m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'B')">D. 8 m</button>
+                    <div class="pembahasan" id="pembahasan-soal1">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Hukum Hooke: F = k × Δx<br>
+                        40 = 200 × Δx<br>
+                        Δx = 40 / 200 = <strong>0,2 meter</strong>.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal2">
+                    <div class="soal-teks">2. Dua buah pegas identik memiliki konstanta masing-masing 100 N/m. Jika kedua pegas tersebut disusun secara paralel, maka konstanta pegas totalnya adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'C')">A. 50 N/m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'C')">B. 100 N/m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'C')">C. 200 N/m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'C')">D. 400 N/m</button>
+                    <div class="pembahasan" id="pembahasan-soal2">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Untuk susunan paralel, konstanta pegas total dijumlahkan:<br>
+                        k_total = k1 + k2 = 100 + 100 = <strong>200 N/m</strong>.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal3">
+                    <div class="soal-teks">3. Dua pegas dengan konstanta 300 N/m dan 600 N/m disusun secara seri. Berapakah konstanta pegas totalnya?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'A')">A. 200 N/m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'A')">B. 450 N/m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'A')">C. 900 N/m</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'A')">D. 150 N/m</button>
+                    <div class="pembahasan" id="pembahasan-soal3">
+                        <strong>Benar! Jawaban: A.</strong><br>
+                        Susunan Seri: 1/k_total = 1/k1 + 1/k2<br>
+                        1/k_total = 1/300 + 1/600<br>
+                        1/k_total = 2/600 + 1/600 = 3/600<br>
+                        k_total = 600 / 3 = <strong>200 N/m</strong>.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal4">
+                    <div class="soal-teks">4. Perhatikan ciri-ciri susunan pegas berikut: (1) Gaya pada tiap pegas sama besar, (2) Pertambahan panjang total adalah jumlah dari pertambahan panjang tiap pegas, (3) Konstanta total lebih kecil dari konstanta masing-masing. Ciri-ciri tersebut merupakan sifat dari...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'A', 'B')">A. Susunan Paralel</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'B', 'B')">B. Susunan Seri</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'C', 'B')">C. Susunan Campuran</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'D', 'B')">D. Pegas Tunggal</button>
+                    <div class="pembahasan" id="pembahasan-soal4">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Susunan seri memiliki gaya yang sama di setiap pegas, namun total regangannya merupakan jumlah dari masing-masing regangan. Karena total regangan lebih besar, sistem menjadi lebih lentur (konstanta mengecil).
+                    </div>
+                </div>
+
+                <div class="soal" id="soal5">
+                    <div class="soal-teks">5. Energi potensial elastis yang tersimpan dalam sebuah pegas yang ditarik sejauh Δx dirumuskan dengan Ep = ½ × k × Δx². Jika pertambahan panjang pegas diperbesar menjadi 3 kali lipat, maka energi potensialnya menjadi...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'A', 'C')">A. 3 kali lipat</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'B', 'C')">B. 6 kali lipat</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'C', 'C')">C. 9 kali lipat</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'D', 'C')">D. 12 kali lipat</button>
+                    <div class="pembahasan" id="pembahasan-soal5">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Karena Δx dikuadratkan (Δx²), maka jika Δx menjadi 3Δx, kuadratnya menjadi (3)² = 9 kali lipat. Energi potensial menjadi 9 kali lebih besar.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================= LOGIKA KUIS =================
+        function cekKuis(idSoal, jawabanDipilih, jawabanBenar) {
+            const soalContainer = document.getElementById(idSoal);
+            const buttons = soalContainer.querySelectorAll('.opsi-btn');
+            const pembahasan = document.getElementById('pembahasan-' + idSoal);
+
+            buttons.forEach(btn => {
+                if (btn.innerText.startsWith(jawabanDipilih)) {
+                    if (jawabanDipilih === jawabanBenar) btn.classList.add('benar');
+                    else btn.classList.add('salah');
+                }
+                if (btn.innerText.startsWith(jawabanBenar)) btn.classList.add('benar');
+                btn.disabled = true;
+                btn.style.cursor = 'default';
+            });
+            pembahasan.style.display = 'block';
+        }
+
+        // ================= LOGIKA SIMULASI PEGAS (SVG) =================
+        const g = 9.8; 
+        const panjangAwalPegas = 100; // pixel
+        const skalaRegangan = 150; // 1 meter = 150 pixel
+
+        // SVG Path Generator untuk Pegas Natural (Helix)
+        function generateSpringPath(length) {
+            const width = 40;
+            const centerX = width / 2;
+            let path = `M ${centerX} 0 `;
+            
+            // Jumlah lilitan (loop) tetap, jaraknya yang melebar
+            const loops = 8; 
+            const loopHeight = length / loops;
+            
+            for (let i = 0; i < loops; i++) {
+                const y1 = i * loopHeight;
+                const y2 = y1 + (loopHeight / 2);
+                const y3 = (i + 1) * loopHeight;
+                
+                // Kurva ke kiri lalu ke kanan (membentuk gelombang sinus)
+                path += `Q ${width + 10} ${y2} ${centerX} ${y3} `;
+            }
+            return path;
+        }
+
+        function updatePegas() {
+            const massa = parseFloat(document.getElementById('slider-massa').value);
+            const k = parseFloat(document.getElementById('slider-k').value);
+
+            document.getElementById('label-massa').innerText = massa.toFixed(1) + " kg";
+            document.getElementById('label-k').innerText = k + " N/m";
+
+            // Fisika
+            const F = massa * g;
+            const deltaX = F / k;
+
+            // Update Data Teks
+            document.getElementById('readout-F').innerText = F.toFixed(1) + " N";
+            document.getElementById('readout-x').innerText = deltaX.toFixed(3) + " m";
+
+            // Update Visual
+            const tinggiSekarang = panjangAwalPegas + (deltaX * skalaRegangan);
+            
+            // 1. Update SVG Pegas
+            const svg = document.getElementById('svg-pegas');
+            const path = document.getElementById('path-pegas');
+            
+            svg.setAttribute('height', tinggiSekarang);
+            svg.setAttribute('viewBox', `0 0 40 ${tinggiSekarang}`);
+            path.setAttribute('d', generateSpringPath(tinggiSekarang));
+
+            // 2. Update Posisi Beban
+            const beban = document.getElementById('beban-visual');
+            beban.style.top = (16 + tinggiSekarang) + 'px'; // 16 adalah tinggi tiang
+            beban.innerText = massa.toFixed(1);
+
+            // 3. Gambar Grafik
+            gambarGrafik(F, deltaX);
+        }
+
+        // Setup Canvas Grafik
+        const canvas = document.getElementById('grafikCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width - 20;
+            canvas.height = 130;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function gambarGrafik(F_sekarang, x_sekarang) {
+            const w = canvas.width;
+            const h = canvas.height;
+            const pad = { left: 40, right: 20, top: 20, bottom: 20 };
+
+            const maxF = 50; 
+            const maxX = 1.0; 
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Grid
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let i = 0; i <= 4; i++) {
+                let y = h - pad.bottom - (i * (h - pad.bottom - pad.top) / 4);
+                ctx.moveTo(pad.left, y);
+                ctx.lineTo(w - pad.right, y);
+                ctx.fillStyle = '#64748b';
+                ctx.font = '10px monospace';
+                ctx.fillText((i * maxF / 4).toFixed(0), 5, y + 3);
+            }
+            for (let i = 0; i <= 5; i++) {
+                let x = pad.left + (i * (w - pad.left - pad.right) / 5);
+                ctx.moveTo(x, pad.top);
+                ctx.lineTo(x, h - pad.bottom);
+                if (i > 0) {
+                    ctx.fillStyle = '#64748b';
+                    ctx.fillText((i * maxX / 5).toFixed(1), x - 10, h - 5);
+                }
+            }
+            ctx.stroke();
+
+            // Sumbu Utama
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(pad.left, pad.top); 
+            ctx.lineTo(pad.left, h - pad.bottom);
+            ctx.lineTo(w - pad.right, h - pad.bottom); 
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 11px monospace';
+            ctx.fillText('F (N)', 5, 12);
+            ctx.fillText('Δx (m)', w - 45, h - 10);
+
+            // Garis Hooke
+            const k = parseFloat(document.getElementById('slider-k').value);
+            ctx.strokeStyle = '#475569'; 
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            let startX = pad.left;
+            let startY = h - pad.bottom;
+            
+            const F_maxX = k * maxX;
+            const plotF = Math.min(F_maxX, maxF);
+            let endX = pad.left + (maxX / maxX) * (w - pad.left - pad.right);
+            let endY;
+            if (F_maxX > maxF) {
+                 endY = pad.top;
+                 endX = pad.left + ((maxF/k) / maxX) * (w - pad.left - pad.right);
+            } else {
+                 endY = h - pad.bottom - (F_maxX / maxF) * (h - pad.bottom - pad.top);
+            }
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+
+            // Titik Data
+            if (F_sekarang > 0) {
+                const x = pad.left + (x_sekarang / maxX) * (w - pad.left - pad.right);
+                const y = h - pad.bottom - (F_sekarang / maxF) * (h - pad.bottom - pad.top);
+
+                ctx.fillStyle = '#2dd4bf';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(45, 212, 191, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, h - pad.bottom); 
+                ctx.moveTo(x, y);
+                ctx.lineTo(pad.left, y); 
+                ctx.stroke();
+                ctx.setLineDash([]); 
+                
+                ctx.fillStyle = '#2dd4bf';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(`(${x_sekarang.toFixed(2)}, ${F_sekarang.toFixed(0)})`, x + 8, y - 8);
+            }
+        }
+
+        // Inisialisasi awal
+        window.onload = updatePegas;
+    </script>
+</body>
+</html>

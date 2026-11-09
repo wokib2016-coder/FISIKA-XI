@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Hukum Pascal</title>
+<!-- Memanggil MathJax untuk rendering rumus matematika standar -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: #3b82f6; margin: 20px 0 10px; font-size: 1.08rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-green);
+    }
+    
+    .gambar-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px 14px; margin: 16px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+    .gambar-box svg { max-width: 100%; height: auto; overflow: visible; }
+
+    /* CSS Kuis */
+    .soal-container { margin-bottom: 30px; }
+    .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+    .opsi-card { background-color: #f8fafc; border: 2px solid transparent; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+    .opsi-card:hover { background-color: #f1f5f9; }
+    .opsi-card.benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .opsi-card.salah { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+    .opsi-card.reveal-benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .pembahasan-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin-top: 15px; display: none; color: #064e3b; }
+    .pembahasan-box.salah { background-color: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+    .pembahasan-title { font-weight: bold; margin-bottom: 8px; display: block; }
+    .pembahasan-text { font-size: 0.95rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Hukum Pascal</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- A. KONSEP HUKUM PASCAL -->
+        <div class="card">
+            <h2>A. Konsep Hukum Pascal</h2>
+            <p><strong>Blaise Pascal</strong> merumuskan sebuah prinsip penting dalam fluida statis: <em>"Tekanan yang diberikan pada zat cair dalam ruang tertutup akan diteruskan ke segala arah dengan sama besar."</em></p>
+            <p>Prinsip ini menjadi dasar dari sistem hidrolik. Secara matematis, Hukum Pascal dinyatakan sebagai:</p>
+            
+            <div class="rumus-box">
+                \[ P_{\text{masuk}} = P_{\text{keluar}} \]
+                <br>
+                \[ \frac{F_1}{A_1} = \frac{F_2}{A_2} \]
+            </div>
+            
+            <!-- GAMBAR 1: ILUSTRASI KONSEP DASAR (PERBEDAAN LUAS PENAMPANG) -->
+            <div class="gambar-box">
+                <svg viewBox="0 0 500 300" width="100%" style="max-width: 450px;">
+                    <defs>
+                        <linearGradient id="oilGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#fbbf24"/>
+                            <stop offset="100%" stop-color="#d97706"/>
+                        </linearGradient>
+                        <linearGradient id="pistonGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#94a3b8"/>
+                            <stop offset="50%" stop-color="#cbd5e1"/>
+                            <stop offset="100%" stop-color="#94a3b8"/>
+                        </linearGradient>
+                        <linearGradient id="bebanGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#cbd5e1"/>
+                            <stop offset="100%" stop-color="#94a3b8"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Wadah Pipa U (Kiri Sempit, Kanan Lebar) -->
+                    <!-- Dinding Luar -->
+                    <path d="M 120 60 L 120 240 L 380 240 L 380 60" fill="none" stroke="#334155" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+                    <!-- Dinding Dalam (Kiri x=150, Kanan x=320) -->
+                    <path d="M 150 60 L 150 210 L 320 210 L 320 60" fill="none" stroke="#334155" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+                    
+                    <!-- Cairan (Oli) -->
+                    <path d="M 123 120 L 147 120 L 147 210 L 323 210 L 323 120 L 377 120 L 377 237 L 123 237 Z" fill="url(#oilGrad)"/>
+
+                    <!-- Garis Sejajar (Permukaan Cairan) -->
+                    <line x1="80" y1="120" x2="420" y2="120" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4"/>
+                    <text x="430" y="124" font-size="13" fill="#b45309" font-weight="bold">Sama tinggi</text>
+
+                    <!-- Piston Kecil (Kiri) - Sempit -->
+                    <rect x="123" y="108" width="24" height="12" fill="url(#pistonGrad)" stroke="#475569" stroke-width="2"/>
+                    <rect x="128" y="60" width="14" height="48" fill="url(#pistonGrad)" stroke="#475569" stroke-width="2"/>
+
+                    <!-- Piston Besar (Kanan) - Lebar -->
+                    <rect x="323" y="108" width="54" height="12" fill="url(#pistonGrad)" stroke="#475569" stroke-width="2"/>
+                    <rect x="338" y="70" width="24" height="38" fill="url(#pistonGrad)" stroke="#475569" stroke-width="2"/>
+                    
+                    <!-- Beban di Piston Besar -->
+                    <rect x="313" y="35" width="74" height="35" fill="url(#bebanGrad)" stroke="#475569" stroke-width="2" rx="3"/>
+                    <text x="350" y="58" font-size="14" fill="#0f172a" text-anchor="middle" font-weight="bold">Beban</text>
+
+                    <!-- Panah F1 (Menghadap ke Bawah) -->
+                    <polygon points="135,55 125,35 145,35" fill="#ef4444"/>
+                    <line x1="135" y1="35" x2="135" y2="20" stroke="#ef4444" stroke-width="3"/>
+                    <text x="135" y="15" font-size="14" fill="#ef4444" text-anchor="middle" font-weight="bold">F₁</text>
+
+                    <!-- Label F2 -->
+                    <text x="350" y="25" font-size="14" fill="#1e293b" text-anchor="middle" font-weight="bold">F₂</text>
+
+                    <!-- Keterangan Luas Penampang -->
+                    <text x="135" y="270" font-size="13" fill="#334155" text-anchor="middle" font-weight="bold">A₁ (Kecil)</text>
+                    <text x="350" y="270" font-size="13" fill="#334155" text-anchor="middle" font-weight="bold">A₂ (Besar)</text>
+                </svg>
+                <div class="gambar-caption">Gambar 1. Ilustrasi dasar Hukum Pascal. Penampang kecil (A₁) diberi gaya F₁ untuk mengangkat beban di penampang besar (A₂).</div>
+            </div>
+
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(F_1\)</strong> = Gaya pada penampang kecil (\(\text{N}\))</li>
+                <li><strong>\(A_1\)</strong> = Luas penampang kecil (\(\text{m}^2\))</li>
+                <li><strong>\(F_2\)</strong> = Gaya angkat pada penampang besar (\(\text{N}\))</li>
+                <li><strong>\(A_2\)</strong> = Luas penampang besar (\(\text{m}^2\))</li>
+            </ul>
+            <p>Dari rumus tersebut, dengan memberikan gaya kecil (\(F_1\)) pada penampang kecil (\(A_1\)), kita dapat menghasilkan gaya yang besar (\(F_2\)) pada penampang besar (\(A_2\)). Inilah yang disebut sebagai <strong>keuntungan mekanis</strong>.</p>
+        </div>
+
+        <!-- B. PEMANFAATAN HUKUM PASCAL -->
+        <div class="card">
+            <h2>B. Pemanfaatan Hukum Pascal</h2>
+            <p>Prinsip Hukum Pascal banyak diaplikasikan dalam kehidupan sehari-hari:</p>
+            <ul>
+                <li><strong>Dongkrak Hidrolik:</strong> Digunakan untuk mengangkat mobil di bengkel.</li>
+                <li><strong>Rem Hidrolik:</strong> Tekanan pada pedal rem diteruskan minyak rem untuk mencengkeram cakram.</li>
+                <li><strong>Mesin Pengangkat Mobil (Car Lift):</strong> Di tempat cuci kendaraan.</li>
+                <li><strong>Kursi Pasien Rumah Sakit:</strong> Mengatur ketinggian kursi dengan mudah.</li>
+            </ul>
+        </div>
+
+        <!-- C. ANIMASI INTERAKTIF -->
+        <div class="card">
+            <h2>C. Animasi Interaktif: Prinsip Dongkrak Hidrolik</h2>
+            <p>Geser slider di bawah ini untuk melihat bagaimana gaya kecil pada penampang sempit mampu mengangkat beban berat.</p>
+            
+            <div class="gambar-box">
+                <svg viewBox="0 0 500 340" width="100%" style="max-width: 480px;">
+                    <defs>
+                        <linearGradient id="pistonGradAnim" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#94a3b8"/>
+                            <stop offset="50%" stop-color="#cbd5e1"/>
+                            <stop offset="100%" stop-color="#94a3b8"/>
+                        </linearGradient>
+                        <linearGradient id="bebanGradAnim" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#cbd5e1"/>
+                            <stop offset="100%" stop-color="#94a3b8"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- 1. CAIRAN OLI -->
+                    <rect id="oliKiri" x="103" y="160" width="54" height="96" fill="#f59e0b" />
+                    <rect x="103" y="240" width="314" height="16" fill="#f59e0b" />
+                    <rect id="oliKanan" x="283" y="160" width="134" height="96" fill="#f59e0b" />
+
+                    <!-- 2. STRUKTUR WADAH -->
+                    <!-- Dinding Kiri -->
+                    <line x1="100" y1="80" x2="100" y2="256" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="160" y1="80" x2="160" y2="240" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                    
+                    <!-- Dinding Kanan -->
+                    <line x1="420" y1="80" x2="420" y2="256" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="280" y1="80" x2="280" y2="240" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+
+                    <!-- Dasar Horizontal -->
+                    <line x1="100" y1="256" x2="420" y2="256" stroke="#334155" stroke-width="6"/>
+                    <line x1="160" y1="240" x2="280" y2="240" stroke="#334155" stroke-width="6"/>
+
+                    <!-- 3. PISTON KECIL (KIRI) -->
+                    <g id="grupPistonKecil">
+                        <rect x="123" y="80" width="14" height="70" fill="url(#pistonGradAnim)" stroke="#475569" stroke-width="1.5"/>
+                        <rect x="103" y="150" width="54" height="12" fill="url(#pistonGradAnim)" stroke="#475569" stroke-width="2" rx="2"/>
+                        
+                        <!-- Panah Menekan ke Bawah -->
+                        <polygon points="130,105 118,85 142,85" fill="#ef4444"/>
+                        <line x1="130" y1="65" x2="130" y2="85" stroke="#ef4444" stroke-width="3"/>
+                        <text x="130" y="55" font-size="14" fill="#ef4444" text-anchor="middle" font-weight="bold">F₁</text>
+                    </g>
+
+                    <!-- 4. PISTON BESAR (KANAN) -->
+                    <g id="grupPistonBesar">
+                        <rect x="283" y="150" width="134" height="15" fill="url(#pistonGradAnim)" stroke="#475569" stroke-width="2" rx="2"/>
+                        <rect x="295" y="110" width="110" height="40" fill="url(#bebanGradAnim)" stroke="#475569" stroke-width="2" rx="4"/>
+                        <text x="350" y="135" font-size="14" fill="#1e293b" text-anchor="middle" font-weight="bold">Beban (F₂)</text>
+                    </g>
+
+                    <!-- 5. LABEL PENAMPANG -->
+                    <text x="130" y="290" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="bold">Penampang Kecil A₁</text>
+                    <text x="350" y="290" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="bold">Penampang Besar A₂</text>
+                </svg>
+                
+                <div style="margin-top: 15px;">
+                    <input type="range" id="sliderPascal" min="0" max="100" value="0" style="width: 80%; max-width: 300px; accent-color: #3b82f6;">
+                    <p style="font-size: 0.85rem; color: #475569; margin-top: 8px;">Geser slider untuk menekan piston.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- D. UJI KOMPETENSI (5 SOAL) -->
+        <div class="card">
+            <h2>D. Uji Kompetensi: Hukum Pascal</h2>
+            <p>Uji pemahaman Anda mengenai Hukum Pascal dan penerapannya.</p>
+
+            <!-- SOAL 1 -->
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Sebuah dongkrak hidrolik memiliki penampang kecil dengan luas \(20 \text{ cm}^2\) dan penampang besar dengan luas \(400 \text{ cm}^2\). Jika gaya sebesar \(100 \text{ N}\) diberikan pada penampang kecil, berapakah gaya angkat yang dihasilkan pada penampang besar?</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'C')">A. \(500 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'C')">B. \(1000 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'C')">C. \(2000 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'C')">D. \(4000 \text{ N}\)</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+
+            <!-- SOAL 2 -->
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Mengapa pada sistem rem hidrolik, ketika kita menekan pedal rem dengan gaya yang relatif kecil, gaya yang dihasilkan pada cakram rem bisa sangat besar?</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'B')">A. Karena rem hidrolik menggunakan bantuan mesin.</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'B')">B. Karena Hukum Pascal: tekanan pada penampang kecil diteruskan sama besar ke penampang besar, sehingga gaya di penampang besar menjadi lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'B')">C. Karena minyak rem memiliki massa jenis yang sangat kecil.</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'B')">D. Karena luas cakram rem lebih kecil dari pedal.</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+
+            <!-- SOAL 3 -->
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Pernyataan yang paling tepat mengenai Hukum Pascal adalah...</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'C')">A. Tekanan berbanding lurus dengan luas penampang.</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'C')">B. Tekanan total pada fluida diam bergantung pada kedalaman.</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'C')">C. Tekanan yang diberikan pada zat cair dalam ruang tertutup diteruskan ke segala arah dengan sama besar.</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'C')">D. Gaya apung sama dengan berat fluida yang dipindahkan.</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+
+            <!-- SOAL 4 -->
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Diketahui luas penampang kecil \(A_1 = 10 \text{ cm}^2\) dan penampang besar \(A_2 = 250 \text{ cm}^2\). Jika ingin mengangkat beban seberat \(5000 \text{ N}\) di penampang besar, berapa besar gaya \(F_1\) yang harus diberikan pada penampang kecil?</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'A')">A. \(200 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'A')">B. \(500 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'A')">C. \(1000 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'A')">D. \(2500 \text{ N}\)</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+
+            <!-- SOAL 5 -->
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Manakah di bawah ini yang <u>bukan</u> merupakan penerapan dari prinsip Hukum Pascal dalam kehidupan sehari-hari?</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'D')">A. Dongkrak hidrolik mobil</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'D')">B. Rem piringan hidrolik motor</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'D')">C. Alat pengangkat mobil di tempat cuci</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'D')">D. Balon udara yang bisa terbang di udara</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT UNTUK ANIMASI DAN KUIS -->
+    <script>
+        // --- 1. ANIMASI INTERAKTIF HUKUM PASCAL ---
+        const slider = document.getElementById("sliderPascal");
+        const grupPistonKecil = document.getElementById("grupPistonKecil");
+        const grupPistonBesar = document.getElementById("grupPistonBesar");
+        const oliKiri = document.getElementById("oliKiri");
+        const oliKanan = document.getElementById("oliKanan");
+
+        if (slider) {
+            slider.addEventListener("input", function() {
+                let val = parseInt(this.value);
+                let jarakTurun = (val / 100) * 45;
+                let jarakNaik = jarakTurun / 3.5;
+                
+                grupPistonKecil.setAttribute("transform", `translate(0, ${jarakTurun})`);
+                grupPistonBesar.setAttribute("transform", `translate(0, -${jarakNaik})`);
+                
+                oliKiri.setAttribute("y", 160 + jarakTurun);
+                oliKiri.setAttribute("height", 96 - jarakTurun);
+                
+                oliKanan.setAttribute("y", 160 - jarakNaik);
+                oliKanan.setAttribute("height", 96 + jarakNaik);
+            });
+        }
+
+        // --- 2. FUNGSI KUIS ---
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const pembahasanBox = document.getElementById('pembahasan' + nomorSoal);
+            
+            opsiCards.forEach(card => {
+                card.classList.remove('benar', 'salah', 'reveal-benar');
+            });
+            pembahasanBox.style.display = 'none';
+
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) {
+                        card.classList.add('benar');
+                    }
+                });
+                
+                pembahasanBox.className = 'pembahasan-box';
+                pembahasanBox.innerHTML = `
+                    <span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span>
+                    <div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>
+                `;
+                pembahasanBox.style.display = 'block';
+
+            } else {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) {
+                        card.classList.add('salah');
+                    }
+                    if (card.innerText.trim().startsWith(opsiBenar + '.')) {
+                        card.classList.add('reveal-benar');
+                    }
+                });
+
+                pembahasanBox.className = 'pembahasan-box salah';
+                pembahasanBox.innerHTML = `
+                    <span class="pembahasan-title">Kurang Tepat. Jawaban yang benar adalah: ${opsiBenar}.</span>
+                    <div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>
+                `;
+                pembahasanBox.style.display = 'block';
+            }
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([pembahasanBox]);
+            }
+        }
+
+        function getPembahasan(soal) {
+            if(soal === 1) {
+                return "$$ \\frac{F_1}{A_1} = \\frac{F_2}{A_2} $$" +
+                       "$$ \\frac{100}{20} = \\frac{F_2}{400} $$" +
+                       "$$ 5 = \\frac{F_2}{400} \\rightarrow F_2 = 5 \\times 400 = 2000 \\text{ N} $$";
+            }
+            if(soal === 2) {
+                return "Prinsip Hukum Pascal menyatakan bahwa tekanan yang diberikan pada fluida tertutup diteruskan sama besar. Karena penampang di cakram rem dibuat lebih luas, maka gaya yang dihasilkan \\(F = P \\times A\\) menjadi jauh lebih besar.";
+            }
+            if(soal === 3) {
+                return "Hukum Pascal berbunyi: <em>'Tekanan yang diberikan pada zat cair dalam ruang tertutup akan diteruskan ke segala arah dengan sama besar.'</em> Ini adalah dasar dari sistem hidrolik.";
+            }
+            if(soal === 4) {
+                return "$$ \\frac{F_1}{A_1} = \\frac{F_2}{A_2} $$" +
+                       "$$ \\frac{F_1}{10} = \\frac{5000}{250} $$" +
+                       "$$ \\frac{F_1}{10} = 20 \\rightarrow F_1 = 20 \\times 10 = 200 \\text{ N} $$";
+            }
+            if(soal === 5) {
+                return "Balon udara yang bisa terbang menggunakan prinsip Hukum Archimedes (gaya ke atas/apung pada fluida gas), bukan Hukum Pascal yang khusus membahas zat cair dalam ruang tertutup.";
+            }
+        }
+    </script>
+
+</body>
+</html>

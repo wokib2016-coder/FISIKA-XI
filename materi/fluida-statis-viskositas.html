@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Viskositas & Kapilaritas</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-blue: #1e3a8a; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444; --green-success: #10b981;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    .header-materi {
+        background-color: var(--dark-blue); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-blue); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-blue);
+    }
+    .gambar-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 16px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+    
+    #simContainer {
+        width: 100%; height: 400px; display: flex; flex-direction: column;
+        background: radial-gradient(ellipse at 50% 0%, #dbeafe, #bae6fd);
+        border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px 12px;
+        overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    #simHeader { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 8px; flex-shrink: 0; }
+    #simHeader h3 { color: #1e3a8a; font-size: 15px; font-weight: 700; }
+    #simHeader h3 span { color: #0e7490; }
+    #simHeader .info { color: #334155; font-size: 11px; background: rgba(255,255,255,0.6); padding: 3px 12px; border-radius: 30px; border: 1px solid var(--border); }
+    #canvasWrap { flex: 1; min-height: 0; border-radius: 10px; overflow: hidden; background: #dbeafe; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); }
+    #simCanvas { display: block; width: 100%; height: 100%; background: linear-gradient(180deg, #e0f2fe, #bfdbfe); }
+    #controls { display: flex; justify-content: center; gap: 8px; padding: 12px 0 2px; flex-shrink: 0; flex-wrap: wrap; }
+    #controls button {
+        background: #ffffff; border: 1px solid var(--border); color: #1e3a8a;
+        font-weight: 600; padding: 7px 18px; border-radius: 40px; font-size: 12px;
+        cursor: pointer; transition: all 0.2s ease; font-family: inherit;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    #controls button:hover { background: #eff6ff; transform: translateY(-1px); }
+    #controls button.active { background: #dbeafe; border-color: #3b82f6; color: #1e3a8a; }
+    #controls button.primary { background: #1e3a8a; border-color: #1e3a8a; color: #ffffff; }
+    #controls button.primary.active { background: #0e7490; border-color: #0e7490; }
+
+    .narasi-sim {
+        margin-top: 15px; padding: 14px 18px; background-color: #f0f9ff;
+        border-left: 4px solid #0ea5e9; border-radius: 8px; font-size: 0.9rem;
+        color: #0c4a6e; text-align: left; line-height: 1.6; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .narasi-sim strong { color: #0284c7; }
+
+    .soal-container { margin-bottom: 30px; }
+    .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+    .opsi-card { background-color: #f8fafc; border: 2px solid transparent; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+    .opsi-card:hover { background-color: #f1f5f9; }
+    .opsi-card.benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .opsi-card.salah { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+    .opsi-card.reveal-benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .pembahasan-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin-top: 15px; display: none; color: #064e3b; }
+    .pembahasan-box.salah { background-color: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+    .pembahasan-title { font-weight: bold; margin-bottom: 8px; display: block; }
+    .pembahasan-text { font-size: 0.95rem; line-height: 1.6; }
+
+    body.landscape-mode #simContainer {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: 9999; border-radius: 0; border: none; padding: 10px;
+    }
+    body.landscape-mode #simHeader { padding: 0 10px 10px; }
+    body.landscape-mode #simHeader h3 { font-size: 20px; }
+    body.landscape-mode #controls { padding: 15px 0 5px; }
+    body.landscape-mode #controls button { font-size: 14px; padding: 10px 24px; }
+    body.landscape-mode #btnRotate { background: #10b981; border-color: #059669; color: white; }
+</style>
+</head>
+<body>
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Viskositas & Kapilaritas</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+    <div class="container">
+        <div class="card">
+            <h2>A. Konsep Viskositas, Hukum Stokes & Kecepatan Terminal</h2>
+            <p><strong>Viskositas</strong> adalah ukuran kekentalan fluida yang menyatakan besar kecilnya gesekan internal dalam fluida. Madu memiliki viskositas tinggi, sedangkan air rendah. Semakin besar viskositas, semakin sulit fluida mengalir.</p>
+
+            <p><strong>1. Rumus Viskositas Fluida</strong></p>
+            <p>Viskositas didefinisikan sebagai perbandingan antara tegangan geser dan laju regangan geser.</p>
+            <div class="rumus-box">
+                \[ \eta = \frac{F \cdot L}{A \cdot v} \]
+            </div>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;">
+                Keterangan: \(\eta\) = Koefisien viskositas (Pa·s atau N·s/m²), \(F\) = Gaya (N), \(L\) = Jarak antar lapisan (m), \(A\) = Luas permukaan lapisan (m²), \(v\) = Kecepatan aliran (m/s).
+            </p>
+
+            <p><strong>2. Gaya Gesek Fluida (Hukum Stokes)</strong></p>
+            <p>Jika sebuah bola bergerak di dalam fluida kental, ia akan mengalami gaya hambat/gesek. Menurut Hukum Stokes, besarnya gaya gesek ini adalah:</p>
+            <div class="rumus-box">
+                \[ F_s = 6 \pi \eta r v \]
+            </div>
+            <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;">
+                Keterangan: \(F_s\) = Gaya gesek Stokes (N), \(\eta\) = Viskositas fluida, \(r\) = Jari-jari bola (m), \(v\) = Kecepatan bola (m/s).
+            </p>
+
+            <p><strong>3. Kecepatan Terminal</strong></p>
+            <p>Saat bola jatuh, kecepatannya bertambah hingga gaya berat (ke bawah) diseimbangkan oleh gaya apung dan gaya gesek Stokes (ke atas). Pada titik ini, bola bergerak dengan kecepatan konstan yang disebut <strong>kecepatan terminal</strong> (\(v_t\)).</p>
+            <div class="rumus-box">
+                \[ v_t = \frac{2 r^2 (\rho_b - \rho_f) g}{9 \eta} \]
+            </div>
+            <p style="font-size: 0.9rem; color: #64748b;">
+                Keterangan: \(\rho_b\) = Massa jenis bola, \(\rho_f\) = Massa jenis fluida, \(g\) = Gravitasi. Semakin besar viskositas (\(\eta\)), semakin kecil kecepatan terminal bola (\(v_t\)).
+            </p>
+        </div>
+        <!-- B. GEJALA KAPILARITAS -->
+        <div class="card">
+            <h2>B. Gejala Kapilaritas</h2>
+            <p><strong>Kapilaritas</strong> adalah peristiwa naik atau turunnya zat cair pada pipa sempit (pipa kapiler). Peristiwa ini dipengaruhi oleh <strong>adhesi</strong> (tarik-menarik antar molekul berbeda) dan <strong>kohesi</strong> (tarik-menarik antar molekul sejenis).</p>
+            <div class="rumus-box">
+                \[ h = \frac{2 \gamma \cos \theta}{\rho g r} \]
+            </div>
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(h\)</strong> = Kenaikan/penurunan zat cair (m)</li>
+                <li><strong>\(\gamma\)</strong> = Tegangan permukaan (N/m)</li>
+                <li><strong>\(\theta\)</strong> = Sudut kontak</li>
+                <li><strong>\(\rho\)</strong> = Massa jenis zat cair (kg/m³)</li>
+                <li><strong>\(g\)</strong> = Percepatan gravitasi (m/s²)</li>
+                <li><strong>\(r\)</strong> = Jari-jari pipa kapiler (m)</li>
+            </ul>
+            <p><strong>Contoh:</strong> Air pada pipa kaca akan <em>naik</em> (adhesi > kohesi), sedangkan raksa pada pipa kaca akan <em>turun</em> (kohesi > adhesi).</p>
+        </div>
+
+        <!-- C. ANIMASI INTERAKTIF -->
+        <div class="card">
+            <h2>C. Animasi Interaktif: Viskositas & Kapilaritas</h2>
+            <p>Klik <strong>Mulai Simulasi</strong> untuk melihat dua fenomena: (1) Bola jatuh di fluida kental vs encer (Viskositas), dan (2) naiknya air pada pipa kapiler (Kapilaritas).</p>
+
+            <div class="gambar-box" style="padding: 12px;">
+                <div id="simContainer">
+                    <div id="simHeader">
+                        <h3>🧪 <span>Simulasi Viskositas & Kapilaritas</span></h3>
+                        <span class="info">⚡ Fisika Interaktif</span>
+                    </div>
+                    <div id="canvasWrap">
+                        <canvas id="simCanvas"></canvas>
+                    </div>
+                    <div id="controls">
+                        <button class="primary" id="btnStart">▶ Mulai Simulasi</button>
+                        <button id="btnResetSim">⟳ Reset</button>
+                        <button class="active" id="btnSlow">🐢 Lambat</button>
+                        <button id="btnFast">🐇 Cepat</button>
+                        <button id="btnRotate" style="display: none; background: #fef3c7; border-color: #f59e0b; color: #b45309;"><i class="fas fa-mobile-alt"></i> Putar Layar</button>
+                    </div>
+                </div>
+                
+                <div class="narasi-sim">
+                    <strong>💡 Penjelasan Simulasi:</strong><br>
+                    <strong>1. Viskositas (Kiri & Tengah):</strong> Bola di dalam fluida kental (madu) jatuh lebih lambat karena gaya gesek Stokes yang besar, sehingga kecepatan terminalnya kecil dan konstan. Sebaliknya, bola di fluida encer (air) memiliki gaya gesek kecil sehingga jatuh lebih cepat.<br>
+                    <strong>2. Kapilaritas (Kanan):</strong> Air naik ke dalam pipa kapiler karena gaya adhesi (air dan kaca) lebih besar daripada gaya kohesi (antar molekul air). Semakin kecil jari-jari pipa, semakin tinggi air naik.
+                </div>
+
+                <div style="margin-top: 10px; font-size: 0.8rem; color: #64748b;">
+                    Fisika · 1. Viskositas (Kekentalan) · 2. Kapilaritas (Naiknya zat cair pada pipa sempit)
+                </div>
+            </div>
+        </div>
+        <!-- D. UJI KOMPETENSI -->
+        <div class="card">
+            <h2>D. Uji Kompetensi</h2>
+            <p>Uji pemahaman Anda mengenai Viskositas dan Gejala Kapilaritas.</p>
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Sebuah fluida memiliki viskositas yang tinggi. Bagaimana pengaruhnya terhadap laju aliran fluida tersebut?</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'B')">A. Laju alirannya menjadi lebih cepat.</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'B')">B. Laju alirannya menjadi lebih lambat.</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'B')">C. Laju alirannya tidak terpengaruh.</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'B')">D. Fluida tersebut akan membeku.</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Peristiwa naiknya air pada pipa kapiler disebabkan oleh...</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'C')">A. Gaya gravitasi bumi.</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'C')">B. Tekanan udara luar.</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'C')">C. Gaya adhesi air dan dinding pipa lebih besar dari gaya kohesi air.</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'C')">D. Massa jenis air lebih besar dari kaca.</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Jika suhu zat cair dinaikkan, maka nilai viskositasnya akan...</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'B')">A. Bertambah.</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'B')">B. Berkurang.</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'B')">C. Tetap.</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'B')">D. Berubah tidak beraturan.</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Zat cair yang memiliki sudut kontak tumpul (θ > 90°) dengan dinding pipa kaca akan...</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'C')">A. Naik di dalam pipa kapiler.</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'C')">B. Membasahi dinding pipa.</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'C')">C. Turun di dalam pipa kapiler (depresi).</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'C')">D. Tidak terjadi apa-apa.</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Semakin kecil jari-jari pipa kapiler, maka kenaikan zat cair akan...</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'B')">A. Semakin rendah.</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'B')">B. Semakin tinggi.</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'B')">C. Tetap sama.</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'B')">D. Tidak dapat diprediksi.</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // LOGIKA SIMULASI VISKOSITAS & KAPILARITAS
+        // ================================================================
+        (function() {
+            const canvas = document.getElementById('simCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let W, H;
+            
+            function resize() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width; canvas.height = rect.height;
+                W = canvas.width; H = canvas.height;
+            }
+            
+            const state = { phase: 'awal', progress: 0, speed: 0.003, time: 0 };
+            const btnStart = document.getElementById('btnStart');
+            const btnResetSim = document.getElementById('btnResetSim');
+            const btnSlow = document.getElementById('btnSlow');
+            const btnFast = document.getElementById('btnFast');
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                const grad = ctx.createLinearGradient(0, 0, 0, H); 
+                grad.addColorStop(0, '#e0f2fe'); grad.addColorStop(1, '#bfdbfe');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+
+                const s = Math.min(W / 850, H / 320); 
+                const baseY = H * 0.82;
+                const centerW = W / 2;
+
+                const p = state.progress;
+                const active = state.phase !== 'awal';
+                const rBola = 10 * s;
+
+                // 1. VISKOSITAS (KIRI - MADU)
+                const leftX = centerW - (W * 0.2);
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.beginPath();
+                ctx.moveTo(leftX - 40*s, baseY - 150*s); ctx.lineTo(leftX - 40*s, baseY);
+                ctx.lineTo(leftX + 40*s, baseY); ctx.lineTo(leftX + 40*s, baseY - 150*s);
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2*s; ctx.stroke();
+                
+                const fluidTopKental = baseY - 120*s;
+                const fluidHeightKental = 118*s;
+                ctx.fillStyle = 'rgba(217, 119, 6, 0.6)';
+                ctx.fillRect(leftX - 38*s, fluidTopKental, 76*s, fluidHeightKental);
+                
+                let progressKental = p * 0.3; 
+                let yKental = fluidTopKental + rBola + (progressKental * (fluidHeightKental - rBola*2));
+                if(!active) yKental = fluidTopKental + rBola;
+                
+                ctx.beginPath(); ctx.arc(leftX, yKental, rBola, 0, Math.PI*2);
+                ctx.fillStyle = '#78350f'; ctx.fill();
+
+                ctx.fillStyle = '#1e3a8a'; ctx.font = `bold ${13*s}px sans-serif`; ctx.textAlign = 'center';
+                ctx.fillText('Fluida Kental (Madu)', leftX, baseY + 25*s);
+                ctx.fillStyle = '#64748b'; ctx.font = `${11*s}px sans-serif`;
+                ctx.fillText('Gaya gesek besar (lambat)', leftX, baseY + 40*s);
+
+                // 2. VISKOSITAS (TENGAH - AIR)
+                const midX = centerW;
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.beginPath();
+                ctx.moveTo(midX - 40*s, baseY - 150*s); ctx.lineTo(midX - 40*s, baseY);
+                ctx.lineTo(midX + 40*s, baseY); ctx.lineTo(midX + 40*s, baseY - 150*s);
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2*s; ctx.stroke();
+                
+                const fluidTopEncer = baseY - 120*s;
+                const fluidHeightEncer = 118*s;
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+                ctx.fillRect(midX - 38*s, fluidTopEncer, 76*s, fluidHeightEncer);
+                
+                let yEncer = fluidTopEncer + rBola + (p * (fluidHeightEncer - rBola*2));
+                if(!active) yEncer = fluidTopEncer + rBola;
+
+                ctx.beginPath(); ctx.arc(midX, yEncer, rBola, 0, Math.PI*2);
+                ctx.fillStyle = '#0f172a'; ctx.fill();
+
+                ctx.fillStyle = '#1e3a8a'; ctx.font = `bold ${13*s}px sans-serif`;
+                ctx.fillText('Fluida Encer (Air)', midX, baseY + 25*s);
+                ctx.fillStyle = '#64748b'; ctx.font = `${11*s}px sans-serif`;
+                ctx.fillText('Gaya gesek kecil (cepat)', midX, baseY + 40*s);
+
+                // 3. KAPILARITAS (KANAN)
+                const rightX = centerW + (W * 0.2);
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.beginPath();
+                ctx.moveTo(rightX - 60*s, baseY - 100*s); ctx.lineTo(rightX - 60*s, baseY);
+                ctx.lineTo(rightX + 60*s, baseY); ctx.lineTo(rightX + 60*s, baseY - 100*s);
+                ctx.strokeStyle = '#94a3b8'; ctx.stroke();
+                
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
+                ctx.fillRect(rightX - 58*s, baseY - 60*s, 116*s, 58*s);
+
+                const p1X = rightX - 20*s;
+                ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2*s;
+                ctx.beginPath(); ctx.moveTo(p1X, baseY - 60*s); ctx.lineTo(p1X, baseY - 200*s); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(p1X + 10*s, baseY - 60*s); ctx.lineTo(p1X + 10*s, baseY - 200*s); ctx.stroke();
+                
+                let hNaik = active ? p * 120*s : 0;
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.8)';
+                ctx.fillRect(p1X + 1*s, (baseY - 60*s) - hNaik, 8*s, 60*s + hNaik);
+
+                const p2X = rightX + 15*s;
+                ctx.beginPath(); ctx.moveTo(p2X, baseY - 60*s); ctx.lineTo(p2X, baseY - 200*s); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(p2X + 20*s, baseY - 60*s); ctx.lineTo(p2X + 20*s, baseY - 200*s); ctx.stroke();
+                
+                let hNaik2 = active ? p * 60*s : 0;
+                ctx.fillStyle = 'rgba(56, 189, 248, 0.8)';
+                ctx.fillRect(p2X + 1*s, (baseY - 60*s) - hNaik2, 18*s, 60*s + hNaik2);
+
+                ctx.fillStyle = '#1e3a8a'; ctx.font = `bold ${13*s}px sans-serif`;
+                ctx.fillText('Kapilaritas', rightX, baseY + 25*s);
+                ctx.fillStyle = '#64748b'; ctx.font = `${11*s}px sans-serif`;
+                ctx.fillText('Pipa kecil naik lebih tinggi', rightX, baseY + 40*s);
+            }
+            function animate() {
+                if (state.phase === 'berjalan') {
+                    state.progress += state.speed;
+                    if (state.progress >= 1) { state.progress = 1; state.phase = 'selesai'; btnStart.textContent = '✅ Selesai'; btnStart.classList.add('active'); }
+                }
+                state.time++; draw(); requestAnimationFrame(animate);
+            }
+
+            function start() {
+                if (state.phase === 'berjalan') return;
+                if (state.phase === 'selesai') { reset(); setTimeout(start, 300); return; }
+                state.phase = 'berjalan'; state.progress = 0; btnStart.textContent = '⏳ Berlangsung...'; btnStart.classList.add('active');
+            }
+
+            function reset() {
+                state.phase = 'awal'; state.progress = 0; btnStart.textContent = '▶ Mulai Simulasi'; btnStart.classList.remove('active');
+            }
+
+            btnStart.addEventListener('click', start);
+            btnResetSim.addEventListener('click', reset);
+            btnSlow.addEventListener('click', () => { state.speed = 0.003; btnSlow.classList.add('active'); btnFast.classList.remove('active'); });
+            btnFast.addEventListener('click', () => { state.speed = 0.015; btnFast.classList.add('active'); btnSlow.classList.remove('active'); });
+
+            window.addEventListener('resize', resize); resize(); reset(); animate();
+        })();
+
+        // ================================================================
+        // FITUR PUTAR LAYAR (LANDSCAPE)
+        // ================================================================
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnRotate = document.getElementById('btnRotate');
+            const simContainer = document.getElementById('simContainer');
+            
+            if (window.innerWidth <= 768) {
+                btnRotate.style.display = 'inline-flex';
+            }
+
+            btnRotate.addEventListener('click', function() {
+                document.body.classList.toggle('landscape-mode');
+                
+                if (document.body.classList.contains('landscape-mode')) {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(err => {});
+                    }
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(err => {});
+                    }
+                    btnRotate.innerHTML = '✖ Tutup Layar Penuh';
+                } else {
+                    if (document.exitFullscreen && document.fullscreenElement) {
+                        document.exitFullscreen().catch(err => {});
+                    }
+                    if (screen.orientation && screen.orientation.unlock) {
+                        screen.orientation.unlock();
+                    }
+                    btnRotate.innerHTML = '<i class="fas fa-mobile-alt"></i> Putar Layar';
+                }
+                
+                setTimeout(() => {
+                    const rect = simContainer.getBoundingClientRect();
+                    const canvas = document.getElementById('simCanvas');
+                    if(canvas) {
+                        canvas.width = rect.width;
+                        canvas.height = rect.height - 100;
+                    }
+                }, 300);
+            });
+        });
+
+        // ================================================================
+        // LOGIKA KUIS
+        // ================================================================
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const box = document.getElementById('pembahasan' + nomorSoal);
+            opsiCards.forEach(c => c.classList.remove('benar', 'salah', 'reveal-benar'));
+            box.style.display = 'none';
+
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(c => {
+                    if (c.innerText.trim().startsWith(opsiDipilih + '.')) c.classList.add('benar');
+                });
+                box.className = 'pembahasan-box';
+                box.innerHTML = `<span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+            } else {
+                opsiCards.forEach(c => {
+                    if (c.innerText.trim().startsWith(opsiDipilih + '.')) c.classList.add('salah');
+                    if (c.innerText.trim().startsWith(opsiBenar + '.')) c.classList.add('reveal-benar');
+                });
+                box.className = 'pembahasan-box salah';
+                box.innerHTML = `<span class="pembahasan-title">Kurang Tepat. Jawaban benar: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+            }
+            box.style.display = 'block';
+            if (window.MathJax) MathJax.typesetPromise([box]);
+        }
+
+        function getPembahasan(soal) {
+            if (soal === 1) return "Fluida dengan viskositas tinggi memiliki gesekan internal yang besar, sehingga laju alirannya menjadi lebih lambat (sulit mengalir).";
+            if (soal === 2) return "Air naik pada pipa kapiler karena gaya adhesi (tarik-menarik antara molekul air dan dinding kaca) lebih besar daripada gaya kohesi (tarik-menarik antar molekul air).";
+            if (soal === 3) return "Pada zat cair, kenaikan suhu menyebabkan molekul bergerak lebih cepat dan jarak antar molekul merenggang, sehingga viskositas (kekentalan) berkurang.";
+            if (soal === 4) return "Jika sudut kontak tumpul (θ > 90°), gaya kohesi lebih besar dari gaya adhesi. Contohnya raksa pada kaca, sehingga permukaannya turun (depresi) di dalam pipa kapiler.";
+            if (soal === 5) return "Berdasarkan rumus h = (2γ cos θ) / (ρgr), kenaikan zat cair (h) berbanding terbalik dengan jari-jari pipa (r). Semakin kecil r, semakin tinggi kenaikan h.";
+        }
+    </script>
+</body>
+</html>

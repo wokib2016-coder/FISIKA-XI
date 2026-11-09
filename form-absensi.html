@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Absensi - Operator</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f6fb; padding: 20px; }
+    .container { max-width: 500px; margin: 40px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-top: 5px solid #1a3c34; }
+    h2 { color: #1a3c34; margin-bottom: 20px; text-align: center; }
+    .info-kelas { background: #e0f2fe; color: #0369a1; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; color: #475569; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
+    button { width: 100%; padding: 12px; background: #1a3c34; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #2a5c52; }
+    .btn-kembali { background: #64748b; margin-top: 10px; }
+    .btn-kembali:hover { background: #475569; }
+    #pesan { margin-top: 15px; text-align: center; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Form Absensi Kelas</h2>
+    <div class="info-kelas" id="info-kelas">Kelas: -</div>
+
+    <form id="form-absensi">
+        <div class="form-group">
+            <label>Tanggal</label>
+            <input type="date" id="tanggal" required>
+        </div>
+        <div class="form-group">
+            <label>Nama Siswa (Yang Tidak Hadir)</label>
+            <input type="text" id="nama" placeholder="Ketik nama lengkap..." required>
+        </div>
+        <div class="form-group">
+            <label>Keterangan</label>
+            <select id="keterangan" required>
+                <option value="" disabled selected>-- Pilih Keterangan --</option>
+                <option value="Alpa">Alpa (Tanpa Keterangan)</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Dispensasi">Dispensasi</option>
+                <option value="Bolos">Bolos</option>
+            </select>
+        </div>
+        <button type="submit" id="btn-simpan">Simpan Absensi</button>
+        <button type="button" class="btn-kembali" onclick="window.location.href='!DOCTYPE html.txt'">← Kembali ke Login</button>
+    </form>
+
+    <div id="pesan"></div>
+</div>
+
+<script>
+    // Ambil kelas dari local storage (disimpan saat login operator)
+    const kelasOperator = localStorage.getItem('kelas_operator') || 'Tidak Diketahui';
+    document.getElementById('info-kelas').innerText = `Kelas: ${kelasOperator}`;
+
+    // URL Web App milikmu sudah dimasukkan di sini
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+
+    document.getElementById('form-absensi').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btn-simpan');
+        const pesan = document.getElementById('pesan');
+        
+        btn.disabled = true;
+        btn.innerText = "Menyimpan...";
+        pesan.innerText = "";
+
+        const data = {
+            tanggal: document.getElementById('tanggal').value,
+            kelas: kelasOperator,
+            nama: document.getElementById('nama').value,
+            keterangan: document.getElementById('keterangan').value
+        };
+
+        try {
+            const response = await fetch(URL_WEB_APP, {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                pesan.style.color = 'green';
+                pesan.innerText = "✅ Data absensi berhasil disimpan ke Google Sheet!";
+                document.getElementById('form-absensi').reset();
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (error) {
+            pesan.style.color = 'red';
+            pesan.innerText = "❌ Gagal menyimpan: " + error.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Simpan Absensi";
+        }
+    });
+</script>
+
+</body>
+</html>

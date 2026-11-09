@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 2: Gaya Gesek & Gaya Sentripetal</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+        --purple: #8b5cf6; --orange: #f97316;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.1rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+    }
+    .vektor-svg-container {
+        background: #f8fafc; border: 1px solid var(--border); border-radius: 12px;
+        padding: 15px; margin: 15px 0; display: flex; justify-content: center; align-items: center; flex-direction: column;
+    }
+    svg { max-width: 100%; height: auto; }
+    .simulasi-container { background: #1e293b; border-radius: 12px; padding: 20px; color: white; margin-top: 15px; }
+    .kanvas-area { position: relative; height: 200px; background: #0f172a; border-radius: 8px; margin-bottom: 15px; overflow: hidden; border-bottom: 4px solid #475569; }
+    .balok { position: absolute; bottom: 30px; left: 20px; width: 60px; height: 45px; background: var(--orange); border-radius: 6px; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 11px; color: #0f172a; box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
+    .lantai { position: absolute; bottom: 0; width: 100%; height: 30px; background: #334155; border-top: 3px solid #64748b; }
+    .panah-gaya { position: absolute; bottom: 50px; height: 8px; background: var(--accent-yellow); border-radius: 4px; display: flex; align-items: center; }
+    .panah-gaya::after { content: 'F'; position: absolute; right: -25px; color: var(--accent-yellow); font-weight: bold; font-family: monospace; }
+    .panah-gaya::before { content: ''; position: absolute; right: -12px; border-left: 15px solid var(--accent-yellow); border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+    .panah-gesek { position: absolute; bottom: 50px; height: 8px; background: var(--red-alert); border-radius: 4px; display: flex; align-items: center; }
+    .panah-gesek::after { content: 'f'; position: absolute; left: -25px; color: var(--red-alert); font-weight: bold; font-family: monospace; }
+    .panah-gesek::before { content: ''; position: absolute; left: -12px; border-right: 15px solid var(--red-alert); border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+    .orbit-container { position: relative; height: 200px; background: #0f172a; border-radius: 8px; margin-bottom: 15px; overflow: hidden; }
+    .orbit-path { position: absolute; border: 2px dashed #475569; border-radius: 50%; }
+    .bola-orbit { position: absolute; width: 26px; height: 26px; background: var(--purple); border-radius: 50%; box-shadow: 0 0 15px var(--purple); z-index: 2; }
+    .tali-orbit { position: absolute; height: 2px; background: var(--accent-yellow); transform-origin: 0 50%; z-index: 1; opacity: 0.5;}
+    .grafik-area { background: #0f172a; border-radius: 8px; padding: 10px; border: 1px solid #334155; position: relative; margin-bottom: 15px; }
+    canvas { width: 100%; height: 180px; display: block; }
+    .kontrol-simulasi { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
+    .kontrol-simulasi label { display: flex; justify-content: space-between; font-size: 0.9rem; color: #cbd5e1; }
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); }
+    .hasil-hitung { margin-top: 15px; padding: 12px; background: rgba(45, 212, 191, 0.1); border: 1px solid var(--teal); border-radius: 8px; font-family: monospace; text-align: center; color: var(--teal); font-size: 1rem; }
+    .status-badge { display: inline-block; margin-top: 6px; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
+    .status-diam { background: #334155; color: #e2e8f0; }
+    .status-tepat { background: #fef3c7; color: #92400e; }
+    .status-bergerak { background: #d1fae5; color: #065f46; }
+    .tab-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; background: #334155; color: #cbd5e1; transition: 0.2s; }
+    .tab-btn.active { background: var(--teal); color: #0f172a; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); }
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.95rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    .pembahasan {
+        display: none; margin-top: 15px; padding: 15px;
+        background: #f0fdf4; border-left: 4px solid var(--green-success);
+        border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #166534;
+    }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Materi 2: <span>Gaya Gesek & Gaya Sentripetal</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- BAGIAN A: GAYA GESEK -->
+        <div class="card">
+            <h2>A. Gaya Gesek</h2>
+            <p><strong>Gaya gesek</strong> adalah gaya yang bekerja antara dua permukaan yang bersentuhan dan cenderung berlawanan dengan arah gerak benda. Gaya ini timbul karena adanya ketidakteraturan mikroskopis pada permukaan benda.</p>
+            
+            <h3>1. Jenis-Jenis Gaya Gesek</h3>
+            <ul>
+                <li><strong>Gaya Gesek Statis (f<sub>s</sub>)</strong> — bekerja saat benda <em>belum</em> bergerak. Nilainya berubah-ubah hingga mencapai maksimum.</li>
+                <li><strong>Gaya Gesek Kinetis (f<sub>k</sub>)</strong> — bekerja saat benda <em>sudah</em> bergerak. Nilainya relatif konstan.</li>
+            </ul>
+
+            <div class="vektor-svg-container">
+                <svg width="320" height="170" viewBox="0 0 320 170">
+                    <text x="10" y="20" font-size="12" fill="#334155" font-weight="bold">Diagram Gaya pada Balok</text>
+                    <line x1="20" y1="130" x2="300" y2="130" stroke="#64748b" stroke-width="3" />
+                    <rect x="120" y="85" width="70" height="45" fill="#f97316" rx="4" />
+                    <text x="145" y="112" font-size="12" fill="#0f172a" font-weight="bold">m</text>
+                    <line x1="190" y1="107" x2="250" y2="107" stroke="#f2c94c" stroke-width="4" />
+                    <polygon points="250,102 260,107 250,112" fill="#f2c94c" />
+                    <text x="255" y="100" font-size="13" fill="#f2c94c" font-weight="bold">F</text>
+                    <line x1="120" y1="107" x2="70" y2="107" stroke="#ef4444" stroke-width="4" />
+                    <polygon points="70,102 60,107 70,112" fill="#ef4444" />
+                    <text x="55" y="100" font-size="13" fill="#ef4444" font-weight="bold">f</text>
+                    <line x1="155" y1="85" x2="155" y2="40" stroke="#2dd4bf" stroke-width="4" />
+                    <polygon points="150,40 155,30 160,40" fill="#2dd4bf" />
+                    <text x="162" y="50" font-size="13" fill="#2dd4bf" font-weight="bold">N</text>
+                    <line x1="155" y1="130" x2="155" y2="165" stroke="#8b5cf6" stroke-width="4" />
+                    <polygon points="150,165 155,175 160,165" fill="#8b5cf6" />
+                    <text x="162" y="165" font-size="13" fill="#8b5cf6" font-weight="bold">w</text>
+                </svg>
+            </div>
+
+            <h3>2. Rumus Gaya Gesek</h3>
+            <p>Gaya gesek bergantung pada <strong>gaya normal (N)</strong> dan <strong>koefisien gesek (μ)</strong>:</p>
+            <div class="rumus-box">f<sub>s(max)</sub> = μ<sub>s</sub> · N &nbsp;&nbsp;|&nbsp;&nbsp; f<sub>k</sub> = μ<sub>k</sub> · N</div>
+            <p>Pada bidang datar, gaya normal N = m·g, sehingga:</p>
+            <div class="rumus-box">f = μ · m · g</div>
+            <p>Dengan g = percepatan gravitasi (≈ 9,8 m/s² atau sering dibulatkan 10 m/s²).</p>
+
+            <h3>3. Tiga Kondisi Benda</h3>
+            <ul>
+                <li><strong>F &lt; f<sub>s(max)</sub></strong> → benda <strong>diam</strong>. Gaya gesek statis menyesuaikan diri sebesar F, sehingga ΣF = 0 dan <strong>a = 0</strong>.</li>
+                <li><strong>F = f<sub>s(max)</sub></strong> → benda <strong>tepat akan bergerak</strong>. Gesek statis sudah maksimum, tetapi benda belum bergerak, sehingga <strong>a = 0</strong>.</li>
+                <li><strong>F &gt; f<sub>s(max)</sub></strong> → benda <strong>bergerak</strong>. Yang bekerja adalah gesek kinetis f<sub>k</sub> = μ<sub>k</sub>·N, sehingga <strong>a = (F − f<sub>k</sub>)/m &gt; 0</strong>.</li>
+            </ul>
+
+            <h3>4. Sifat Penting</h3>
+            <ul>
+                <li>Koefisien gesek statis selalu <strong>lebih besar</strong> dari koefisien gesek kinetis (μ<sub>s</sub> &gt; μ<sub>k</sub>).</li>
+                <li>Gaya gesek <strong>tidak bergantung</strong> pada luas permukaan kontak.</li>
+                <li>Gaya gesek <strong>selalu berlawanan</strong> dengan arah gerak (atau kecenderungan gerak).</li>
+            </ul>
+        </div>
+
+        <!-- BAGIAN B: GAYA SENTRIPETAL -->
+        <div class="card">
+            <h2>B. Gaya Sentripetal</h2>
+            <p><strong>Gaya sentripetal</strong> adalah gaya yang bekerja pada benda yang bergerak melingkar, <strong>berarah menuju pusat lingkaran</strong>. Gaya ini yang membuat benda tetap berada pada lintasan melingkar (tidak terlempar lurus).</p>
+
+            <div class="vektor-svg-container">
+                <svg width="280" height="200" viewBox="0 0 280 200">
+                    <text x="10" y="20" font-size="12" fill="#334155" font-weight="bold">Gaya Sentripetal pada Gerak Melingkar</text>
+                    <circle cx="140" cy="110" r="70" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="6,4" />
+                    <circle cx="140" cy="110" r="4" fill="#f2c94c" />
+                    <text x="148" y="114" font-size="11" fill="#f2c94c" font-weight="bold">pusat</text>
+                    <circle cx="210" cy="110" r="14" fill="#8b5cf6" />
+                    <text x="203" y="115" font-size="11" fill="white" font-weight="bold">m</text>
+                    <line x1="196" y1="110" x2="150" y2="110" stroke="#2dd4bf" stroke-width="4" />
+                    <polygon points="150,105 140,110 150,115" fill="#2dd4bf" />
+                    <text x="160" y="100" font-size="13" fill="#2dd4bf" font-weight="bold">F<sub>s</sub></text>
+                    <line x1="210" y1="96" x2="210" y2="50" stroke="#f2c94c" stroke-width="4" />
+                    <polygon points="205,50 210,40 215,50" fill="#f2c94c" />
+                    <text x="218" y="52" font-size="13" fill="#f2c94c" font-weight="bold">v</text>
+                    <line x1="140" y1="110" x2="196" y2="110" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,3" />
+                    <text x="160" y="125" font-size="11" fill="#94a3b8">R</text>
+                </svg>
+            </div>
+
+            <h3>1. Rumus Gaya Sentripetal</h3>
+            <div class="rumus-box">F<sub>s</sub> = m · v² / R &nbsp;&nbsp; atau &nbsp;&nbsp; F<sub>s</sub> = m · ω² · R</div>
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>m</strong> = massa benda (kg)</li>
+                <li><strong>v</strong> = kecepatan linear (m/s)</li>
+                <li><strong>ω</strong> = kecepatan sudut (rad/s)</li>
+                <li><strong>R</strong> = jari-jari lintasan (m)</li>
+            </ul>
+
+            <h3>2. Percepatan Sentripetal</h3>
+            <p>Percepatan yang selalu mengarah ke pusat lingkaran:</p>
+            <div class="rumus-box">a<sub>s</sub> = v² / R</div>
+
+            <h3>3. Sumber Gaya Sentripetal</h3>
+            <p>Gaya sentripetal bukan jenis gaya baru, melainkan peran yang dimainkan oleh gaya yang sudah ada:</p>
+            <ul>
+                <li><strong>Tegangan tali</strong> — pada bola yang diputar dengan tali.</li>
+                <li><strong>Gaya gesek</strong> — pada mobil yang berbelok di jalan datar.</li>
+                <li><strong>Gaya gravitasi</strong> — pada planet yang mengorbit matahari.</li>
+                <li><strong>Gaya normal</strong> — pada roller coaster di lintasan melingkar.</li>
+            </ul>
+        </div>
+        <!-- BAGIAN C: SIMULASI INTERAKTIF -->
+        <div class="card">
+            <h2>C. Simulasi Interaktif</h2>
+            <p>Pilih tab simulasi di bawah ini untuk mencoba kedua konsep secara interaktif!</p>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" id="tab-gesek-btn" onclick="switchTab('gesek')">🟠 Gaya Gesek</button>
+                <button class="tab-btn" id="tab-sentripetal-btn" onclick="switchTab('sentripetal')">🟣 Gaya Sentripetal</button>
+            </div>
+
+            <!-- TAB: GAYA GESEK -->
+            <div class="tab-panel active" id="panel-gesek">
+                <div class="simulasi-container">
+                    <div class="kanvas-area" id="kanvas-gesek">
+                        <div class="lantai"></div>
+                        <div class="balok" id="balok">m</div>
+                        <div class="panah-gaya" id="panah-dorong" style="width: 0px; left: 85px;"></div>
+                        <div class="panah-gesek" id="panah-gesek" style="width: 0px; left: 20px;"></div>
+                    </div>
+
+                    <div class="grafik-area">
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">Grafik v - t (Kecepatan vs Waktu)</div>
+                        <canvas id="grafikGesek"></canvas>
+                    </div>
+
+                    <div class="kontrol-simulasi">
+                        <div>
+                            <label>Gaya Dorong (F) <span id="label-F">15 N</span></label>
+                            <input type="range" id="slider-F" min="0" max="60" value="15" oninput="updateGesek()">
+                        </div>
+                        <div>
+                            <label>Koefisien Gesek Kinetis (μ<sub>k</sub>) <span id="label-mu">0,30</span></label>
+                            <input type="range" id="slider-mu" min="0" max="100" value="30" oninput="updateGesek()">
+                        </div>
+                    </div>
+
+                    <div class="hasil-hitung" id="hasil-gesek">
+                        f = 6,0 N | a = 4,50 m/s²
+                        <br><span class="status-badge status-bergerak" id="status-gesek">Benda BERGERAK (F &gt; f_s maks)</span>
+                    </div>
+                    <button onclick="resetGesek()" style="margin-top: 15px; background: #475569; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- TAB: GAYA SENTRIPETAL -->
+            <div class="tab-panel" id="panel-sentripetal">
+                <div class="simulasi-container">
+                    <div class="orbit-container" id="kanvas-orbit">
+                        <div class="orbit-path" id="orbit-path"></div>
+                        
+                        <!-- SVG untuk Vektor Kecepatan dan Gaya Sentripetal -->
+                        <svg id="svg-vektor" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                            <!-- Vektor Gaya Sentripetal (Fs) -->
+                            <line id="panah-fs" x1="0" y1="0" x2="0" y2="0" stroke="#2dd4bf" stroke-width="3" />
+                            <polygon id="ujung-fs" points="0,0 0,0 0,0" fill="#2dd4bf" />
+                            <text id="teks-fs" x="0" y="0" fill="#2dd4bf" font-size="14" font-weight="bold" font-family="sans-serif">F<tspan baseline-shift="sub" font-size="10">s</tspan></text>
+                            
+                            <!-- Vektor Kecepatan Linear (v) -->
+                            <line id="panah-v" x1="0" y1="0" x2="0" y2="0" stroke="#f2c94c" stroke-width="3" />
+                            <polygon id="ujung-v" points="0,0 0,0 0,0" fill="#f2c94c" />
+                            <text id="teks-v" x="0" y="0" fill="#f2c94c" font-size="14" font-weight="bold" font-family="sans-serif">v</text>
+                        </svg>
+
+                        <div class="tali-orbit" id="tali-orbit"></div>
+                        <div class="bola-orbit" id="bola-orbit"></div>
+                    </div>
+
+                    <div class="grafik-area">
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 5px;">Grafik F<sub>s</sub> - v (Gaya Sentripetal vs Kecepatan)</div>
+                        <canvas id="grafikSentripetal"></canvas>
+                    </div>
+
+                    <div class="kontrol-simulasi">
+                        <div>
+                            <label>Kecepatan (v) <span id="nilai-v">4 m/s</span></label>
+                            <input type="range" id="slider-v" min="1" max="12" value="4" oninput="updateSentripetal()">
+                        </div>
+                        <div>
+                            <label>Jari-jari (R) <span id="nilai-R">1,5 m</span></label>
+                            <input type="range" id="slider-R" min="1" max="5" value="3" oninput="updateSentripetal()">
+                        </div>
+                        <div>
+                            <label>Massa (m) <span id="nilai-m">1,0 kg</span></label>
+                            <input type="range" id="slider-m" min="1" max="10" value="2" oninput="updateSentripetal()">
+                        </div>
+                    </div>
+
+                    <div class="hasil-hitung" id="hasil-sentripetal">F<sub>s</sub> = m·v²/R</div>
+                    <button onclick="resetSentripetal()" style="margin-top: 15px; background: #475569; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAGIAN D: KUIS INTERAKTIF HOTS -->
+        <div class="card">
+            <h2>D. Uji Pemahaman Interaktif (HOTS)</h2>
+            <p>Soal-soal berikut menuntut analisis, penerapan konsep, dan penalaran tingkat tinggi. Pilih jawaban yang paling tepat!</p>
+
+            <div class="kuis-box">
+                <!-- Soal 1: Gaya Gesek - Analisis -->
+                <div class="soal" id="soal1">
+                    <div class="soal-teks">1. Seorang siswa melakukan percobaan menarik balok bermassa 5 kg di atas meja kayu dengan koefisien gesek statis 0,4 dan kinetis 0,3 (g = 10 m/s²). Ia menarik balok dengan gaya konstan sebesar 18 N. Berdasarkan data tersebut, analisis manakah yang tepat mengenai keadaan balok?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'C')">A. Balok bergerak dengan percepatan 0,6 m/s² karena gaya tarik lebih besar dari gaya gesek kinetis.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'C')">B. Balok tetap diam karena gaya tarik lebih kecil dari gaya gesek statis maksimum.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'C')">C. Balok tetap diam karena gaya tarik belum melewati batas gaya gesek statis maksimum (20 N).</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'C')">D. Balok bergerak dengan percepatan 6 m/s² karena gaya gesek statis tidak bekerja saat benda ditarik.</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal1">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Mari kita analisis:<br>
+                        • Gaya gesek statis maksimum: f<sub>s(maks)</sub> = μ<sub>s</sub> · m · g = 0,4 × 5 × 10 = <strong>20 N</strong>.<br>
+                        • Gaya tarik (F) = 18 N.<br>
+                        Karena F (18 N) < f<sub>s(maks)</sub> (20 N), maka benda <strong>tetap diam</strong> (a = 0). Gaya gesek statis yang bekerja menyesuaikan diri sebesar 18 N, bukan 20 N. Opsi A salah karena benda tidak pernah mulai bergerak.
+                    </div>
+                </div>
+
+                <!-- Soal 2: Gaya Gesek - Penerapan (Penalaran) -->
+                <div class="soal" id="soal2">
+                    <div class="soal-teks">2. Dua buah balok identik (massa dan bahan sama) diletakkan di atas lantai. Balok A diletakkan mendatar (luas kontak besar), sedangkan Balok B diletakkan berdiri (luas kontak kecil). Jika keduanya ditarik dengan gaya yang sama besar hingga bergerak, pernyataan yang benar adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'B')">A. Balok A mengalami gaya gesek lebih besar karena luas permukaan kontaknya lebih luas.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'B')">B. Kedua balok mengalami gaya gesek kinetis yang sama besar karena gaya gesek tidak bergantung pada luas permukaan.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'B')">C. Balok B mengalami gaya gesek lebih kecil karena tekanan yang diberikan ke lantai lebih besar.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'B')">D. Gaya gesek Balok A dan B tidak dapat dibandingkan karena luas kontaknya berbeda.</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal2">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Ini adalah miskonsepsi umum. Rumus gaya gesek adalah f<sub>k</sub> = μ<sub>k</sub> · N. Karena massa kedua balok sama, gaya normal (N = m·g) juga sama. Koefisien gesek (μ<sub>k</sub>) hanya bergantung pada jenis bahan, bukan luas. Oleh karena itu, <strong>gaya geseknya sama besar</strong>, terlepas dari luas permukaan kontak.
+                    </div>
+                </div>
+
+                <!-- Soal 3: Gaya Sentripetal - Analisis Kuantitatif -->
+                <div class="soal" id="soal3">
+                    <div class="soal-teks">3. Sebuah mobil bermassa 1000 kg melaju di tikungan datar berjari-jari 50 m. Jika koefisien gesek statis antara ban dan jalan adalah 0,5 (g = 10 m/s²), berapakah kecepatan maksimum yang diizinkan agar mobil tidak terpeleset keluar lintasan?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'D')">A. 10 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'D')">B. 15 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'D')">C. 20 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'D')">D. 5√10 m/s atau sekitar 15,8 m/s</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal3">
+                        <strong>Benar! Jawaban: D.</strong><br>
+                        Agar mobil tidak terpeleset, gaya sentripetal harus disediakan oleh gaya gesek statis maksimum.<br>
+                        F<sub>s</sub> = f<sub>s(maks)</sub><br>
+                        m · v² / R = μ<sub>s</sub> · m · g<br>
+                        v² / R = μ<sub>s</sub> · g<br>
+                        v<sub>maks</sub> = √(μ<sub>s</sub> · g · R)<br>
+                        v<sub>maks</sub> = √(0,5 · 10 · 50) = √250 = <strong>5√10 ≈ 15,8 m/s</strong>.
+                    </div>
+                </div>
+
+                <!-- Soal 4: Gaya Sentripetal - Konsep (Analisis Grafik) -->
+                <div class="soal" id="soal4">
+                    <div class="soal-teks">4. Jika sebuah benda diputar melingkar dengan jari-jari konstan dan kelajuan sudutnya (ω) digandakan menjadi dua kali lipat, bagaimana pengaruhnya terhadap gaya sentripetal yang dibutuhkan?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'A', 'B')">A. Gaya sentripetal menjadi 2 kali lebih besar.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'B', 'B')">B. Gaya sentripetal menjadi 4 kali lebih besar.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'C', 'B')">C. Gaya sentripetal menjadi setengah dari sebelumnya.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'D', 'B')">D. Gaya sentripetal tetap, yang berubah hanya kecepatan linearnya.</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal4">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Hubungan gaya sentripetal dengan kecepatan sudut dinyatakan dengan F<sub>s</sub> = m · ω² · R.<br>
+                        Karena F<sub>s</sub> berbanding lurus dengan kuadrat ω (ω²), jika ω digandakan (ω' = 2ω), maka:<br>
+                        F<sub>s</sub>' = m · (2ω)² · R = 4 · (m · ω² · R) = <strong>4 kali lipat</strong>.
+                    </div>
+                </div>
+
+                <!-- Soal 5: Gabungan - Sintesis -->
+                <div class="soal" id="soal5">
+                    <div class="soal-teks">5. Sebuah bola bermassa 2 kg diikat dengan tali dan diputar vertikal. Jika bola berada di titik terendah dan bergerak dengan kecepatan 5 m/s (R = 1 m, g = 10 m/s²), pernyataan yang tepat mengenai tegangan tali di titik tersebut adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'A', 'D')">A. Tegangan tali lebih kecil dari gaya berat bola karena bola bergerak melingkar.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'B', 'D')">B. Tegangan tali sama dengan gaya berat bola karena gaya sentripetal bernilai nol di titik terendah.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'C', 'D')">C. Tegangan tali sama dengan 50 N karena hanya dipengaruhi oleh massa dan kecepatan.</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'D', 'D')">D. Tegangan tali lebih besar dari gaya berat karena harus menopang berat bola sekaligus memberikan gaya sentripetal.</button>
+                    
+                    <div class="pembahasan" id="pembahasan-soal5">
+                        <strong>Benar! Jawaban: D.</strong><br>
+                        Di titik terendah, gaya yang mengarah ke pusat lingkaran (ke atas) adalah tegangan tali (T), dan gaya yang mengarah keluar adalah berat (w). Persamaan gaya sentripetalnya:<br>
+                        ΣF = m · v² / R<br>
+                        T − w = m · v² / R<br>
+                        T = w + (m · v² / R)<br>
+                        T = (2 × 10) + (2 × 5² / 1) = 20 + 50 = <strong>70 N</strong>.<br>
+                        Jadi, T (70 N) > w (20 N). Tegangan tali harus menopang berat dan sekaligus memberikan gaya sentripetal tambahan agar bola tetap melingkar.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // ================= LOGIKA KUIS =================
+        function cekKuis(idSoal, jawabanDipilih, jawabanBenar) {
+            const soalContainer = document.getElementById(idSoal);
+            const buttons = soalContainer.querySelectorAll('.opsi-btn');
+            const pembahasan = document.getElementById('pembahasan-' + idSoal);
+            buttons.forEach(btn => {
+                if (btn.innerText.startsWith(jawabanDipilih)) {
+                    if (jawabanDipilih === jawabanBenar) btn.classList.add('benar');
+                    else btn.classList.add('salah');
+                }
+                if (btn.innerText.startsWith(jawabanBenar)) btn.classList.add('benar');
+                btn.disabled = true;
+                btn.style.cursor = 'default';
+            });
+            pembahasan.style.display = 'block';
+        }
+
+        // ================= TAB SWITCH =================
+        let activeTab = 'gesek';
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('panel-gesek').classList.toggle('active', tab === 'gesek');
+            document.getElementById('panel-sentripetal').classList.toggle('active', tab === 'sentripetal');
+            document.getElementById('tab-gesek-btn').classList.toggle('active', tab === 'gesek');
+            document.getElementById('tab-sentripetal-btn').classList.toggle('active', tab === 'sentripetal');
+            if (tab === 'gesek') resetGesek();
+            else resetSentripetal();
+        }
+
+        // ================= SIMULASI GAYA GESEK =================
+        const G = 10;
+        const MASSA_GESEK = 2;
+        const TOL = 1e-9;
+
+        let gesek = {
+            posisiX: 20,
+            kecepatan: 0,
+            waktu: 0,
+            dataWaktu: [],
+            dataKecepatan: [],
+            animasiId: null,
+            lastTime: 0,
+            batasWaktu: 1
+        };
+
+        const canvasGesek = document.getElementById('grafikGesek');
+        const ctxGesek = canvasGesek.getContext('2d');
+        const kanvasGesek = document.getElementById('kanvas-gesek');
+        const balok = document.getElementById('balok');
+        const panahDorong = document.getElementById('panah-dorong');
+        const panahGesek = document.getElementById('panah-gesek');
+
+        function resizeCanvasGesek() {
+            const rect = canvasGesek.parentElement.getBoundingClientRect();
+            canvasGesek.width = rect.width - 20;
+            canvasGesek.height = 180;
+        }
+
+        function hitungStateGesek() {
+            const F = parseInt(document.getElementById('slider-F').value);
+            const mu = Math.round(parseInt(document.getElementById('slider-mu').value)) / 100;
+
+            const fGesekMaks = mu * MASSA_GESEK * G;
+            let fGesekAktual, a, status, statusClass;
+
+            if (F < fGesekMaks - TOL) {
+                fGesekAktual = F;
+                a = 0;
+                status = "Benda DIAM (F < f_s maks)";
+                statusClass = "status-diam";
+            } else if (Math.abs(F - fGesekMaks) <= TOL) {
+                fGesekAktual = fGesekMaks;
+                a = 0;
+                status = "TEPAT AKAN BERGERAK (F = f_s maks)";
+                statusClass = "status-tepat";
+            } else {
+                fGesekAktual = fGesekMaks;
+                a = (F - fGesekMaks) / MASSA_GESEK;
+                status = "Benda BERGERAK (F > f_s maks)";
+                statusClass = "status-bergerak";
+            }
+
+            return { F, mu, fGesekMaks, fGesekAktual, a, status, statusClass };
+        }
+
+        function updateGesek() {
+            const s = hitungStateGesek();
+
+            document.getElementById('label-F').innerText = s.F + ' N';
+            document.getElementById('label-mu').innerText = s.mu.toFixed(2).replace('.', ',');
+
+            const hasilEl = document.getElementById('hasil-gesek');
+            hasilEl.innerHTML =
+                `f = ${s.fGesekAktual.toFixed(1).replace('.', ',')} N | a = ${s.a.toFixed(2).replace('.', ',')} m/s²` +
+                `<br><span class="status-badge ${s.statusClass}" id="status-gesek">${s.status}</span>`;
+
+            panahDorong.style.width = Math.max(0, s.F * 2) + 'px';
+            panahDorong.style.left = (gesek.posisiX + 60) + 'px';
+            panahGesek.style.width = Math.max(0, s.fGesekAktual * 2) + 'px';
+            panahGesek.style.left = (gesek.posisiX - s.fGesekAktual * 2) + 'px';
+
+            const jarakLayar = kanvasGesek.clientWidth - 100;
+            const jarakMeter = jarakLayar / 20;
+            if (s.a > 0) {
+                gesek.batasWaktu = Math.sqrt((2 * jarakMeter) / s.a);
+            } else {
+                gesek.batasWaktu = 999;
+            }
+
+            if (!gesek.animasiId) {
+                gesek.lastTime = performance.now();
+                gesek.animasiId = requestAnimationFrame(loopGesek);
+            }
+        }
+
+        function loopGesek(timestamp) {
+            if (!gesek.lastTime) gesek.lastTime = timestamp;
+            let dt = (timestamp - gesek.lastTime) / 1000;
+            gesek.lastTime = timestamp;
+            if (dt > 0.1) dt = 0.1;
+
+            const s = hitungStateGesek();
+            const a = s.a;
+
+            if (a > 0) {
+                gesek.kecepatan += a * dt;
+                gesek.waktu += dt;
+                gesek.posisiX += gesek.kecepatan * 15 * dt;
+            } else {
+                gesek.kecepatan = 0;
+            }
+
+            if (gesek.posisiX > kanvasGesek.clientWidth - 80 || gesek.waktu >= gesek.batasWaktu) {
+                gesek.posisiX = 20;
+                gesek.kecepatan = 0;
+                gesek.waktu = 0;
+                gesek.dataWaktu = [];
+                gesek.dataKecepatan = [];
+            }
+
+            balok.style.left = gesek.posisiX + 'px';
+            panahDorong.style.left = (gesek.posisiX + 60) + 'px';
+            panahGesek.style.left = (gesek.posisiX - s.fGesekAktual * 2) + 'px';
+
+            if (gesek.dataWaktu.length === 0 || gesek.waktu - gesek.dataWaktu[gesek.dataWaktu.length - 1] > 0.02) {
+                gesek.dataWaktu.push(gesek.waktu);
+                gesek.dataKecepatan.push(gesek.kecepatan);
+            }
+
+            gambarGrafikGesek();
+            gesek.animasiId = requestAnimationFrame(loopGesek);
+        }
+
+        function gambarGrafikGesek() {
+            const w = canvasGesek.width, h = canvasGesek.height;
+            const pad = { left: 40, right: 30, top: 20, bottom: 30 };
+            ctxGesek.clearRect(0, 0, w, h);
+
+            const maxX = Math.max(1, gesek.batasWaktu);
+            const maxY = Math.max(5, Math.ceil(Math.max(...gesek.dataKecepatan, 0) * 1.1));
+
+            ctxGesek.strokeStyle = '#334155';
+            ctxGesek.lineWidth = 1;
+            ctxGesek.beginPath();
+            for (let i = 0; i <= 4; i++) {
+                let y = h - pad.bottom - (i * (h - pad.bottom - pad.top) / 4);
+                ctxGesek.moveTo(pad.left, y);
+                ctxGesek.lineTo(w - pad.right, y);
+                ctxGesek.fillStyle = '#64748b';
+                ctxGesek.font = '10px monospace';
+                ctxGesek.fillText((i * maxY / 4).toFixed(0), 5, y + 3);
+            }
+            for (let i = 0; i <= 5; i++) {
+                let x = pad.left + (i * (w - pad.left - pad.right) / 5);
+                ctxGesek.moveTo(x, pad.top);
+                ctxGesek.lineTo(x, h - pad.bottom);
+                if (i > 0) {
+                    ctxGesek.fillStyle = '#64748b';
+                    ctxGesek.fillText((i * maxX / 5).toFixed(1), x - 10, h - 10);
+                }
+            }
+            ctxGesek.stroke();
+
+            ctxGesek.strokeStyle = '#94a3b8';
+            ctxGesek.lineWidth = 2;
+            ctxGesek.beginPath();
+            ctxGesek.moveTo(pad.left, pad.top);
+            ctxGesek.lineTo(pad.left, h - pad.bottom);
+            ctxGesek.lineTo(w - pad.right, h - pad.bottom);
+            ctxGesek.stroke();
+
+            ctxGesek.fillStyle = '#94a3b8';
+            ctxGesek.font = 'bold 11px monospace';
+            ctxGesek.fillText('v (m/s)', 5, 12);
+            ctxGesek.fillText('t (s)', w - 30, h - 10);
+
+            if (gesek.dataWaktu.length > 1) {
+                ctxGesek.strokeStyle = '#2dd4bf';
+                ctxGesek.lineWidth = 3;
+                ctxGesek.beginPath();
+                for (let i = 0; i < gesek.dataWaktu.length; i++) {
+                    let x = pad.left + (gesek.dataWaktu[i] / maxX) * (w - pad.left - pad.right);
+                    let y = (h - pad.bottom) - (gesek.dataKecepatan[i] / maxY) * (h - pad.bottom - pad.top);
+                    if (i === 0) ctxGesek.moveTo(x, y);
+                    else ctxGesek.lineTo(x, y);
+                }
+                ctxGesek.stroke();
+
+                let lx = pad.left + (gesek.dataWaktu[gesek.dataWaktu.length - 1] / maxX) * (w - pad.left - pad.right);
+                let ly = (h - pad.bottom) - (gesek.dataKecepatan[gesek.dataKecepatan.length - 1] / maxY) * (h - pad.bottom - pad.top);
+                ctxGesek.fillStyle = '#f2c94c';
+                ctxGesek.beginPath();
+                ctxGesek.arc(lx, ly, 5, 0, Math.PI * 2);
+                ctxGesek.fill();
+                ctxGesek.fillStyle = '#f2c94c';
+                ctxGesek.font = 'bold 12px sans-serif';
+                ctxGesek.fillText(gesek.kecepatan.toFixed(1) + ' m/s', lx - 20, ly - 15);
+            }
+        }
+
+        function resetGesek() {
+            if (gesek.animasiId) cancelAnimationFrame(gesek.animasiId);
+            gesek.animasiId = null;
+            gesek.posisiX = 20;
+            gesek.kecepatan = 0;
+            gesek.waktu = 0;
+            gesek.dataWaktu = [];
+            gesek.dataKecepatan = [];
+            gesek.lastTime = 0;
+            balok.style.left = gesek.posisiX + 'px';
+            panahDorong.style.left = (gesek.posisiX + 60) + 'px';
+            ctxGesek.clearRect(0, 0, canvasGesek.width, canvasGesek.height);
+            updateGesek();
+        }
+
+        // ================= SIMULASI GAYA SENTRIPETAL =================
+        let sentri = {
+            sudut: 0,
+            animasiId: null,
+            lastTime: 0
+        };
+
+        const canvasSentri = document.getElementById('grafikSentripetal');
+        const ctxSentri = canvasSentri.getContext('2d');
+        const kanvasOrbit = document.getElementById('kanvas-orbit');
+        const orbitPath = document.getElementById('orbit-path');
+        const bolaOrbit = document.getElementById('bola-orbit');
+        const taliOrbit = document.getElementById('tali-orbit');
+
+        function resizeCanvasSentri() {
+            const rect = canvasSentri.parentElement.getBoundingClientRect();
+            canvasSentri.width = rect.width - 20;
+            canvasSentri.height = 180;
+        }
+
+        function updateSentripetal() {
+            const v = parseInt(document.getElementById('slider-v').value);
+            const R = parseInt(document.getElementById('slider-R').value) / 2;
+            const m = parseInt(document.getElementById('slider-m').value) / 2;
+
+            document.getElementById('nilai-v').innerText = v + ' m/s';
+            document.getElementById('nilai-R').innerText = R.toFixed(1).replace('.', ',') + ' m';
+            document.getElementById('nilai-m').innerText = m.toFixed(1).replace('.', ',') + ' kg';
+
+            const Fs = m * v * v / R;
+            const as = v * v / R;
+            document.getElementById('hasil-sentripetal').innerHTML =
+                `F<sub>s</sub> = m·v²/R = ${m.toFixed(1)}·${v}²/${R.toFixed(1)} = <strong>${Fs.toFixed(1).replace('.', ',')} N</strong> | a<sub>s</sub> = ${as.toFixed(1).replace('.', ',')} m/s²`;
+
+            const wOrbit = kanvasOrbit.clientWidth;
+            const hOrbit = kanvasOrbit.clientHeight;
+            const radiusPx = Math.min(wOrbit, hOrbit) / 2 - 30;
+            const cx = wOrbit / 2;
+            const cy = hOrbit / 2;
+
+            orbitPath.style.width = (radiusPx * 2) + 'px';
+            orbitPath.style.height = (radiusPx * 2) + 'px';
+            orbitPath.style.left = (cx - radiusPx) + 'px';
+            orbitPath.style.top = (cy - radiusPx) + 'px';
+
+            if (!sentri.animasiId) {
+                sentri.lastTime = performance.now();
+                sentri.animasiId = requestAnimationFrame(loopSentri);
+            }
+
+            gambarGrafikSentri();
+        }
+
+        function loopSentri(timestamp) {
+            if (!sentri.lastTime) sentri.lastTime = timestamp;
+            let dt = (timestamp - sentri.lastTime) / 1000;
+            sentri.lastTime = timestamp;
+            if (dt > 0.1) dt = 0.1;
+
+            const v = parseInt(document.getElementById('slider-v').value);
+            const R = parseInt(document.getElementById('slider-R').value) / 2;
+            const wOrbit = kanvasOrbit.clientWidth;
+            const hOrbit = kanvasOrbit.clientHeight;
+            const radiusPx = Math.min(wOrbit, hOrbit) / 2 - 30;
+            const cx = wOrbit / 2;
+            const cy = hOrbit / 2;
+
+            const omega = (v / R) * 0.5;
+            sentri.sudut += omega * dt;
+
+            const x = cx + radiusPx * Math.cos(sentri.sudut);
+            const y = cy + radiusPx * Math.sin(sentri.sudut);
+
+            bolaOrbit.style.left = (x - 13) + 'px';
+            bolaOrbit.style.top = (y - 13) + 'px';
+
+            // Tali orbit (garis dari pusat ke bola)
+            const dx = x - cx;
+            const dy = y - cy;
+            const panjang = Math.sqrt(dx * dx + dy * dy);
+            const sudutDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+            taliOrbit.style.width = panjang + 'px';
+            taliOrbit.style.left = cx + 'px';
+            taliOrbit.style.top = cy + 'px';
+            taliOrbit.style.transform = `rotate(${sudutDeg}deg)`;
+
+            // ================= GAMBAR VEKTOR (PRESISI) =================
+            const headLen = 12;
+            const panahFs = document.getElementById('panah-fs');
+            const ujungFs = document.getElementById('ujung-fs');
+            const teksFs = document.getElementById('teks-fs');
+            const panjangFs = 65;
+            
+            // 1. Vektor Gaya Sentripetal (Fs): selalu berlawanan arah jari-jari (menuju pusat)
+            const uxFs = -dx / panjang;
+            const uyFs = -dy / panjang;
+            
+            const txFs = x + uxFs * panjangFs;
+            const tyFs = y + uyFs * panjangFs;
+            
+            panahFs.setAttribute('x1', x);
+            panahFs.setAttribute('y1', y);
+            panahFs.setAttribute('x2', txFs);
+            panahFs.setAttribute('y2', tyFs);
+
+            const angleFs = Math.atan2(uyFs, uxFs);
+            ujungFs.setAttribute('points', 
+                `${txFs},${tyFs} ` +
+                `${txFs - headLen * Math.cos(angleFs - Math.PI / 6)},${tyFs - headLen * Math.sin(angleFs - Math.PI / 6)} ` +
+                `${txFs - headLen * Math.cos(angleFs + Math.PI / 6)},${tyFs - headLen * Math.sin(angleFs + Math.PI / 6)}`
+            );
+
+            // Posisi Teks Fs (digeser ke samping kanan dari arah panah)
+            teksFs.setAttribute('x', txFs + (-uyFs * 15) - 5);
+            teksFs.setAttribute('y', tyFs + (uxFs * 15) + 5);
+
+            // 2. Vektor Kecepatan Linear (v): tegak lurus jari-jari, searah perputaran jarum jam
+            const panahV = document.getElementById('panah-v');
+            const ujungV = document.getElementById('ujung-v');
+            const teksV = document.getElementById('teks-v');
+            const panjangV = 65;
+
+            // Rotasi vektor (dx, dy) sebesar 90 derajat searah jarum jam: (-dy, dx)
+            const uxV = -dy / panjang;
+            const uyV = dx / panjang;
+
+            const txV = x + uxV * panjangV;
+            const tyV = y + uyV * panjangV;
+
+            panahV.setAttribute('x1', x);
+            panahV.setAttribute('y1', y);
+            panahV.setAttribute('x2', txV);
+            panahV.setAttribute('y2', tyV);
+
+            const angleV = Math.atan2(uyV, uxV);
+            ujungV.setAttribute('points', 
+                `${txV},${tyV} ` +
+                `${txV - headLen * Math.cos(angleV - Math.PI / 6)},${tyV - headLen * Math.sin(angleV - Math.PI / 6)} ` +
+                `${txV - headLen * Math.cos(angleV + Math.PI / 6)},${tyV - headLen * Math.sin(angleV + Math.PI / 6)}`
+            );
+
+            // Posisi Teks v (digeser ke samping kanan dari arah panah)
+            teksV.setAttribute('x', txV + (-uyV * 15) - 5);
+            teksV.setAttribute('y', tyV + (uxV * 15) + 5);
+            // ==========================================================
+
+            sentri.animasiId = requestAnimationFrame(loopSentri);
+        }
+
+        function gambarGrafikSentri() {
+            const w = canvasSentri.width, h = canvasSentri.height;
+            const pad = { left: 45, right: 30, top: 20, bottom: 35 };
+            ctxSentri.clearRect(0, 0, w, h);
+
+            const vMax = 12;
+            const m = parseInt(document.getElementById('slider-m').value) / 2;
+            const R = parseInt(document.getElementById('slider-R').value) / 2;
+            const FsMax = m * vMax * vMax / R;
+
+            ctxSentri.strokeStyle = '#334155';
+            ctxSentri.lineWidth = 1;
+            ctxSentri.beginPath();
+            for (let i = 0; i <= 4; i++) {
+                let y = h - pad.bottom - (i * (h - pad.bottom - pad.top) / 4);
+                ctxSentri.moveTo(pad.left, y);
+                ctxSentri.lineTo(w - pad.right, y);
+                ctxSentri.fillStyle = '#64748b';
+                ctxSentri.font = '10px monospace';
+                ctxSentri.fillText((i * FsMax / 4).toFixed(0), 5, y + 3);
+            }
+            for (let i = 0; i <= 6; i++) {
+                let x = pad.left + (i * (w - pad.left - pad.right) / 6);
+                ctxSentri.moveTo(x, pad.top);
+                ctxSentri.lineTo(x, h - pad.bottom);
+                if (i > 0) {
+                    ctxSentri.fillStyle = '#64748b';
+                    ctxSentri.fillText((i * vMax / 6).toFixed(0), x - 5, h - 12);
+                }
+            }
+            ctxSentri.stroke();
+
+            ctxSentri.strokeStyle = '#94a3b8';
+            ctxSentri.lineWidth = 2;
+            ctxSentri.beginPath();
+            ctxSentri.moveTo(pad.left, pad.top);
+            ctxSentri.lineTo(pad.left, h - pad.bottom);
+            ctxSentri.lineTo(w - pad.right, h - pad.bottom);
+            ctxSentri.stroke();
+
+            ctxSentri.fillStyle = '#94a3b8';
+            ctxSentri.font = 'bold 11px monospace';
+            ctxSentri.fillText('Fs (N)', 5, 12);
+            ctxSentri.fillText('v (m/s)', w - 45, h - 10);
+
+            // Kurva parabola Fs = m·v²/R
+            ctxSentri.strokeStyle = '#8b5cf6';
+            ctxSentri.lineWidth = 3;
+            ctxSentri.beginPath();
+            for (let vv = 0; vv <= vMax; vv += 0.2) {
+                const Fs = m * vv * vv / R;
+                const x = pad.left + (vv / vMax) * (w - pad.left - pad.right);
+                const y = (h - pad.bottom) - (Fs / FsMax) * (h - pad.bottom - pad.top);
+                if (vv === 0) ctxSentri.moveTo(x, y);
+                else ctxSentri.lineTo(x, y);
+            }
+            ctxSentri.stroke();
+
+            // Titik pada v saat ini
+            const vNow = parseInt(document.getElementById('slider-v').value);
+            const FsNow = m * vNow * vNow / R;
+            const xNow = pad.left + (vNow / vMax) * (w - pad.left - pad.right);
+            const yNow = (h - pad.bottom) - (FsNow / FsMax) * (h - pad.bottom - pad.top);
+            ctxSentri.fillStyle = '#f2c94c';
+            ctxSentri.beginPath();
+            ctxSentri.arc(xNow, yNow, 6, 0, Math.PI * 2);
+            ctxSentri.fill();
+            ctxSentri.fillStyle = '#f2c94c';
+            ctxSentri.font = 'bold 12px sans-serif';
+            ctxSentri.fillText(FsNow.toFixed(1) + ' N', xNow - 25, yNow - 12);
+        }
+
+        function resetSentripetal() {
+            if (sentri.animasiId) cancelAnimationFrame(sentri.animasiId);
+            sentri.animasiId = null;
+            sentri.sudut = 0;
+            sentri.lastTime = 0;
+            updateSentripetal();
+        }
+
+        // ================= INISIALISASI =================
+        window.addEventListener('resize', () => {
+            resizeCanvasGesek();
+            resizeCanvasSentri();
+            if (activeTab === 'gesek') gambarGrafikGesek();
+            else gambarGrafikSentri();
+        });
+
+        window.onload = function() {
+            resizeCanvasGesek();
+            resizeCanvasSentri();
+            updateGesek();
+            updateSentripetal();
+        };
+    </script>
+</body>
+</html>

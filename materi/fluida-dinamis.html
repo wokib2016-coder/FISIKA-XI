@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Fluida Ideal, Debit & Kontinuitas</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: #3b82f6; margin: 20px 0 10px; font-size: 1.08rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-green);
+    }
+    
+    .gambar-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+    .gambar-box svg { max-width: 100%; height: auto; }
+    .gambar-caption { font-size: 0.85rem; color: #475569; margin-top: 10px; font-style: italic; line-height: 1.5; }
+
+    /* CSS Simulasi Interaktif */
+    .sim-area { background: #f0fdf4; border: 2px dashed #10b981; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .sim-canvas-container { position: relative; width: 100%; height: 250px; background: #0f172a; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }
+    .sim-canvas-container canvas { display: block; width: 100%; height: 100%; }
+    .sim-controls { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+    @media(min-width: 600px) { .sim-controls { grid-template-columns: 1fr 1fr; } }
+    .sim-control { background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .sim-control label { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 5px; color: #1e293b; }
+    .sim-control input[type="range"] { width: 100%; accent-color: #10b981; cursor: pointer; }
+    .sim-control .val { font-size: 0.85rem; color: #3b82f6; font-weight: bold; text-align: right; display: block; margin-top: 5px; }
+    .sim-results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; }
+    .sim-result-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .sim-result-item .title { font-size: 0.75rem; color: #64748b; font-weight: bold; }
+    .sim-result-item .val { font-size: 1.1rem; color: #059669; font-weight: bold; }
+
+    /* CSS Kuis Model Baru */
+    .soal-container { margin-bottom: 30px; }
+    .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+    .opsi-card { background-color: #f8fafc; border: 2px solid transparent; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+    .opsi-card:hover { background-color: #f1f5f9; }
+    .opsi-card.benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .opsi-card.salah { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+    .opsi-card.reveal-benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .pembahasan-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin-top: 15px; display: none; color: #064e3b; }
+    .pembahasan-box.salah { background-color: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+    .pembahasan-title { font-weight: bold; margin-bottom: 8px; display: block; }
+    .pembahasan-text { font-size: 0.95rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Fluida Ideal, Debit & Kontinuitas</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- A. FLUIDA IDEAL -->
+        <div class="card">
+            <h2>A. Karakteristik Fluida Ideal</h2>
+            <p>Dalam mempelajari dinamika fluida (fluida yang bergerak), kita sering menggunakan model <strong>Fluida Ideal</strong> untuk menyederhanakan perhitungan. Fluida ideal memiliki beberapa karakteristik khusus:</p>
+            <ul>
+                <li><strong>Aliran Tunak (Steady):</strong> Kecepatan aliran fluida di suatu titik tidak berubah terhadap waktu.</li>
+                <li><strong>Incompressible (Tak Termampatkan):</strong> Massa jenis fluida (\(\rho\)) selalu konstan, tidak berubah meskipun diberi tekanan.</li>
+                <li><strong>Non-viskos (Tak Kental):</strong> Fluida mengalir tanpa gesekan internal (tidak ada kekentalan).</li>
+                <li><strong>Aliran Laminer:</strong> Aliran fluida mengikuti garis lurus dan tidak berputar (tidak turbulen).</li>
+            </ul>
+        </div>
+
+        <!-- B. DEBIT -->
+        <div class="card">
+            <h2>B. Debit Fluida</h2>
+            <p><strong>Debit (\(Q\))</strong> didefinisikan sebagai volume fluida (\(V\)) yang mengalir melalui suatu penampang per satuan waktu (\(t\)). Satuan SI untuk debit adalah <strong>meter kubik per sekon (m³/s)</strong>.</p>
+            
+            <div class="rumus-box">\[ Q = \frac{V}{t} \]</div>
+            
+            <p>Jika fluida mengalir melalui sebuah pipa dengan luas penampang \(A\) dan kecepatan aliran \(v\), maka dalam waktu \(t\) fluida menempuh jarak \(s = v \cdot t\). Volume fluida yang melewati pipa adalah \(V = A \cdot s = A \cdot v \cdot t\). Substitusi ke rumus debit menghasilkan:</p>
+
+            <div class="rumus-box">\[ Q = A \cdot v \]</div>
+            
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(Q\)</strong> = Debit (m³/s)</li>
+                <li><strong>\(V\)</strong> = Volume fluida (m³)</li>
+                <li><strong>\(t\)</strong> = Waktu (s)</li>
+                <li><strong>\(A\)</strong> = Luas penampang pipa (m²)</li>
+                <li><strong>\(v\)</strong> = Kecepatan aliran fluida (m/s)</li>
+            </ul>
+        </div>
+
+        <!-- C. PERSAMAAN KONTINUITAS (DENGAN SIMULASI) -->
+        <div class="card">
+            <h2>C. Persamaan Kontinuitas & Simulasi</h2>
+            <p>Persamaan kontinuitas didasarkan pada prinsip <strong>kekekalan massa</strong>. Untuk fluida ideal yang tak termampatkan, massa fluida yang masuk ke suatu bagian pipa harus sama dengan massa fluida yang keluar dari bagian tersebut.</p>
+            <p>Karena massa jenisnya konstan, maka volume fluida yang masuk per detik (debit) juga harus sama dengan volume yang keluar per detik.</p>
+            
+            <div class="rumus-box">
+                \[ Q_1 = Q_2 \]
+                <br>
+                \[ A_1 \cdot v_1 = A_2 \cdot v_2 \]
+            </div>
+            
+            <p><em>Kesimpulan penting:</em> Dari persamaan \(A_1 v_1 = A_2 v_2\), dapat dilihat bahwa <strong>luas penampang berbanding terbalik dengan kecepatan aliran</strong>. Jika pipa menyempit (A kecil), maka fluida akan mengalir lebih cepat (v besar). Sebaliknya, jika pipa melebar, fluida mengalir lebih lambat.</p>
+
+            <!-- SIMULASI INTERAKTIF -->
+            <div class="sim-area">
+                <h3 style="margin-top:0; color:#065f46; text-align:center;">💧 Simulasi Interaktif Persamaan Kontinuitas</h3>
+                <p style="text-align:center; font-size:0.9rem; color:#047857; margin-bottom:15px;">Geser slider di bawah untuk mengubah luas penampang pipa dan lihat bagaimana kecepatan aliran berubah!</p>
+                
+                <div class="sim-canvas-container">
+                    <canvas id="simCanvas" width="800" height="250"></canvas>
+                </div>
+
+                <div class="sim-controls">
+                    <div class="sim-control">
+                        <label>Luas Penampang 1 (Kiri - Lebar) \(A_1\)</label>
+                        <input type="range" id="sliderA1" min="10" max="40" value="30" step="1">
+                        <span class="val" id="valA1">30 unit</span>
+                    </div>
+                    <div class="sim-control">
+                        <label>Luas Penampang 2 (Kanan - Sempit) \(A_2\)</label>
+                        <input type="range" id="sliderA2" min="2" max="20" value="10" step="1">
+                        <span class="val" id="valA2">10 unit</span>
+                    </div>
+                </div>
+
+                <div class="sim-results">
+                    <div class="sim-result-item"><div class="title">Kecepatan 1 (Kiri)</div><div class="val" id="valV1">1.50 m/s</div></div>
+                    <div class="sim-result-item"><div class="title">Kecepatan 2 (Kanan)</div><div class="val" id="valV2">4.50 m/s</div></div>
+                    <div class="sim-result-item"><div class="title">Debit Konstan (Q)</div><div class="val" id="valQ">6.00 m³/s</div></div>
+                </div>
+            </div>
+
+        </div>
+        <!-- D. UJI PEMAHAMAN INTERAKTIF (HOTS) -->
+        <div class="card">
+            <h2>D. Uji Pemahaman Interaktif (HOTS)</h2>
+            <p>Pilih satu jawaban yang paling tepat pada setiap soal. Sistem akan langsung memberikan umpan balik dan pembahasan.</p>
+
+            <!-- SOAL 1 -->
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Sebuah selang taman memiliki diameter 2 cm dan mengalirkan air dengan kecepatan \(1,5 \text{ m/s}\). Berapakah besar debit air yang mengalir melalui selang tersebut? (\(\pi = 3,14\))</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'B')">A. \(4,71 \times 10^{-4} \text{ m}^3/\text{s}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'B')">B. \(4,71 \times 10^{-3} \text{ m}^3/\text{s}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'B')">C. \(4,71 \times 10^{-2} \text{ m}^3/\text{s}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'B')">D. \(4,71 \times 10^{-1} \text{ m}^3/\text{s}\)</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+
+            <!-- SOAL 2 -->
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Air mengalir dari pipa berpenampang besar dengan luas \(10 \text{ cm}^2\) dan kecepatan \(2 \text{ m/s}\) menuju pipa berpenampang kecil yang luasnya \(2 \text{ cm}^2\). Berapakah kecepatan air di pipa kecil tersebut?</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'C')">A. \(0,4 \text{ m/s}\)</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'C')">B. \(2 \text{ m/s}\)</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'C')">C. \(10 \text{ m/s}\)</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'C')">D. \(20 \text{ m/s}\)</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+
+            <!-- SOAL 3 -->
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Berdasarkan simulasi interaktif yang telah kamu coba, mengapa kecepatan aliran fluida di bagian pipa yang sempit jauh lebih besar daripada di bagian pipa yang lebar?</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'B')">A. Karena massa jenis fluida berkurang di pipa sempit.</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'B')">B. Karena debit fluida yang mengalir di setiap titik penampang selalu konstan, sehingga luas penampang berbanding terbalik dengan kecepatan.</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'B')">C. Karena tekanan udara di dalam pipa sempit lebih rendah.</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'B')">D. Karena gaya gravitasi menarik air lebih kuat di pipa sempit.</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+
+            <!-- SOAL 4 -->
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Sebuah bak mandi berkapasitas \(200 \text{ Liter}\) diisi air menggunakan keran dengan debit \(2 \text{ Liter/menit}\). Berapa lama waktu yang dibutuhkan untuk mengisi bak tersebut hingga penuh?</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'C')">A. 50 menit</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'C')">B. 80 menit</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'C')">C. 100 menit</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'C')">D. 200 menit</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+
+            <!-- SOAL 5 -->
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Pada sebuah pipa venturi (pipa yang menyempit di tengah), air mengalir dari penampang lebar ke penampang sempit. Bagaimana kondisi kecepatan (\(v\)) dan tekanan (\(P\)) fluida di bagian pipa yang sempit dibandingkan dengan bagian yang lebar?</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'C')">A. Kecepatan lebih kecil, tekanan lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'C')">B. Kecepatan lebih besar, tekanan lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'C')">C. Kecepatan lebih besar, tekanan lebih kecil.</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'C')">D. Kecepatan dan tekanan bernilai sama.</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT UNTUK INTERAKSI KUIS & ANIMASI -->
+    <script>
+        /* =====================================================
+           BAGIAN 1: LOGIKA KUIS INTERAKTIF
+           ===================================================== */
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const pembahasanBox = document.getElementById('pembahasan' + nomorSoal);
+            
+            opsiCards.forEach(card => { card.classList.remove('benar', 'salah', 'reveal-benar'); });
+            pembahasanBox.style.display = 'none';
+
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) card.classList.add('benar');
+                });
+                pembahasanBox.className = 'pembahasan-box';
+                pembahasanBox.innerHTML = `<span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+                pembahasanBox.style.display = 'block';
+            } else {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) card.classList.add('salah');
+                    if (card.innerText.trim().startsWith(opsiBenar + '.')) card.classList.add('reveal-benar');
+                });
+                pembahasanBox.className = 'pembahasan-box salah';
+                pembahasanBox.innerHTML = `<span class="pembahasan-title">Kurang Tepat. Jawaban yang benar adalah: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+                pembahasanBox.style.display = 'block';
+            }
+
+            if (window.MathJax) MathJax.typesetPromise([pembahasanBox]);
+        }
+
+        function getPembahasan(soal) {
+            if(soal === 1) return "Diameter \(d = 2 \text{ cm} = 0,02 \text{ m}\), maka jari-jari \(r = 0,01 \text{ m}\).<br>Luas penampang \(A = \pi r^2 = 3,14 \times (0,01)^2 = 3,14 \times 10^{-4} \text{ m}^2\).<br>\[ Q = A \cdot v \]<br>\[ Q = (3,14 \times 10^{-4}) \times 1,5 = 4,71 \times 10^{-4} \text{ m}^3/\text{s} \]";
+            if(soal === 2) return "Gunakan Persamaan Kontinuitas:<br>\[ A_1 \cdot v_1 = A_2 \cdot v_2 \]<br>\[ 10 \times 2 = 2 \times v_2 \]<br>\[ 20 = 2 v_2 \Rightarrow v_2 = 10 \text{ m/s} \]";
+            if(soal === 3) return "Berdasarkan Persamaan Kontinuitas \(Q_1 = Q_2\) atau \(A_1 v_1 = A_2 v_2\). Karena debit (\(Q\)) selalu konstan di sepanjang pipa, maka luas penampang (\(A\)) berbanding terbalik dengan kecepatan (\(v\)). Jika penampang mengecil, kecepatan aliran harus bertambah agar volume air yang lewat per detik tetap sama.";
+            if(soal === 4) return "Gunakan rumus debit:<br>\[ Q = \frac{V}{t} \Rightarrow t = \frac{V}{Q} \]<br>\[ t = \frac{200 \text{ L}}{2 \text{ L/menit}} = 100 \text{ menit} \]";
+            if(soal === 5) return "Berdasarkan Asas Bernoulli (yang akan dipelajari selanjutnya), pada pipa yang menyempit, kecepatan fluida meningkat (kontinuitas). Peningkatan kecepatan ini menyebabkan energi kinetik bertambah, sehingga energi tekanan harus berkurang. Jadi, di pipa sempit: kecepatan lebih besar, tekanan lebih kecil.";
+        }
+
+        /* =====================================================
+           BAGIAN 2: SIMULASI ANIMASI KONTINUITAS (CANVAS)
+           ===================================================== */
+        const simCanvas = document.getElementById('simCanvas');
+        const simCtx = simCanvas.getContext('2d');
+        
+        // Pengaturan awal simulasi
+        let A1_val = 30; // nilai slider 1
+        let A2_val = 10; // nilai slider 2
+        let baseVelocity = 1.5; // kecepatan dasar (m/s)
+        
+        let particles = [];
+        const numParticles = 150;
+        
+        // Warna fluida
+        const waterColor = '#38bdf8';
+        const darkWaterColor = '#0ea5e9';
+
+        // Menyesuaikan ukuran canvas jika layar berubah
+        function resizeSimCanvas() {
+            const container = simCanvas.parentElement;
+            simCanvas.width = container.clientWidth;
+            simCanvas.height = container.clientHeight;
+            initParticles();
+        }
+
+        // Inisialisasi partikel air
+        function initParticles() {
+            particles = [];
+            for(let i=0; i<numParticles; i++) {
+                particles.push({
+                    x: Math.random() * simCanvas.width,
+                    y: Math.random() * simCanvas.height,
+                    size: 2 + Math.random() * 3
+                });
+            }
+        }
+
+        // Update nilai dari slider
+        function updateSimParams() {
+            A1_val = parseFloat(document.getElementById('sliderA1').value);
+            A2_val = parseFloat(document.getElementById('sliderA2').value);
+            
+            document.getElementById('valA1').innerText = A1_val + " unit";
+            document.getElementById('valA2').innerText = A2_val + " unit";
+
+            // Hitung kecepatan & debit (skala buatan agar angkanya cantik)
+            // Q = A * v (Kita anggap A1 * v1 = konstan)
+            let Q = A1_val * baseVelocity;
+            let v1 = Q / A1_val; // Pasti sama dengan baseVelocity
+            let v2 = Q / A2_val;
+
+            document.getElementById('valV1').innerText = v1.toFixed(2) + " m/s";
+            document.getElementById('valV2').innerText = v2.toFixed(2) + " m/s";
+            document.getElementById('valQ').innerText = Q.toFixed(2) + " m³/s";
+        }
+
+        // Event listener untuk slider
+        document.getElementById('sliderA1').addEventListener('input', updateSimParams);
+        document.getElementById('sliderA2').addEventListener('input', updateSimParams);
+
+        // Fungsi Menggambar
+        function drawSimulation() {
+            simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+            
+            const cx = simCanvas.width / 2;
+            const cy = simCanvas.height / 2;
+            
+            // Menentukan ketinggian pipa (berbanding lurus dengan luas A)
+            const h1 = A1_val * 3; // Tinggi pipa kiri
+            const h2 = A2_val * 3; // Tinggi pipa kanan
+            
+            const topY1 = cy - h1/2;
+            const botY1 = cy + h1/2;
+            const topY2 = cy - h2/2;
+            const botY2 = cy + h2/2;
+
+            // 1. Gambar Badan Pipa
+            simCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            simCtx.beginPath();
+            simCtx.moveTo(0, topY1);
+            simCtx.lineTo(cx - 100, topY1); // Bagian transisi
+            simCtx.lineTo(cx + 100, topY2);
+            simCtx.lineTo(simCanvas.width, topY2);
+            simCtx.lineTo(simCanvas.width, botY2);
+            simCtx.lineTo(cx + 100, botY2);
+            simCtx.lineTo(cx - 100, botY1);
+            simCtx.lineTo(0, botY1);
+            simCtx.closePath();
+            simCtx.fill();
+            
+            simCtx.strokeStyle = '#64748b';
+            simCtx.lineWidth = 3;
+            simCtx.stroke();
+
+            // 2. Update Posisi Partikel
+            // Kecepatan animasi (v1 lambat, v2 cepat)
+            let speedAnim1 = 2; // pixel per frame
+            let speedAnim2 = speedAnim1 * (A1_val / A2_val);
+            if (speedAnim2 > 15) speedAnim2 = 15; // Batasi agar tidak terlalu ekstrem
+
+            simCtx.fillStyle = waterColor;
+            
+            particles.forEach(p => {
+                // Tentukan apakah partikel ada di area lebar atau sempit
+                if (p.x < cx - 100) {
+                    // Area 1 (Lebar)
+                    p.x += speedAnim1;
+                    // Batasi Y agar sesuai bentuk pipa
+                    if (p.y < topY1 + p.size || p.y > botY1 - p.size) {
+                        p.y = topY1 + p.size + Math.random() * (h1 - p.size*2);
+                    }
+                } else if (p.x > cx + 100) {
+                    // Area 2 (Sempit)
+                    p.x += speedAnim2;
+                    // Batasi Y agar sesuai bentuk pipa
+                    if (p.y < topY2 + p.size || p.y > botY2 - p.size) {
+                        p.y = topY2 + p.size + Math.random() * (h2 - p.size*2);
+                    }
+                } else {
+                    // Area Transisi
+                    p.x += (speedAnim1 + speedAnim2) / 2;
+                    // Interpolasi posisi Y agar tidak menembus dinding
+                    let ratio = (p.x - (cx - 100)) / 200;
+                    let currentTop = topY1 + (topY2 - topY1) * ratio;
+                    let currentBot = botY1 + (botY2 - botY1) * ratio;
+                    if (p.y < currentTop + p.size || p.y > currentBot - p.size) {
+                        p.y = currentTop + p.size + Math.random() * (currentBot - currentTop - p.size*2);
+                    }
+                }
+
+                // Reset jika keluar layar
+                if (p.x > simCanvas.width) {
+                    p.x = 0;
+                    p.y = topY1 + Math.random() * h1;
+                }
+                
+                // Gambar partikel
+                simCtx.beginPath();
+                simCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                simCtx.fill();
+            });
+
+            // 3. Label Teks
+            simCtx.fillStyle = '#e2e8f0';
+            simCtx.font = 'bold 14px sans-serif';
+            simCtx.textAlign = 'center';
+            simCtx.fillText(`A₁ (Lebar)`, cx/2, 30);
+            simCtx.fillText(`A₂ (Sempit)`, cx + cx/2, 30);
+
+            // Garis putus-putus pembatas area
+            simCtx.strokeStyle = '#f59e0b';
+            simCtx.setLineDash([5,5]);
+            simCtx.beginPath();
+            simCtx.moveTo(cx - 100, 10);
+            simCtx.lineTo(cx - 100, simCanvas.height - 10);
+            simCtx.moveTo(cx + 100, 10);
+            simCtx.lineTo(cx + 100, simCanvas.height - 10);
+            simCtx.stroke();
+            simCtx.setLineDash([]);
+
+            requestAnimationFrame(drawSimulation);
+        }
+
+        // Inisialisasi awal saat halaman dimuat
+        window.addEventListener('load', () => {
+            resizeSimCanvas();
+            updateSimParams();
+            drawSimulation();
+        });
+
+        // Handle resize window
+        window.addEventListener('resize', resizeSimCanvas);
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Hukum Archimedes</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-blue: #1e3a8a; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444; --green-success: #10b981;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    .header-materi {
+        background-color: var(--dark-blue); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-blue); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-blue);
+    }
+    .gambar-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 16px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+    
+    /* CSS SIMULASI GELAS UKUR */
+    #simContainer {
+        width: 100%; height: 400px; display: flex; flex-direction: column;
+        background: radial-gradient(ellipse at 50% 0%, #dbeafe, #bae6fd);
+        border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px 12px;
+        overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    #simHeader { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 8px; flex-shrink: 0; }
+    #simHeader h3 { color: #1e3a8a; font-size: 15px; font-weight: 700; }
+    #simHeader h3 span { color: #0e7490; }
+    #simHeader .info { color: #334155; font-size: 11px; background: rgba(255,255,255,0.6); padding: 3px 12px; border-radius: 30px; border: 1px solid var(--border); }
+    #canvasWrap { flex: 1; min-height: 0; border-radius: 10px; overflow: hidden; background: #dbeafe; box-shadow: inset 0 0 20px rgba(0,0,0,0.05); }
+    #simCanvas { display: block; width: 100%; height: 100%; background: linear-gradient(180deg, #e0f2fe, #bfdbfe); }
+    #controls { display: flex; justify-content: center; gap: 8px; padding: 12px 0 2px; flex-shrink: 0; flex-wrap: wrap; }
+    #controls button {
+        background: #ffffff; border: 1px solid var(--border); color: #1e3a8a;
+        font-weight: 600; padding: 7px 18px; border-radius: 40px; font-size: 12px;
+        cursor: pointer; transition: all 0.2s ease; font-family: inherit;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    #controls button:hover { background: #eff6ff; transform: translateY(-1px); }
+    #controls button.active { background: #dbeafe; border-color: #3b82f6; color: #1e3a8a; }
+    #controls button.primary { background: #1e3a8a; border-color: #1e3a8a; color: #ffffff; }
+    #controls button.primary.active { background: #0e7490; border-color: #0e7490; }
+</style>
+</head>
+<body>
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Hukum Archimedes</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+    <div class="container">
+    <!-- LANJUTAN STYLE DARI TAHAP 1 -->
+    <style>
+        /* CSS KUIS */
+        .soal-container { margin-bottom: 30px; }
+        .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+        .opsi-card { background-color: #f8fafc; border: 2px solid transparent; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+        .opsi-card:hover { background-color: #f1f5f9; }
+        .opsi-card.benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+        .opsi-card.salah { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+        .opsi-card.reveal-benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+        .pembahasan-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin-top: 15px; display: none; color: #064e3b; }
+        .pembahasan-box.salah { background-color: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+        .pembahasan-title { font-weight: bold; margin-bottom: 8px; display: block; }
+        .pembahasan-text { font-size: 0.95rem; line-height: 1.6; }
+
+        /* CSS NARASI BARU DI BAWAH SIMULASI */
+        .narasi-sim {
+            margin-top: 15px; padding: 14px 18px; background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9; border-radius: 8px; font-size: 0.9rem;
+            color: #0c4a6e; text-align: left; line-height: 1.6; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .narasi-sim strong { color: #0284c7; }
+
+        /* CSS UNTUK MODE LANDSCAPE DI HP */
+        body.landscape-mode #simContainer {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 9999; border-radius: 0; border: none; padding: 10px;
+        }
+        body.landscape-mode #simHeader { padding: 0 10px 10px; }
+        body.landscape-mode #simHeader h3 { font-size: 20px; }
+        body.landscape-mode #controls { padding: 15px 0 5px; }
+        body.landscape-mode #controls button { font-size: 14px; padding: 10px 24px; }
+        body.landscape-mode #btnRotate { background: #10b981; border-color: #059669; color: white; }
+    </style>
+</head>
+<body>
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Hukum Archimedes</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+    <div class="container">
+        <!-- A. KONSEP HUKUM ARCHIMEDES -->
+        <div class="card">
+            <h2>A. Konsep Hukum Archimedes</h2>
+            <p><strong>Archimedes</strong> merumuskan: <em>"Suatu benda yang dicelupkan sebagian atau seluruhnya ke dalam zat cair akan mengalami gaya ke atas (gaya apung) yang besarnya sama dengan berat zat cair yang dipindahkan oleh benda tersebut."</em></p>
+            <div class="rumus-box">
+                \[ F_A = \rho \cdot g \cdot V_{\text{tercelup}} \]
+            </div>
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(F_A\)</strong> = Gaya apung (N)</li>
+                <li><strong>\(\rho\)</strong> = Massa jenis fluida (kg/m³)</li>
+                <li><strong>\(g\)</strong> = Percepatan gravitasi (m/s²)</li>
+                <li><strong>\(V_{\text{tercelup}}\)</strong> = Volume benda yang tercelup (m³)</li>
+            </ul>
+        </div>
+
+        <!-- B. TIGA KEADAAN BENDA -->
+        <div class="card">
+            <h2>B. Tiga Keadaan Benda dalam Fluida</h2>
+            <p>Saat benda mencapai kesetimbangan di dalam fluida, berlaku \(F_A = W\). Kondisi benda ditentukan oleh perbandingan massa jenis:</p>
+            <ul>
+                <li><strong>Terapung:</strong> \(\rho_{\text{benda}} < \rho_{\text{fluida}}\) — benda tercelup sebagian.</li>
+                <li><strong>Melayang:</strong> \(\rho_{\text{benda}} = \rho_{\text{fluida}}\) — benda tercelup seluruhnya di tengah.</li>
+                <li><strong>Tenggelam:</strong> \(\rho_{\text{benda}} > \rho_{\text{fluida}}\) — benda di dasar wadah.</li>
+            </ul>
+        </div>
+
+        <!-- C. ANIMASI INTERAKTIF (GELAS UKUR) -->
+        <div class="card">
+            <h2>C. Animasi Interaktif: Tiga Keadaan Benda</h2>
+            <p>Klik <strong>Mulai Percobaan</strong> untuk melihat tiga buah apel dengan massa jenis berbeda dicelupkan ke dalam air. Perhatikan bagaimana masing-masing apel berperilaku: <strong>terapung</strong>, <strong>melayang</strong>, atau <strong>tenggelam</strong>, serta bagaimana neraca digital mencatat beratnya!</p>
+
+            <div class="gambar-box" style="padding: 12px;">
+                <div id="simContainer">
+                    <div id="simHeader">
+                        <h3>🍎 <span>Simulasi Percobaan Apel</span></h3>
+                        <span class="info">⚡ Fisika Interaktif</span>
+                    </div>
+                    <div id="canvasWrap">
+                        <canvas id="simCanvas"></canvas>
+                    </div>
+                    <div id="controls">
+                        <button class="primary" id="btnStart">▶ Mulai Percobaan</button>
+                        <button id="btnResetSim">⟳ Reset Simulasi</button>
+                        <button class="active" id="btnSlow">🐢 Lambat</button>
+                        <button id="btnFast">🐇 Cepat</button>
+                        <button id="btnRotate" style="display: none; background: #fef3c7; border-color: #f59e0b; color: #b45309;"><i class="fas fa-mobile-alt"></i> Putar Layar</button>
+                    </div>
+                </div>
+                
+                <!-- NARASI BARU DI SINI -->
+                <div class="narasi-sim">
+                    <strong>💡 Hubungan Air Tumpah dengan Gaya Apung:</strong><br>
+                    Perhatikan bahwa berat air yang tumpah (terlihat di neraca digital) <strong>sama persis</strong> dengan besarnya gaya apung yang diterima benda. Hal ini sesuai dengan Hukum Archimedes: <em>"Gaya apung yang bekerja pada suatu benda sama dengan berat fluida yang dipindahkan oleh benda tersebut."</em>
+                </div>
+
+                <div style="margin-top: 10px; font-size: 0.8rem; color: #64748b;">
+                    Hukum Archimedes · 1. Terapung (massa jenis &lt; air) · 2. Melayang (massa jenis = air) · 3. Tenggelam (massa jenis &gt; air)
+                </div>
+            </div>
+        </div>
+        <!-- D. UJI KOMPETENSI -->
+        <div class="card">
+            <h2>D. Uji Kompetensi: Hukum Archimedes</h2>
+            <p>Uji pemahaman Anda mengenai Hukum Archimedes dan penerapannya.</p>
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Sebuah benda dengan volume \(500 \text{ cm}^3\) tercelup seluruhnya ke dalam air. Jika massa jenis air \(1000 \text{ kg/m}^3\) dan \(g = 10 \text{ m/s}^2\), berapakah gaya apungnya?</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'B')">A. \(0,5 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'B')">B. \(5 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'B')">C. \(50 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'B')">D. \(500 \text{ N}\)</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Kapal laut terbuat dari besi yang massa jenisnya jauh lebih besar dari air laut. Mengapa kapal tidak tenggelam?</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'C')">A. Karena air laut memiliki massa jenis yang sangat kecil.</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'C')">B. Karena besi kapal dilapisi cat anti karat.</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'C')">C. Karena bentuk kapal berongga sehingga massa jenis rata-rata kapal lebih kecil dari massa jenis air laut.</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'C')">D. Karena kapal didorong mesin yang sangat kuat.</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Berat benda di udara \(50 \text{ N}\), di dalam air menjadi \(30 \text{ N}\). Berapakah gaya apungnya?</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'B')">A. \(10 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'B')">B. \(20 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'B')">C. \(30 \text{ N}\)</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'B')">D. \(80 \text{ N}\)</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Sebuah benda akan melayang di dalam zat cair jika...</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'C')">A. Massa jenis benda lebih kecil dari massa jenis zat cair.</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'C')">B. Gaya apung lebih kecil dari gaya berat benda.</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'C')">C. Massa jenis benda sama dengan massa jenis zat cair.</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'C')">D. Berat benda sama dengan nol.</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Alat untuk mengukur massa jenis zat cair berdasarkan Hukum Archimedes adalah...</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'B')">A. Barometer</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'B')">B. Hidrometer</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'B')">C. Termometer</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'B')">D. Manometer</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        // LOGIKA SIMULASI APEL (DIPERBESAR OTOMATIS)
+        // ================================================================
+        (function() {
+            const canvas = document.getElementById('simCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let W, H;
+            function resize() {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width; canvas.height = rect.height;
+                W = canvas.width; H = canvas.height;
+            }
+            const state = { phase: 'awal', progress: 0, speed: 0.0035, time: 0 };
+            const btnStart = document.getElementById('btnStart');
+            const btnResetSim = document.getElementById('btnResetSim');
+            const btnSlow = document.getElementById('btnSlow');
+            const btnFast = document.getElementById('btnFast');
+
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (typeof r === 'number') r = [r, r, r, r];
+                const [tl, tr, br, bl] = r;
+                this.beginPath(); this.moveTo(x + tl, y); this.lineTo(x + w - tr, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + tr); this.lineTo(x + w, y + h - br);
+                this.quadraticCurveTo(x + w, y + h, x + w - br, y + h); this.lineTo(x + bl, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - bl); this.lineTo(x, y + tl);
+                this.quadraticCurveTo(x, y, x + tl, y); this.closePath(); return this;
+            };
+
+            function lighten(col, p) { const n = parseInt(col.replace('#',''),16); const a = Math.round(2.55*p); return `rgb(${Math.min(255,(n>>16)+a)},${Math.min(255,((n>>8)&0xff)+a)},${Math.min(255,(n&0xff)+a)})`; }
+            function darken(col, p) { const n = parseInt(col.replace('#',''),16); const a = Math.round(2.55*p); return `rgb(${Math.max(0,(n>>16)-a)},${Math.max(0,((n>>8)&0xff)-a)},${Math.max(0,(n&0xff)-a)})`; }
+            function drawApple(cx, cy, r, color) {
+                ctx.save(); ctx.shadowBlur = r * 0.8; ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowOffsetY = r * 0.2;
+                const grad = ctx.createRadialGradient(cx - r*0.35, cy - r*0.35, r*0.05, cx, cy, r);
+                grad.addColorStop(0, lighten(color, 55)); grad.addColorStop(0.5, color); grad.addColorStop(1, darken(color, 45));
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fillStyle = grad; ctx.fill(); ctx.restore();
+                ctx.fillStyle = darken(color, 35); ctx.beginPath(); ctx.ellipse(cx - r*0.08, cy - r*0.82, r*0.22, r*0.1, 0, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = '#4e352f'; ctx.lineWidth = r * 0.12; ctx.lineCap = 'round';
+                ctx.beginPath(); ctx.moveTo(cx - r*0.02, cy - r*0.78); ctx.quadraticCurveTo(cx + r*0.12, cy - r*1.2, cx + r*0.25, cy - r*1.1); ctx.stroke();
+                ctx.fillStyle = '#388e3c'; ctx.beginPath(); ctx.ellipse(cx + r*0.2, cy - r*1.05, r*0.22, r*0.1, 0.6, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.beginPath(); ctx.ellipse(cx - r*0.28, cy - r*0.28, r*0.16, r*0.32, -0.4, 0, Math.PI*2); ctx.fill();
+            }
+
+            function drawWaterFlow(fromX, fromY, toX, toY, active, s) {
+                if (!active) return; const t = state.time; ctx.shadowBlur = 0;
+                for (let i = 0; i < 25; i++) {
+                    const f = i / 25, baseX = fromX + (toX - fromX) * f, baseY = fromY + (toY - fromY) * f + Math.sin(f * 3 + t * 0.04) * 5 * s;
+                    ctx.fillStyle = `rgba(56, 150, 200, ${0.2 + (1 - f) * 0.4})`;
+                    ctx.beginPath(); ctx.arc(baseX + Math.sin(f * 2 + t * 0.03) * 2 * s, baseY, (2 + (1 - f) * 2) * s, 0, Math.PI*2); ctx.fill();
+                }
+            }
+
+            function drawStation(cx, initialVal, finalVal, label, color, mode, isCustomText, customText, s, baseY, p, smoothP) {
+                const isFloat = mode === 'floating', isSink = mode === 'sinking', active = state.phase !== 'awal';
+                let displayText = initialVal + ' g';
+                if (active) {
+                    if (isCustomText && state.phase === 'selesai') displayText = customText;
+                    else if (isCustomText) displayText = Math.round(initialVal + (170 - initialVal) * smoothP) + ' g';
+                    else displayText = Math.round(initialVal + (finalVal - initialVal) * smoothP) + ' g';
+                }
+                
+                ctx.shadowBlur = 10 * s; ctx.shadowColor = 'rgba(0,0,0,0.08)'; ctx.fillStyle = '#f0f4f8';
+                ctx.beginPath(); ctx.roundRect(cx - 52 * s, baseY - 5 * s, 104 * s, 42 * s, 9 * s); ctx.fill();
+                ctx.shadowColor = 'transparent'; ctx.strokeStyle = '#b0c8d8'; ctx.lineWidth = 1.3 * s; ctx.stroke();
+                ctx.fillStyle = '#121f26'; ctx.beginPath(); ctx.roundRect(cx - 39 * s, baseY + 3 * s, 78 * s, 23 * s, 6 * s); ctx.fill();
+                ctx.font = `bold ${15 * s}px "Courier New", monospace`; ctx.fillStyle = '#5cf584'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(displayText, cx, baseY + 14.5 * s); ctx.textBaseline = 'alphabetic';
+
+                const gx2 = cx - 18 * s, gw2 = 36 * s, gh2 = 28 * s, gy2 = (baseY - 5 * s) - gh2;
+                ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.beginPath(); ctx.ellipse(cx, baseY - 5 * s, gw2 * 0.45, 2.8 * s, 0, 0, Math.PI * 2); ctx.fill();
+                const glassGrad = ctx.createLinearGradient(gx2, gy2, gx2 + gw2, gy2);
+                glassGrad.addColorStop(0, 'rgba(255,255,255,0.7)'); glassGrad.addColorStop(0.2, 'rgba(180,220,240,0.25)'); glassGrad.addColorStop(0.8, 'rgba(180,220,240,0.25)'); glassGrad.addColorStop(1, 'rgba(255,255,255,0.6)');
+                ctx.fillStyle = glassGrad; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 1.4 * s;
+                ctx.beginPath(); ctx.roundRect(gx2, gy2, gw2, gh2, [3.5 * s, 3.5 * s, 2 * s, 2 * s]); ctx.fill(); ctx.stroke();
+
+                let fillFactorMax = 0.40; if (mode === 'neutral' || isSink) fillFactorMax = 0.88;
+                const fillH = Math.min(1, active ? smoothP : 0) * fillFactorMax * 19 * s;
+                if (fillH > 1) {
+                    ctx.fillStyle = 'rgba(50, 165, 205, 0.65)'; ctx.beginPath(); ctx.roundRect(gx2 + 2 * s, (gy2 + gh2) - fillH - 2 * s, gw2 - 4 * s, fillH, 2 * s); ctx.fill();
+                    ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.beginPath(); ctx.ellipse(cx, (gy2 + gh2) - fillH - 2 * s, (gw2 - 6 * s) / 2, 2 * s, 0, 0, Math.PI * 2); ctx.fill();
+                }
+
+                const gx = cx - 88 * s, gy = baseY - 114 * s, gw = 48 * s, gh = 142 * s;
+                ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.beginPath(); ctx.ellipse(gx + gw/2, baseY - 5 * s, gw * 0.45, 4 * s, 0, 0, Math.PI * 2); ctx.fill();
+                const mg = ctx.createLinearGradient(gx, gy, gx + gw, gy);
+                mg.addColorStop(0, 'rgba(255,255,255,0.75)'); mg.addColorStop(0.15, 'rgba(190,225,245,0.2)'); mg.addColorStop(0.85, 'rgba(190,225,245,0.2)'); mg.addColorStop(1, 'rgba(255,255,255,0.7)');
+                ctx.fillStyle = mg; ctx.strokeStyle = 'rgba(255,255,255,0.95)'; ctx.lineWidth = 1.6 * s;
+                ctx.beginPath(); ctx.roundRect(gx, gy, gw, gh, [6 * s, 6 * s, 2 * s, 2 * s]); ctx.fill(); ctx.stroke();
+
+                const baseWl = gy + 36 * s;
+                let subFactor = 0; if (isFloat) subFactor = 0.55 * smoothP; else if (isSink || mode === 'neutral') subFactor = 0.92 * smoothP;
+                const currentWl = baseWl - (subFactor * 21 * s), waterHeight = gh - (currentWl - gy) - 3 * s;
+                ctx.fillStyle = 'rgba(55, 175, 210, 0.38)'; ctx.beginPath(); ctx.roundRect(gx + 2 * s, currentWl, gw - 4 * s, waterHeight, [0, 0, 2 * s, 2 * s]); ctx.fill();
+
+                const pourX = gx + gw, pourY = currentWl - 2 * s, spoutTipX = cx - 12 * s, spoutTipY = baseY - 50 * s;
+                ctx.fillStyle = '#4a7a8f'; ctx.beginPath(); ctx.moveTo(pourX, pourY); ctx.lineTo(spoutTipX, spoutTipY); ctx.lineTo(spoutTipX, spoutTipY + 8 * s); ctx.closePath(); ctx.fill();
+
+                const ar = 17 * s; let targetFinalY;
+                if (isFloat) targetFinalY = currentWl + (ar * 0.5); else if (isSink) targetFinalY = (gy + gh) - ar - 4 * s; else targetFinalY = currentWl + 24 * s;
+                const cupCenterX = gx + gw / 2, mouthY = gy;
+                let apx, apy;
+                if (!active) { apx = cx + 32 * s; apy = baseY - 16 * s; }
+                else {
+                    if (p <= 0.4) {
+                        const subP = p / 0.4, easeSub = subP * subP * (3 - 2 * subP);
+                        const startX = cx + 32 * s, startY = baseY - 16 * s, peakX = cupCenterX, peakY = mouthY - 40 * s;
+                        apx = startX + (peakX - startX) * easeSub; apy = startY + (peakY - startY) * easeSub;
+                    } else {
+                        const subP = (p - 0.4) / 0.6, easeDamp = 1 - Math.pow(1 - subP, 3), peakX = cupCenterX, peakY = mouthY - 40 * s;
+                        apx = peakX; apy = peakY + (targetFinalY - peakY) * easeDamp;
+                    }
+                }
+                drawApple(apx, apy, ar, color); drawWaterFlow(spoutTipX, spoutTipY + 4 * s, cx, baseY - 32 * s, active && p > 0.45 && p < 0.95, s);
+
+                if (state.phase === 'selesai') {
+                    ctx.save(); ctx.textAlign = 'center';
+                    let densityText = mode === 'floating' ? 'Massa Jenis Benda < Massa Jenis Air' : (mode === 'neutral' ? 'Massa Jenis Benda = Massa Jenis Air' : 'Massa Jenis Benda > Massa Jenis Air');
+                    ctx.font = `bold ${11 * s}px "Segoe UI", sans-serif`; ctx.fillStyle = '#10b981'; 
+                    ctx.fillText('✨ GAYA APUNG = BERAT BENDA ✨', cx, 72 * s);
+                    ctx.fillStyle = '#334155'; ctx.fillText(densityText, cx, 88 * s); ctx.restore();
+                }
+                
+                ctx.font = `bold ${12 * s}px "Segoe UI", sans-serif`; ctx.fillStyle = '#1b6e3e'; ctx.textAlign = 'center'; 
+                ctx.fillText(label, cx, baseY + 55 * s);
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                const grad = ctx.createLinearGradient(0, 0, 0, H); grad.addColorStop(0, '#e0f2fe'); grad.addColorStop(1, '#bfdbfe');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+                
+                const s = Math.min(W / 850, H / 320); 
+                const baseY = H * 0.72;
+                const spacing = Math.min(W * 0.30, 330 * s);
+                const centerW = W / 2, m1 = centerW - spacing, m2 = centerW + spacing;
+                
+                ctx.strokeStyle = 'rgba(30,58,138,0.08)'; ctx.lineWidth = 1.2 * s; ctx.setLineDash([4 * s, 6 * s]);
+                ctx.beginPath(); ctx.moveTo(centerW - spacing/2, 16 * s); ctx.lineTo(centerW - spacing/2, H - 16 * s); ctx.moveTo(centerW + spacing/2, 16 * s); ctx.lineTo(centerW + spacing/2, H - 16 * s); ctx.stroke(); ctx.setLineDash([]);
+                
+                ctx.font = `bold ${14 * s}px "Segoe UI", sans-serif`; ctx.fillStyle = 'rgba(30,58,138,0.75)'; ctx.textAlign = 'center';
+                ctx.fillText('⚖️ PERCOBAAN 1', m1, 24 * s); ctx.fillText('⚖️ PERCOBAAN 2', centerW, 24 * s); ctx.fillText('⚖️ PERCOBAAN 3', m2, 24 * s);
+                
+                const p = state.progress, smoothP = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+                drawStation(m1, 175, 145, '🟡 Terapung', '#e67e22', 'floating', true, '< 175', s, baseY, p, smoothP);
+                drawStation(centerW, 200, 200, '🟢 Melayang', '#27ae60', 'neutral', false, '', s, baseY, p, smoothP);
+                drawStation(m2, 225, 200, '🔴 Tenggelam', '#c0392b', 'sinking', false, '', s, baseY, p, smoothP);
+            }
+
+            function animate() {
+                if (state.phase === 'berjalan') {
+                    state.progress += state.speed;
+                    if (state.progress >= 1) { state.progress = 1; state.phase = 'selesai'; btnStart.textContent = '✅ Selesai'; btnStart.classList.add('active'); }
+                }
+                state.time++; draw(); requestAnimationFrame(animate);
+            }
+
+            function start() {
+                if (state.phase === 'berjalan') return;
+                if (state.phase === 'selesai') { reset(); setTimeout(start, 300); return; }
+                state.phase = 'berjalan'; state.progress = 0; btnStart.textContent = '⏳ Berlangsung...'; btnStart.classList.add('active');
+            }
+
+            function reset() {
+                state.phase = 'awal'; state.progress = 0; btnStart.textContent = '▶ Mulai Percobaan'; btnStart.classList.remove('active');
+            }
+
+            btnStart.addEventListener('click', start);
+            btnResetSim.addEventListener('click', reset);
+            btnSlow.addEventListener('click', () => { state.speed = 0.0035; btnSlow.classList.add('active'); btnFast.classList.remove('active'); });
+            btnFast.addEventListener('click', () => { state.speed = 0.015; btnFast.classList.add('active'); btnSlow.classList.remove('active'); });
+
+            window.addEventListener('resize', resize); resize(); reset(); animate();
+        })();
+
+        // ================================================================
+        // FITUR PUTAR LAYAR (LANDSCAPE)
+        // ================================================================
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnRotate = document.getElementById('btnRotate');
+            const simContainer = document.getElementById('simContainer');
+            
+            if (window.innerWidth <= 768) {
+                btnRotate.style.display = 'inline-flex';
+            }
+
+            btnRotate.addEventListener('click', function() {
+                document.body.classList.toggle('landscape-mode');
+                
+                if (document.body.classList.contains('landscape-mode')) {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(err => {});
+                    }
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(err => {});
+                    }
+                    btnRotate.innerHTML = '✖ Tutup Layar Penuh';
+                } else {
+                    if (document.exitFullscreen && document.fullscreenElement) {
+                        document.exitFullscreen().catch(err => {});
+                    }
+                    if (screen.orientation && screen.orientation.unlock) {
+                        screen.orientation.unlock();
+                    }
+                    btnRotate.innerHTML = '<i class="fas fa-mobile-alt"></i> Putar Layar';
+                }
+                
+                setTimeout(() => {
+                    const rect = simContainer.getBoundingClientRect();
+                    const canvas = document.getElementById('simCanvas');
+                    if(canvas) {
+                        canvas.width = rect.width;
+                        canvas.height = rect.height - 100;
+                    }
+                }, 300);
+            });
+        });
+
+        // ================================================================
+        // LOGIKA KUIS
+        // ================================================================
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const box = document.getElementById('pembahasan' + nomorSoal);
+            opsiCards.forEach(c => c.classList.remove('benar', 'salah', 'reveal-benar'));
+            box.style.display = 'none';
+
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(c => {
+                    if (c.innerText.trim().startsWith(opsiDipilih + '.')) c.classList.add('benar');
+                });
+                box.className = 'pembahasan-box';
+                box.innerHTML = `<span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+            } else {
+                opsiCards.forEach(c => {
+                    if (c.innerText.trim().startsWith(opsiDipilih + '.')) c.classList.add('salah');
+                    if (c.innerText.trim().startsWith(opsiBenar + '.')) c.classList.add('reveal-benar');
+                });
+                box.className = 'pembahasan-box salah';
+                box.innerHTML = `<span class="pembahasan-title">Kurang Tepat. Jawaban benar: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+            }
+            box.style.display = 'block';
+            if (window.MathJax) MathJax.typesetPromise([box]);
+        }
+
+        function getPembahasan(soal) {
+            if (soal === 1) return "V = 500 cm³ = 5×10⁻⁴ m³.<br>F<sub>A</sub> = ρ·g·V = 1000 × 10 × 5×10⁻⁴ = <strong>5 N</strong>.";
+            if (soal === 2) return "Kapal berongga berisi udara sehingga volume totalnya besar. Massa jenis rata-rata kapal menjadi lebih kecil dari air laut, jadi kapal terapung.";
+            if (soal === 3) return "F<sub>A</sub> = W<sub>udara</sub> − W<sub>air</sub> = 50 − 30 = <strong>20 N</strong>.";
+            if (soal === 4) return "Benda melayang jika massa jenis benda = massa jenis zat cair (ρ<sub>benda</sub> = ρ<sub>fluida</sub>), sehingga F<sub>A</sub> = W.";
+            if (soal === 5) return "Hidrometer mengukur massa jenis zat cair berdasarkan prinsip Hukum Archimedes.";
+        }
+    </script>
+</body>
+</html>

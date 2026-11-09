@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Konsep Tekanan dan Fluida Statis</title>
+<!-- Memanggil MathJax untuk rendering rumus matematika standar -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: #3b82f6; margin: 20px 0 10px; font-size: 1.08rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-green);
+    }
+    
+    .gambar-box { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+    .gambar-box svg { max-width: 100%; height: auto; }
+    .gambar-caption { font-size: 0.85rem; color: #475569; margin-top: 10px; font-style: italic; line-height: 1.5; }
+
+    /* CSS Kuis Model Baru */
+    .soal-container { margin-bottom: 30px; }
+    .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+    
+    .opsi-card {
+        background-color: #f8fafc;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+    }
+    .opsi-card:hover { background-color: #f1f5f9; }
+    
+    .opsi-card.benar {
+        background-color: #ecfdf5;
+        border-color: #10b981;
+        color: #065f46;
+        font-weight: bold;
+    }
+    
+    .opsi-card.salah {
+        background-color: #fef2f2;
+        border-color: #ef4444;
+        color: #991b1b;
+    }
+    
+    .opsi-card.reveal-benar {
+        background-color: #ecfdf5;
+        border-color: #10b981;
+        color: #065f46;
+        font-weight: bold;
+    }
+
+    .pembahasan-box {
+        background-color: #ecfdf5;
+        border: 1px solid #10b981;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 15px;
+        display: none;
+        color: #064e3b;
+    }
+    .pembahasan-box.salah {
+        background-color: #fef2f2;
+        border-color: #ef4444;
+        color: #7f1d1d;
+    }
+    .pembahasan-title {
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .pembahasan-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Konsep Tekanan & Fluida Statis</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- A. KONSEP TEKANAN -->
+        <div class="card">
+            <h2>A. Konsep Tekanan</h2>
+            <p><strong>Tekanan (\(P\))</strong> didefinisikan sebagai besarnya gaya normal (\(F\)) yang bekerja pada suatu bidang per satuan luas permukaan (\(A\)). Satuan SI untuk tekanan adalah <strong>Pascal (Pa)</strong> atau setara dengan Newton per meter persegi (N/m²).</p>
+            
+            <div class="rumus-box">\[ P = \frac{F}{A} \]</div>
+            
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(P\)</strong> = Tekanan (Pa atau N/m²)</li>
+                <li><strong>\(F\)</strong> = Gaya (N)</li>
+                <li><strong>\(A\)</strong> = Luas bidang sentuh (m²)</li>
+            </ul>
+        </div>
+
+        <!-- B. TEKANAN UDARA -->
+        <div class="card">
+            <h2>B. Tekanan Udara (Atmosfer)</h2>
+            <p>Udara di sekitar kita memiliki massa dan berat. Lapisan udara yang menyelimuti bumi memberikan tekanan ke permukaan bumi dan segala isinya yang disebut sebagai <strong>Tekanan Atmosfer</strong> (\(P_{\text{atm}}\)).</p>
+            <p>Besarnya tekanan udara standar di permukaan laut ditetapkan sebagai 1 atmosfer (1 atm):</p>
+            
+            <div class="rumus-box">\[ 1 \text{ atm} = 76 \text{ cmHg} = 1,013 \times 10^5 \text{ Pa} \]</div>
+            
+            <p>Semakin tinggi suatu tempat dari permukaan laut (misalnya di puncak gunung), kolom udara di atasnya semakin pendek, sehingga tekanan udaranya semakin kecil. Alat pengukurnya adalah <em>Barometer</em>.</p>
+        </div>
+
+        <!-- C. TEKANAN HIDROSTATIS -->
+        <div class="card">
+            <h2>C. Tekanan Hidrostatis</h2>
+            <p><strong>Tekanan Hidrostatis (\(P_h\))</strong> adalah tekanan yang diberikan oleh zat cair yang diam (statis) akibat gaya berat kolom zat cair di atasnya.</p>
+            <p>Nilai tekanan hidrostatis <strong>hanya bergantung pada kedalaman (\(h\)), massa jenis zat cair (\(\rho\)), dan percepatan gravitasi (\(g\))</strong>. Tekanan ini tidak bergantung pada bentuk wadah.</p>
+            
+            <div class="rumus-box">\[ P_h = \rho \cdot g \cdot h \]</div>
+            
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(P_h\)</strong> = Tekanan hidrostatis (Pa)</li>
+                <li><strong>\(\rho\)</strong> = Massa jenis zat cair (kg/m³)</li>
+                <li><strong>\(g\)</strong> = Percepatan gravitasi (m/s²)</li>
+                <li><strong>\(h\)</strong> = Kedalaman titik dari permukaan zat cair (m)</li>
+            </ul>
+
+            <!-- GAMBAR 1: TEKANAN HIDROSTATIS -->
+            <div class="gambar-box">
+                <svg viewBox="0 0 480 320" width="100%" style="max-width: 460px;">
+                    <defs>
+                        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9"/>
+                            <stop offset="100%" stop-color="#0369a1" stop-opacity="0.95"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M 100 280 L 100 50 M 260 280 L 260 50" fill="none" stroke="#0c4a6e" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="100" y1="280" x2="260" y2="280" stroke="#0c4a6e" stroke-width="4" stroke-linecap="round"/>
+                    <rect x="102" y="90" width="156" height="188" fill="url(#waterGrad)"/>
+                    <line x1="60" y1="90" x2="360" y2="90" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4"/>
+                    <text x="360" y="82" font-size="11" fill="#b45309" text-anchor="end" font-weight="bold">Permukaan Air</text>
+                    <line x1="110" y1="135" x2="250" y2="135" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.8"/>
+                    <circle cx="180" cy="135" r="5.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+                    <text x="180" y="125" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="bold">B</text>
+                    <line x1="290" y1="90" x2="290" y2="135" stroke="#991b1b" stroke-width="1.5"/>
+                    <line x1="285" y1="90" x2="295" y2="90" stroke="#991b1b" stroke-width="1.5"/>
+                    <line x1="285" y1="135" x2="295" y2="135" stroke="#991b1b" stroke-width="1.5"/>
+                    <text x="305" y="116" font-size="11" fill="#991b1b" font-weight="bold">h<sub>B</sub></text>
+                    <line x1="110" y1="235" x2="250" y2="235" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.8"/>
+                    <circle cx="180" cy="235" r="5.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+                    <text x="180" y="225" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="bold">A</text>
+                    <line x1="330" y1="90" x2="330" y2="235" stroke="#991b1b" stroke-width="1.5"/>
+                    <line x1="325" y1="90" x2="335" y2="90" stroke="#991b1b" stroke-width="1.5"/>
+                    <line x1="325" y1="235" x2="335" y2="235" stroke="#991b1b" stroke-width="1.5"/>
+                    <text x="345" y="166" font-size="11" fill="#991b1b" font-weight="bold">h<sub>A</sub></text>
+                </svg>
+                <div class="gambar-caption">
+                    <strong>Gambar 1.</strong> Posisi Titik A berada jauh lebih dalam daripada Titik B (\(h_A > h_B\)). Oleh karena itu, tekanan hidrostatis di titik A jauh lebih besar daripada di titik B (<strong>\(P_A > P_B\)</strong>).
+                </div>
+            </div>
+        </div>
+
+        <!-- D. TEKANAN MUTLAK -->
+        <div class="card">
+            <h2>D. Tekanan Mutlak (Total)</h2>
+            <p>Tekanan mutlak (\(P_{\text{mutlak}}\)) adalah total tekanan yang dialami oleh suatu benda di dalam fluida (seperti saat menyelam), yang merupakan gabungan antara tekanan atmosfer luar dengan tekanan hidrostatis.</p>
+            
+            <div class="rumus-box">
+                \[ P_{\text{mutlak}} = P_{\text{atm}} + P_h \]
+                <br>
+                \[ P_{\text{mutlak}} = P_{\text{atm}} + \rho g h \]
+            </div>
+        </div>
+
+        <!-- E. HUKUM UTAMA HIDROSTATIS -->
+        <div class="card">
+            <h2>E. Hukum Utama Hidrostatis & Bejana Berhubungan</h2>
+            <p>Hukum utama hidrostatis menyatakan bahwa <em>"Semua titik yang terletak pada satu bidang datar yang sama di dalam zat cair yang diam memiliki tekanan yang sama besar."</em></p>
+            <p>Prinsip ini diaplikasikan pada <strong>Bejana Berhubungan</strong>: jika wadah diisi dengan satu jenis zat cair yang sama, permukaan zat cair di setiap bagian wadah akan selalu sama tinggi dan sejajar, meskipun bentuk bagian atas wadahnya beraneka ragam.</p>
+            
+            <div class="rumus-box">
+                \[ P_A = P_B \]
+                <br>
+                \[ \rho \cdot g \cdot h_A = \rho \cdot g \cdot h_B \]
+            </div>
+
+            <!-- GAMBAR 2: PIPA U -->
+            <div class="gambar-box">
+                <svg viewBox="0 0 450 300" width="100%" style="max-width: 400px;">
+                    <path d="M 125 50 L 125 250 L 325 250 L 325 50" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
+                    <path d="M 165 50 L 165 230 L 285 230 L 285 50" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
+                    <path d="M 285 50 L 285 250" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
+                    <path d="M 325 50 L 325 230" fill="none" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
+                    <path d="M 125 120 L 165 120 L 165 230 L 285 230 L 285 120 L 325 120 L 325 250 L 125 250 Z" fill="#38bdf8" />
+                    <line x1="70" y1="120" x2="380" y2="120" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4"/>
+                    <text x="385" y="115" font-size="12" fill="#b45309" text-anchor="start" font-weight="bold">Permukaan Air</text>
+                    <line x1="70" y1="200" x2="380" y2="200" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,5"/>
+                    <text x="75" y="192" font-size="11" fill="#991b1b" font-weight="bold">Bidang Datar Acuan</text>
+                    <circle cx="145" cy="200" r="5.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+                    <text x="145" y="190" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="bold">A</text>
+                    <circle cx="305" cy="200" r="5.5" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+                    <text x="305" y="190" font-size="13" fill="#dc2626" text-anchor="middle" font-weight="bold">B</text>
+                </svg>
+                <div class="gambar-caption">
+                    <strong>Gambar 2.</strong> Pipa U berisi zat cair yang sama. Titik <strong>A</strong> dan <strong>B</strong> terletak pada satu bidang datar acuan yang sama, sehingga tekanan hidrostatis di kedua titik tersebut bernilai sama besar (<strong>\(P_A = P_B\)</strong>).
+                </div>
+            </div>
+        </div>
+
+        <!-- F. UJI PEMAHAMAN INTERAKTIF (HOTS) -->
+        <div class="card">
+            <h2>F. Uji Pemahaman Interaktif (HOTS)</h2>
+            <p>Pilih satu jawaban yang paling tepat pada setiap soal. Sistem akan langsung memberikan umpan balik dan pembahasan.</p>
+
+            <!-- SOAL 1 -->
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Sebuah planet X memiliki massa 4 kali massa Bumi, dan jari-jarinya 2 kali jari-jari Bumi. Jika berat seorang astronot di Bumi adalah 600 N, maka berat astronot tersebut di planet X adalah...</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'B')">A. 150 N</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'B')">B. 600 N</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'B')">C. 1200 N</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'B')">D. 2400 N</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+
+            <!-- SOAL 2 -->
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Seorang penyelam berada di kedalaman 10 meter di bawah permukaan laut. Jika massa jenis air laut adalah \(1.025 \text{ kg/m}^3\) dan percepatan gravitasi \(10 \text{ m/s}^2\), berapakah tekanan hidrostatis yang dialami penyelam tersebut?</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'B')">A. 10.250 Pa</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'B')">B. 102.500 Pa</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'B')">C. 1.025.000 Pa</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'B')">D. 102.500.000 Pa</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+
+            <!-- SOAL 3 -->
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Mengapa bagian bawah bendungan air biasanya dibuat lebih tebal daripada bagian atasnya?</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'B')">A. Karena tekanan udara di bawah lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'B')">B. Karena tekanan hidrostatis bergantung pada kedalaman, sehingga semakin ke bawah tekanannya semakin besar.</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'B')">C. Karena massa jenis air di bagian bawah lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'B')">D. Karena untuk menghemat biaya pembangunan.</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+
+            <!-- SOAL 4 -->
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Dua wadah berbentuk bejana berhubungan diisi dengan air. Wadah pertama berbentuk tabung sempit dan wadah kedua berbentuk corong lebar. Bagaimana perbandingan tekanan hidrostatis di dasar kedua wadah jika ketinggian air di keduanya sama?</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'C')">A. Tekanan di wadah corong lebih besar karena volumenya lebih banyak.</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'C')">B. Tekanan di tabung sempit lebih besar karena gaya gravitasi lebih terpusat.</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'C')">C. Tekanan di kedua wadah sama besar karena kedalamannya sama.</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'C')">D. Tidak bisa ditentukan karena bentuk wadahnya berbeda.</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+
+            <!-- SOAL 5 -->
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Tekanan mutlak yang dialami oleh seorang penyelam di kedalaman 5 meter (dengan \(P_{\text{atm}} = 1 \text{ atm} = 10^5 \text{ Pa}\), \(\rho_{\text{air}} = 1000 \text{ kg/m}^3\), \(g = 10 \text{ m/s}^2\)) adalah...</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'C')">A. \(0,5 \times 10^5 \text{ Pa}\)</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'C')">B. \(1,0 \times 10^5 \text{ Pa}\)</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'C')">C. \(1,5 \times 10^5 \text{ Pa}\)</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'C')">D. \(2,0 \times 10^5 \text{ Pa}\)</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT UNTUK INTERAKSI KUIS -->
+    <script>
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const pembahasanBox = document.getElementById('pembahasan' + nomorSoal);
+            
+            // Reset state
+            opsiCards.forEach(card => {
+                card.classList.remove('benar', 'salah', 'reveal-benar');
+            });
+            pembahasanBox.style.display = 'none';
+
+            // Cek Jawaban
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) {
+                        card.classList.add('benar');
+                    }
+                });
+                
+                pembahasanBox.className = 'pembahasan-box';
+                pembahasanBox.innerHTML = `
+                    <span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span>
+                    <div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>
+                `;
+                pembahasanBox.style.display = 'block';
+
+            } else {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) {
+                        card.classList.add('salah');
+                    }
+                    if (card.innerText.trim().startsWith(opsiBenar + '.')) {
+                        card.classList.add('reveal-benar');
+                    }
+                });
+
+                pembahasanBox.className = 'pembahasan-box salah';
+                pembahasanBox.innerHTML = `
+                    <span class="pembahasan-title">Kurang Tepat. Jawaban yang benar adalah: ${opsiBenar}.</span>
+                    <div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>
+                `;
+                pembahasanBox.style.display = 'block';
+            }
+
+            // Render ulang MathJax di dalam pembahasan yang baru muncul
+            if (window.MathJax) {
+                MathJax.typesetPromise([pembahasanBox]);
+            }
+        }
+
+        function getPembahasan(soal) {
+            if(soal === 1) return "Percepatan gravitasi \(g\) sebanding dengan \(M / R^2\).<br>\[ \\frac{g_X}{g_B} = \\left(\\frac{M_X}{M_B}\\right) \\times \\left(\\frac{R_B}{R_X}\\right)^2 \]<br>\[ \\frac{g_X}{g_B} = \\left(\\frac{4}{1}\\right) \\times \\left(\\frac{1}{2}\\right)^2 = 4 \\times \\frac{1}{4} = 1 \]<br>Karena percepatan gravitasinya sama (1:1), maka berat astronot di planet X juga sama, yaitu <strong>600 N</strong>.";
+            
+            if(soal === 2) return "Gunakan rumus tekanan hidrostatis:<br>\[ P_h = \\rho \\cdot g \\cdot h \]<br>\[ P_h = 1.025 \\times 10 \\times 10 = 102.500 \\text{ Pa} \]";
+            
+            if(soal === 3) return "Tekanan hidrostatis (\(P_h = \\rho g h\)) sebanding dengan kedalaman (\(h\)). Semakin dalam, tekanan semakin besar, sehingga dinding harus lebih tebal agar tidak jebol.";
+            
+            if(soal === 4) return "Sesuai Hukum Utama Hidrostatis, tekanan hanya bergantung pada kedalaman (\(h\)), bukan pada bentuk atau volume wadah. Karena kedalamannya sama, tekanannya juga sama.";
+            
+            if(soal === 5) return "\[ P_{\\text{mutlak}} = P_{\\text{atm}} + P_h \]<br>\[ P_{\\text{mutlak}} = 10^5 + (1000 \\times 10 \\times 5) \]<br>\[ P_{\\text{mutlak}} = 100.000 + 50.000 = 150.000 \\text{ Pa} \\; (1,5 \\times 10^5 \\text{ Pa}) \]";
+        }
+    </script>
+
+</body>
+</html>

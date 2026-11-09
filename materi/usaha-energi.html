@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 4: Usaha dan Energi</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+    }
+
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+
+    /* HEADER */
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    /* KONTEN */
+    .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+
+    /* RUMUS BOX */
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.1rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* SIMULASI BANDUL */
+    .simulasi-container { background: #0f172a; border-radius: 12px; padding: 15px; color: white; margin-top: 15px; }
+    
+    .panel-atas {
+        display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;
+        background: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155;
+    }
+
+    .area-bandul {
+        position: relative; height: 220px; background: #0f172a; border-radius: 8px;
+        overflow: hidden; border-bottom: 4px solid #334155;
+    }
+    
+    .garis-referensi {
+        position: absolute; bottom: 30px; width: 100%; border-top: 1px dashed #475569;
+    }
+    .label-referensi { position: absolute; bottom: 35px; right: 10px; font-size: 0.7rem; color: #64748b; }
+
+    .tiang-penyangga {
+        position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+        width: 20px; height: 30px; background: #475569; border-radius: 0 0 5px 5px;
+    }
+    .tali {
+        position: absolute; top: 30px; left: 50%; transform-origin: top center;
+        width: 2px; height: 150px; background: #94a3b8;
+    }
+    .bandul {
+        position: absolute; bottom: -20px; left: -19px;
+        width: 40px; height: 40px; background: var(--accent-yellow);
+        border-radius: 50%; box-shadow: inset -5px -5px 10px rgba(0,0,0,0.5);
+        display: flex; justify-content: center; align-items: center; font-weight: bold; color: #0f172a;
+    }
+
+    /* Readout Data */
+    .data-readout {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155;
+    }
+    .data-box { text-align: center; }
+    .data-box span { display: block; font-size: 0.75rem; color: #94a3b8; }
+    .data-box strong { font-size: 1.1rem; color: var(--accent-yellow); font-family: monospace; }
+
+    /* Grafik Energi */
+    .grafik-energi {
+        display: flex; justify-content: space-around; align-items: flex-end;
+        height: 90px; background: #0f172a; border-radius: 8px; padding: 10px;
+        border: 1px solid #334155;
+    }
+    .bar-container { display: flex; flex-direction: column; align-items: center; width: 25%; }
+    .bar {
+        width: 100%; transition: height 0.05s; border-radius: 4px 4px 0 0; 
+        position: relative; display: flex; justify-content: center;
+    }
+    .bar-ep { background: #3b82f6; }
+    .bar-ek { background: #ef4444; }
+    .bar-em { background: var(--teal); }
+    
+    .bar::before {
+        content: attr(data-value); position: absolute; top: -18px;
+        font-size: 10px; font-weight: bold; color: #cbd5e1; white-space: nowrap;
+    }
+    .bar-label { font-size: 0.7rem; color: #cbd5e1; margin-top: 5px; text-align: center;}
+
+    .btn-mulai {
+        background: var(--teal); color: #0f172a; border: none; padding: 12px;
+        border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem;
+    }
+    .btn-mulai:hover { background: #14b8a6; }
+    .btn-mulai:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+
+    .panel-bawah { display: flex; flex-direction: column; gap: 12px; background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; }
+    .kontrol-simulasi label { display: flex; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 5px;}
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); }
+
+    .hasil-hitung { 
+        padding: 10px; background: rgba(45, 212, 191, 0.1); border: 1px solid var(--teal); 
+        border-radius: 8px; font-family: monospace; text-align: center; color: var(--teal); 
+        font-size: 0.9rem; font-weight: bold;
+    }
+
+    /* KUIS */
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); font-size: 0.95rem;}
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    .pembahasan { display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid var(--green-success); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #065f46; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Materi 4: <span>Usaha & Energi</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- PENGANTAR -->
+        <div class="card">
+            <h2>A. Konsep Usaha dan Energi</h2>
+            <p><strong>Usaha (W)</strong> dalam fisika didefinisikan sebagai perpindahan yang disebabkan oleh gaya.</p>
+            <div class="rumus-box">W = F × s × cos θ</div>
+            <p><strong>Energi (E)</strong> adalah kemampuan untuk melakukan usaha. Satuan usaha dan energi sama, yaitu Joule (J).</p>
+
+            <h3>1. Energi Kinetik (Ek)</h3>
+            <p>Energi yang dimiliki oleh benda yang sedang bergerak.</p>
+            <div class="rumus-box">Ek = ½ × m × v²</div>
+
+            <h3>2. Energi Potensial (Ep)</h3>
+            <p>Energi yang dimiliki benda karena posisi atau ketinggiannya.</p>
+            <div class="rumus-box">Ep = m × g × h</div>
+
+            <h3>3. Hukum Kekekalan Energi Mekanik</h3>
+            <div class="rumus-box">Em = Ep + Ek = Konstan</div>
+        </div>
+
+        <!-- SIMULASI BANDUL -->
+        <div class="card">
+            <h2>B. Simulasi Kekekalan Energi (Bandul)</h2>
+            <p>Atur ketinggian awal, lalu tekan "Mulai". Bandul akan berayun terus-menerus tanpa henti. Tekan <strong>Pause</strong> untuk melihat data aktual dan membuktikan perhitungannya!</p>
+            
+            <div class="simulasi-container">
+                <div class="panel-atas">
+                    <div class="area-bandul" id="area-bandul">
+                        <div class="garis-referensi"></div>
+                        <div class="label-referensi">Titik Terendah (h=0)</div>
+                        <div class="tiang-penyangga"></div>
+                        <div class="tali" id="tali">
+                            <div class="bandul">m</div>
+                        </div>
+                    </div>
+
+                    <!-- READOUT DATA -->
+                    <div class="data-readout">
+                        <div class="data-box">
+                            <span>Ketinggian (h)</span>
+                            <strong id="readout-h">0.00 m</strong>
+                        </div>
+                        <div class="data-box">
+                            <span>Kecepatan (v)</span>
+                            <strong id="readout-v">0.00 m/s</strong>
+                        </div>
+                    </div>
+
+                    <!-- Grafik Energi -->
+                    <div class="grafik-energi">
+                        <div class="bar-container">
+                            <div class="bar bar-ep" id="bar-ep" style="height: 0px;" data-value="0 J"></div>
+                            <div class="bar-label">Energi Potensial</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar bar-ek" id="bar-ek" style="height: 0px;" data-value="0 J"></div>
+                            <div class="bar-label">Energi Kinetik</div>
+                        </div>
+                        <div class="bar-container">
+                            <div class="bar bar-em" id="bar-em" style="height: 0px;" data-value="0 J"></div>
+                            <div class="bar-label">Energi Mekanik</div>
+                        </div>
+                    </div>
+
+                    <div class="hasil-hitung" id="hasil-energi">
+                        Em = Ep + Ek = 0 J
+                    </div>
+
+                    <button id="btn-mulai" class="btn-mulai" onclick="toggleAnimasi()">▶ Lepaskan Bandul</button>
+                </div>
+
+                <div class="panel-bawah kontrol-simulasi">
+                    <div>
+                        <label>Ketinggian Awal (h) <span id="label-h">0.5 meter</span></label>
+                        <input type="range" id="slider-h" min="0.1" max="1.0" step="0.1" value="0.5" oninput="resetBandul()">
+                    </div>
+                    <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px; text-align: center;">*Asumsi massa bandul (m) = 1 kg, dan g = 10 m/s².</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KUIS INTERAKTIF HOTS -->
+        <div class="card">
+            <h2>C. Uji Pemahaman Interaktif (HOTS)</h2>
+            <div class="kuis-box">
+                
+                <div class="soal" id="soal1">
+                    <div class="soal-teks">1. Sebuah bola bermassa 2 kg dilempar vertikal ke atas dengan kecepatan awal 10 m/s. Jika g = 10 m/s², berapakah energi kinetik bola tepat saat berada di titik tertinggi?</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'C')">A. 200 J</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'C')">B. 100 J</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'C')">C. 0 J</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'C')">D. 20 J</button>
+                    <div class="pembahasan" id="pembahasan-soal1">
+                        <strong>Benar! Jawaban: C.</strong><br>
+                        Tepat di titik tertinggi, bola berhenti sesaat sebelum jatuh kembali. Karena kecepatannya nol (v = 0), maka Energi Kinetiknya juga nol (Ek = ½ × m × 0² = 0). Seluruh energinya berubah menjadi Energi Potensial.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal2">
+                    <div class="soal-teks">2. Buah kelapa bermassa 2 kg jatuh dari ketinggian 10 meter. Jika g = 10 m/s², berapakah kecepatan buah kelapa tepat sebelum menyentuh tanah? (Gunakan Hukum Kekekalan Energi)</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'B')">A. 10 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'B')">B. 10√2 m/s (sekitar 14,1 m/s)</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'B')">C. 20 m/s</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'B')">D. 100 m/s</button>
+                    <div class="pembahasan" id="pembahasan-soal2">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Energi Mekanik di atas = Energi Mekanik di bawah.<br>
+                        m.g.h + 0 = 0 + ½.m.v² (massa bisa dicoret)<br>
+                        10 × 10 = ½ × v²<br>
+                        100 = ½ v² -> v² = 200 -> v = √200 = 10√2 m/s (sekitar 14,1 m/s).
+                    </div>
+                </div>
+
+                <div class="soal" id="soal3">
+                    <div class="soal-teks">3. Sebuah balok ditarik dengan gaya 50 N membentuk sudut 60 derajat terhadap arah horizontal. Jika balok berpindah sejauh 4 meter, berapakah usaha yang dilakukan gaya tersebut? (cos 60 = 0,5)</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'A')">A. 100 Joule</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'A')">B. 200 Joule</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'A')">C. 50 Joule</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'A')">D. 0 Joule</button>
+                    <div class="pembahasan" id="pembahasan-soal3">
+                        <strong>Benar! Jawaban: A.</strong><br>
+                        W = F × s × cos θ<br>
+                        W = 50 × 4 × cos 60<br>
+                        W = 200 × 0,5 = <strong>100 Joule</strong>.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal4">
+                    <div class="soal-teks">4. Perhatikan pernyataan berikut tentang sebuah benda yang bergerak jatuh bebas: (1) Energi mekaniknya tetap, (2) Energi potensialnya berkurang, (3) Energi kinetiknya bertambah. Pernyataan yang benar adalah...</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'A', 'D')">A. Hanya (1) dan (2)</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'B', 'D')">B. Hanya (2) dan (3)</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'C', 'D')">C. Hanya (1) dan (3)</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal4', 'D', 'D')">D. Semua pernyataan benar (1, 2, dan 3)</button>
+                    <div class="pembahasan" id="pembahasan-soal4">
+                        <strong>Benar! Jawaban: D.</strong><br>
+                        Saat jatuh bebas, ketinggian berkurang (Ep berkurang), kecepatan bertambah (Ek bertambah). Karena tidak ada gesekan, total Energi Mekanik (Ep + Ek) selalu tetap.
+                    </div>
+                </div>
+
+                <div class="soal" id="soal5">
+                    <div class="soal-teks">5. Sebuah mesin derek mengangkat peti bermassa 100 kg setinggi 5 meter dalam waktu 10 detik. Berapakah daya (P) yang dikeluarkan mesin derek tersebut? (g = 10 m/s², P = W/t)</div>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'A', 'B')">A. 50 Watt</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'B', 'B')">B. 500 Watt</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'C', 'B')">C. 5000 Watt</button>
+                    <button class="opsi-btn" onclick="cekKuis('soal5', 'D', 'B')">D. 1000 Watt</button>
+                    <div class="pembahasan" id="pembahasan-soal5">
+                        <strong>Benar! Jawaban: B.</strong><br>
+                        Usaha (W) = m.g.h = 100 × 10 × 5 = 5000 Joule.<br>
+                        Daya (P) = W / t = 5000 / 10 = <strong>500 Watt</strong>.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ================= LOGIKA KUIS =================
+        function cekKuis(idSoal, jawabanDipilih, jawabanBenar) {
+            const soalContainer = document.getElementById(idSoal);
+            const buttons = soalContainer.querySelectorAll('.opsi-btn');
+            const pembahasan = document.getElementById('pembahasan-' + idSoal);
+
+            buttons.forEach(btn => {
+                if (btn.innerText.startsWith(jawabanDipilih)) {
+                    if (jawabanDipilih === jawabanBenar) btn.classList.add('benar');
+                    else btn.classList.add('salah');
+                }
+                if (btn.innerText.startsWith(jawabanBenar)) btn.classList.add('benar');
+                btn.disabled = true;
+                btn.style.cursor = 'default';
+            });
+            pembahasan.style.display = 'block';
+        }
+
+        // ================= LOGIKA SIMULASI BANDUL =================
+        const g = 10; 
+        const m = 1; 
+        let h_awal = 0.5; 
+        
+        let sudut = 0; 
+        let kecepatanSudut = 0;
+        let sedangAnimasi = false;
+        let animasiId = null;
+
+        const tali = document.getElementById('tali');
+        const btnMulai = document.getElementById('btn-mulai');
+        const readoutH = document.getElementById('readout-h');
+        const readoutV = document.getElementById('readout-v');
+        
+        // Skala visual: 1 meter = 150 pixel
+        const skalaTinggi = 150; 
+        const panjangTali = 150;
+
+        function resetBandul() {
+            cancelAnimationFrame(animasiId);
+            sedangAnimasi = false;
+            btnMulai.innerText = "▶ Lepaskan Bandul";
+            
+            h_awal = parseFloat(document.getElementById('slider-h').value);
+            document.getElementById('label-h').innerText = h_awal.toFixed(1) + " meter";
+
+            const cosSudut = (panjangTali - (h_awal * skalaTinggi)) / panjangTali;
+            const validCos = Math.max(-1, Math.min(1, cosSudut));
+            const sudutRad = Math.acos(validCos);
+            
+            sudut = -sudutRad; 
+            kecepatanSudut = 0;
+            
+            tali.style.transform = `rotate(${sudut}rad)`;
+            
+            // Update Readout & Grafik Awal
+            updateReadout(sudut, 0);
+            const Ep = m * g * h_awal;
+            const Ek = 0;
+            updateGrafikEnergi(Ep, Ek);
+        }
+
+        function updateReadout(sudutRad, kecepatanSudutRad) {
+            const panjangTaliMeter = panjangTali / skalaTinggi;
+            
+            // h = L - L.cos(sudut)
+            const h = panjangTaliMeter - (panjangTaliMeter * Math.cos(sudutRad));
+            
+            // v = omega * L
+            const v = Math.abs(kecepatanSudutRad * panjangTaliMeter);
+
+            readoutH.innerText = h.toFixed(2) + " m";
+            readoutV.innerText = v.toFixed(2) + " m/s";
+        }
+
+        function updateGrafikEnergi(Ep, Ek) {
+            const Em = Ep + Ek;
+            const maxEnergi = 10; 
+
+            // Karena tinggi divalidasi agar tidak minus, kita pakai Math.max(0, ...)
+            const tinggiEp = Math.max(0, (Ep / maxEnergi) * 60);
+            const tinggiEk = Math.max(0, (Ek / maxEnergi) * 60);
+            const tinggiEm = Math.max(0, (Em / maxEnergi) * 60);
+
+            document.getElementById('bar-ep').style.height = tinggiEp + 'px';
+            document.getElementById('bar-ep').setAttribute('data-value', Ep.toFixed(1) + ' J');
+
+            document.getElementById('bar-ek').style.height = tinggiEk + 'px';
+            document.getElementById('bar-ek').setAttribute('data-value', Ek.toFixed(1) + ' J');
+
+            document.getElementById('bar-em').style.height = tinggiEm + 'px';
+            document.getElementById('bar-em').setAttribute('data-value', Em.toFixed(1) + ' J');
+
+            document.getElementById('hasil-energi').innerHTML = `Em = Ep + Ek = ${Em.toFixed(1)} J`;
+        }
+
+        function toggleAnimasi() {
+            if (sedangAnimasi) {
+                sedangAnimasi = false;
+                cancelAnimationFrame(animasiId);
+                btnMulai.innerText = "▶ Lanjutkan";
+            } else {
+                sedangAnimasi = true;
+                btnMulai.innerText = "⏸ Pause";
+                loopBandul();
+            }
+        }
+
+        function loopBandul() {
+            if (!sedangAnimasi) return;
+
+            const panjangTaliMeter = panjangTali / skalaTinggi;
+            const percepatanSudut = -(g / panjangTaliMeter) * Math.sin(sudut);
+            
+            kecepatanSudut += percepatanSudut * 0.02; 
+            sudut += kecepatanSudut * 0.02;
+
+            // Faktor redaman (0.999) DIHAPUS agar bandul berayun selamanya
+
+            tali.style.transform = `rotate(${sudut}rad)`;
+
+            updateReadout(sudut, kecepatanSudut);
+
+            const h_sekarang = panjangTaliMeter - (panjangTaliMeter * Math.cos(sudut));
+            const Ep = m * g * h_sekarang;
+            
+            // Gunakan Em konstan dari posisi awal
+            const Em_total = m * g * h_awal;
+            
+            // Ek = Em - Ep
+            const Ek = Math.max(0, Em_total - Ep); 
+
+            updateGrafikEnergi(Ep, Ek);
+
+            animasiId = requestAnimationFrame(loopBandul);
+        }
+
+        window.onload = resetBandul;
+    </script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rekap Skor – Latihan TKA Fisika</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f3f4f6; color: #1f2937; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    /* Header & Tombol */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    h1 { font-size: 1.4rem; color: #111827; }
+    .btn-keluar { background: #dc2626; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.9rem;}
+    .btn-keluar:hover { background: #b91c1c; }
+
+    /* Panel Filter */
+    .filter-panel { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; align-items: center; }
+    .filter-group { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+    .filter-group select, .filter-group input { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; outline: none; }
+    .btn-action { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
+    .btn-action:hover { background: #bae6fd; }
+
+    /* Ringkasan Info */
+    .summary-box { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; }
+    .summary-box strong { color: #111827; }
+
+    /* Tabel Data */
+    .table-responsive { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+    th, td { padding: 12px 15px; border-bottom: 1px solid #e5e7eb; }
+    th { background: #e0f2fe; color: #0369a1; font-weight: 600; white-space: nowrap; }
+    
+    /* Warna Status */
+    .status-selesai { color: #16a34a; font-weight: bold; }
+    
+    /* Progress Bar */
+    .progress-bar { background: #e5e7eb; border-radius: 10px; height: 8px; width: 80px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 5px; }
+    .progress-fill { background: #3b82f6; height: 100%; border-radius: 10px; }
+
+    /* Tabel Analisis */
+    .table-analisis { width: 100%; max-width: 700px; border-collapse: collapse; font-size: 0.9rem; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-top: 10px;}
+    .table-analisis th { background: #e0f2fe; color: #0369a1; padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    .table-analisis td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
+    .text-red { color: #dc2626; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Rekap Skor – Latihan TKA Fisika</h1>
+        <a href="index.html" class="btn-keluar">Keluar / Kembali ke Login</a>
+    </div>
+
+    <!-- Panel Filter -->
+    <div class="filter-panel">
+        <div class="filter-group">
+            <label>Tampilan</label>
+            <select><option>Terbaik per siswa</option><option>Semua percobaan</option></select>
+        </div>
+        <div class="filter-group">
+            <label>Status</label>
+            <select><option>Semua</option><option>Selesai</option></select>
+        </div>
+        <div class="filter-group">
+            <label>Kelas</label>
+            <select><option>Semua</option><option>XI-A</option><option>XI-B</option></select>
+        </div>
+        <input type="text" placeholder="Cari NIS / nama" style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px;">
+        <button class="btn-action">Unduh CSV</button>
+        <button class="btn-action" onclick="muatDataDariSheets()">Muat ulang data</button>
+    </div>
+
+    <!-- Ringkasan -->
+    <div class="summary-box">
+        <strong>Total Data Masuk:</strong> <span id="total-data">Memuat...</span> &middot; 
+        <strong>Status Koneksi:</strong> <span id="status-koneksi">Menghubungkan...</span>
+    </div>
+
+    <!-- Tabel Utama -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nama</th>
+                    <th>Kelas</th>
+                    <th>Status</th>
+                    <th>Progres</th>
+                    <th>Waktu</th>
+                    <th>Benar</th>
+                    <th>Skor</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-data-siswa">
+                <tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat data dari Google Sheets...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 30px;">
+        Klik baris untuk melihat rincian. Baris miring = draft yang belum dikirim (skor sementara, bisa berubah). Soal yang tidak dijawab dihitung salah.
+    </p>
+
+    <!-- Tabel Analisis (Disesuaikan dengan Materi Proyek) -->
+    <h3 style="margin-bottom: 10px; font-size: 1.1rem;">Analisis per indikator (soal yang paling banyak salah di urutan atas)</h3>
+    <table class="table-analisis">
+        <thead>
+            <tr>
+                <th>Indikator</th>
+                <th>Elemen › Subelemen</th>
+                <th>Benar</th>
+                <th>% benar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Dinamika › Vektor dan Hukum Newton</td>
+                <td>0/10</td>
+                <td class="text-red">0%</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Dinamika › Usaha dan Energi</td>
+                <td>0/10</td>
+                <td class="text-red">0%</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Fluida › Statis</td>
+                <td>0/10</td>
+                <td class="text-red">0%</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Fluida › Dinamis</td>
+                <td>0/10</td>
+                <td class="text-red">0%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // ========================================================
+    // URL GOOGLE APPS SCRIPT KAMU
+    // ========================================================
+    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec"; 
+    const PIN_GURU = "2026"; 
+
+    async function muatDataDariSheets() {
+        const tbody = document.getElementById('tabel-data-siswa');
+        const summaryTotal = document.getElementById('total-data');
+        const summaryStatus = document.getElementById('status-koneksi');
+
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat ulang data...</td></tr>`;
+
+        try {
+            // Memanggil URL dengan parameter PIN
+            const response = await fetch(`${URL_GOOGLE_SCRIPT}?pin=${PIN_GURU}`);
+            const result = await response.json();
+
+            // Cek status dari Apps Script
+            if (result.status !== 'ok') {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red; padding: 20px;">Gagal: ${result.message || 'Akses ditolak (PIN salah)'}</td></tr>`;
+                summaryStatus.innerHTML = `<span style="color:red;">Koneksi Gagal.</span>`;
+                return;
+            }
+
+            const dataSiswa = result.data;
+            
+            summaryTotal.innerText = dataSiswa.length + " siswa";
+            summaryStatus.innerHTML = `<span style="color:#16a34a;">Berhasil terhubung ke Google Sheets.</span>`;
+
+            if (dataSiswa.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Belum ada data siswa yang masuk.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = ''; // Kosongkan loading
+
+            // Looping data dari Google Sheets
+            dataSiswa.forEach((siswa, index) => {
+                // Ambil data berdasarkan nama Header (Judul Kolom) di Google Sheets
+                const nama = siswa['Nama'] || siswa['nama'] || '-';
+                const kelas = siswa['Kelas'] || siswa['kelas'] || '-';
+                const waktu = siswa['Waktu'] || siswa['waktu'] || '-';
+                const skor = siswa['Skor'] !== undefined ? siswa['Skor'] : (siswa['skor'] || 0);
+                const benar = siswa['Benar'] !== undefined ? siswa['Benar'] : (siswa['benar'] || 0);
+                const totalSoal = siswa['TotalSoal'] !== undefined ? siswa['TotalSoal'] : (siswa['totalSoal'] || 50);
+                
+                // Hitung persentase progres
+                const progresPersen = totalSoal > 0 ? (benar / totalSoal) * 100 : 0;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${nama}</strong></td>
+                    <td>${kelas}</td>
+                    <td class="status-selesai">Selesai</td>
+                    <td>
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${progresPersen}%;"></div></div> 
+                        ${benar}/${totalSoal}
+                    </td>
+                    <td>${waktu}</td>
+                    <td>${benar}</td>
+                    <td class="text-red">${skor}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+        } catch (error) {
+            console.error("Gagal mengambil data:", error);
+            tbody.innerHTML = `
+                <tr><td colspan="8" style="text-align:center; color:red; padding: 20px;">Gagal memuat data. Cek koneksi internet atau pastikan Web App di Apps Script sudah di-deploy dengan akses "Siapa Saja (Anyone)".</td></tr>
+            `;
+            summaryStatus.innerHTML = `<span style="color:red;">Koneksi Error.</span>`;
+        }
+    }
+
+    // Panggil fungsi saat halaman selesai dimuat
+    window.onload = muatDataDariSheets;
+</script>
+</body>
+</html>
