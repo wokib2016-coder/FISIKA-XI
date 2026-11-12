@@ -19,6 +19,7 @@
     .filter-panel { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; align-items: center; }
     .filter-group { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
     .filter-group select, .filter-group input { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; outline: none; }
+    .filter-group input { flex-grow: 1; min-width: 150px; }
     .btn-action { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
     .btn-action:hover { background: #bae6fd; }
 
@@ -31,6 +32,10 @@
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
     th, td { padding: 12px 15px; border-bottom: 1px solid #e5e7eb; }
     th { background: #e0f2fe; color: #0369a1; font-weight: 600; white-space: nowrap; }
+    
+    /* Baris Tabel Interaktif */
+    #tabel-data-siswa tr { transition: background-color 0.2s; cursor: pointer; }
+    #tabel-data-siswa tr:hover { background-color: #f8fafc; }
     
     /* Warna Status */
     .status-selesai { color: #16a34a; font-weight: bold; }
@@ -58,18 +63,32 @@
     <div class="filter-panel">
         <div class="filter-group">
             <label>Tampilan</label>
-            <select><option>Terbaik per siswa</option><option>Semua percobaan</option></select>
+            <select id="filter-tampilan" onchange="filterData()">
+                <option value="terbaik">Terbaik per siswa</option>
+                <option value="semua">Semua percobaan</option>
+            </select>
         </div>
         <div class="filter-group">
             <label>Status</label>
-            <select><option>Semua</option><option>Selesai</option></select>
+            <select id="filter-status" onchange="filterData()">
+                <option value="Semua">Semua</option>
+                <option value="Selesai">Selesai</option>
+            </select>
         </div>
         <div class="filter-group">
             <label>Kelas</label>
-            <select><option>Semua</option><option>XI-A</option><option>XI-B</option></select>
+            <select id="filter-kelas" onchange="filterData()">
+                <option value="Semua">Semua</option>
+                <option value="XI-A">XI-A</option>
+                <option value="XI-B">XI-B</option>
+                <option value="XI-C">XI-C</option>
+                <option value="XI-D">XI-D</option>
+                <option value="XI-E">XI-E</option>
+                <option value="XI-F">XI-F</option>
+            </select>
         </div>
-        <input type="text" placeholder="Cari NIS / nama" style="padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px;">
-        <button class="btn-action">Unduh CSV</button>
+        <input type="text" id="filter-cari" placeholder="Cari NIS / nama..." oninput="filterData()">
+        <button class="btn-action" onclick="unduhCSV()">Unduh CSV</button>
         <button class="btn-action" onclick="muatDataDariSheets()">Muat ulang data</button>
     </div>
 
@@ -146,71 +165,45 @@
 
 <script>
     // ========================================================
-    // URL GOOGLE APPS SCRIPT KAMU
+    // KONFIGURASI
     // ========================================================
     const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec"; 
     const PIN_GURU = "2026"; 
+    
+    let semuaDataSiswa = []; // Menyimpan data asli dari server
+    let dataTampil = [];     // Menyimpan data setelah difilter
 
+    // ========================================================
+    // FUNGSI UNTUK MENGAMBIL DATA DARI GOOGLE SHEETS
+    // ========================================================
     async function muatDataDariSheets() {
         const tbody = document.getElementById('tabel-data-siswa');
         const summaryTotal = document.getElementById('total-data');
         const summaryStatus = document.getElementById('status-koneksi');
 
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat ulang data...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat ulang data dari Google Sheets...</td></tr>`;
 
         try {
-            // Memanggil URL dengan parameter PIN
             const response = await fetch(`${URL_GOOGLE_SCRIPT}?pin=${PIN_GURU}`);
             const result = await response.json();
 
-            // Cek status dari Apps Script
             if (result.status !== 'ok') {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red; padding: 20px;">Gagal: ${result.message || 'Akses ditolak (PIN salah)'}</td></tr>`;
                 summaryStatus.innerHTML = `<span style="color:red;">Koneksi Gagal.</span>`;
                 return;
             }
 
-            const dataSiswa = result.data;
-            
-            summaryTotal.innerText = dataSiswa.length + " siswa";
+            semuaDataSiswa = result.data;
+            summaryTotal.innerText = semuaDataSiswa.length + " siswa";
             summaryStatus.innerHTML = `<span style="color:#16a34a;">Berhasil terhubung ke Google Sheets.</span>`;
 
-            if (dataSiswa.length === 0) {
+            if (semuaDataSiswa.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Belum ada data siswa yang masuk.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = ''; // Kosongkan loading
-
-            // Looping data dari Google Sheets
-            dataSiswa.forEach((siswa, index) => {
-                // PERBAIKAN: Nama key disesuaikan 100% dengan Header di Google Sheets Anda
-                const nama = siswa['NAMA'] || '-';
-                const kelas = siswa['KELAS'] || '-';
-                const waktu = siswa['WAKTU'] || '-';
-                const skor = siswa['SKOR'] || 0;
-                const benar = siswa['BENAR'] || 0;
-                const totalSoal = siswa['TOTAL SOAL'] || 50; // Perhatikan ada spasinya
-                
-                // Hitung persentase progres
-                const progresPersen = totalSoal > 0 ? (benar / totalSoal) * 100 : 0;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td><strong>${nama}</strong></td>
-                    <td>${kelas}</td>
-                    <td class="status-selesai">Selesai</td>
-                    <td>
-                        <div class="progress-bar"><div class="progress-fill" style="width: ${progresPersen}%;"></div></div> 
-                        ${benar}/${totalSoal}
-                    </td>
-                    <td>${waktu}</td>
-                    <td>${benar}</td>
-                    <td class="text-red">${skor}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+            // Setelah data didapat, jalankan filter (untuk pertama kali)
+            filterData();
 
         } catch (error) {
             console.error("Gagal mengambil data:", error);
@@ -219,6 +212,133 @@
             `;
             summaryStatus.innerHTML = `<span style="color:red;">Koneksi Error.</span>`;
         }
+    }
+
+    // ========================================================
+    // FUNGSI FILTER & TAMPILAN TABEL
+    // ========================================================
+    function filterData() {
+        const kelasFilter = document.getElementById('filter-kelas').value;
+        const statusFilter = document.getElementById('filter-status').value;
+        const cariFilter = document.getElementById('filter-cari').value.toLowerCase();
+        const tbody = document.getElementById('tabel-data-siswa');
+
+        // 1. Filter berdasarkan dropdown
+        dataTampil = semuaDataSiswa.filter(siswa => {
+            const nama = (siswa['NAMA'] || '').toLowerCase();
+            const kelas = siswa['KELAS'] || '';
+            const status = 'Selesai'; // Karena semua data di tabel ini dianggap selesai
+
+            const cocokKelas = (kelasFilter === 'Semua' || kelas === kelasFilter);
+            const cocokStatus = (statusFilter === 'Semua' || status === statusFilter);
+            const cocokCari = (nama.includes(cariFilter));
+
+            return cocokKelas && cocokStatus && cocokCari;
+        });
+
+        // 2. Filter Tampilan "Terbaik per Siswa" (Hapus duplikat nama, ambil skor tertinggi)
+        const tampilanMode = document.getElementById('filter-tampilan').value;
+        if (tampilanMode === 'terbaik') {
+            const mapTerbaik = new Map();
+            dataTampil.forEach(siswa => {
+                const nama = siswa['NAMA'];
+                const skor = Number(siswa['SKOR']) || 0;
+                if (!mapTerbaik.has(nama) || skor > (Number(mapTerbaik.get(nama)['SKOR']) || 0)) {
+                    mapTerbaik.set(nama, siswa);
+                }
+            });
+            dataTampil = Array.from(mapTerbaik.values());
+        }
+
+        // Urutkan data berdasarkan nama (A-Z) agar rapi
+        dataTampil.sort((a, b) => (a['NAMA'] || '').localeCompare(b['NAMA'] || ''));
+
+        // 3. Render ke HTML
+        tbody.innerHTML = '';
+        
+        if (dataTampil.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #6b7280;">Tidak ada data yang cocok dengan filter.</td></tr>`;
+            return;
+        }
+
+        dataTampil.forEach((siswa, index) => {
+            const nama = siswa['NAMA'] || '-';
+            const kelas = siswa['KELAS'] || '-';
+            const waktuMentah = siswa['WAKTU'] || '-';
+            const skor = siswa['SKOR'] || 0;
+            const benar = siswa['BENAR'] || 0;
+            const totalSoal = siswa['TOTAL SOAL'] || 50; 
+            
+            // Format Tanggal agar rapi (Contoh: 11 Nov 2026, 22:54)
+            let waktuRapi = waktuMentah;
+            if (waktuMentah !== '-') {
+                const dateObj = new Date(waktuMentah);
+                if (!isNaN(dateObj)) {
+                    waktuRapi = dateObj.toLocaleString('id-ID', { 
+                        day: '2-digit', month: 'short', year: 'numeric', 
+                        hour: '2-digit', minute: '2-digit' 
+                    });
+                }
+            }
+
+            const progresPersen = totalSoal > 0 ? (benar / totalSoal) * 100 : 0;
+
+            const tr = document.createElement('tr');
+            // Menambahkan onclick untuk melihat detail (munculkan alert sederhana)
+            tr.onclick = () => {
+                alert(`Rincian Nilai:\n\nNama: ${nama}\nKelas: ${kelas}\nWaktu: ${waktuRapi}\nSkor Akhir: ${skor}\nJawaban Benar: ${benar} dari ${totalSoal} soal.`);
+            };
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${nama}</strong></td>
+                <td>${kelas}</td>
+                <td class="status-selesai">Selesai</td>
+                <td>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${progresPersen}%;"></div></div> 
+                    ${benar}/${totalSoal}
+                </td>
+                <td>${waktuRapi}</td>
+                <td>${benar}</td>
+                <td class="text-red">${skor}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ========================================================
+    // FUNGSI UNDUH CSV (EXCEL)
+    // ========================================================
+    function unduhCSV() {
+        if (dataTampil.length === 0) {
+            alert("Tidak ada data untuk diunduh.");
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        // Header CSV
+        csvContent += "No,Nama,Kelas,Status,Benar,Total Soal,Skor,Waktu\n";
+
+        // Isi CSV
+        dataTampil.forEach((siswa, index) => {
+            const nama = siswa['NAMA'] || '-';
+            const kelas = siswa['KELAS'] || '-';
+            const skor = siswa['SKOR'] || 0;
+            const benar = siswa['BENAR'] || 0;
+            const totalSoal = siswa['TOTAL SOAL'] || 50;
+            const waktu = siswa['WAKTU'] || '-';
+            
+            // Bungkus string dengan tanda kutip agar aman jika ada koma di nama
+            csvContent += `${index + 1},"${nama}","${kelas}","Selesai",${benar},${totalSoal},${skor},"${waktu}"\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Rekap_Nilai_Fisika.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     // Panggil fungsi saat halaman selesai dimuat
