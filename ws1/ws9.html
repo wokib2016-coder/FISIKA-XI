@@ -558,6 +558,7 @@
                 </div>
             </div>
         </div>
+
         <div id="langkah1" class="section-target">
             <div class="card">
                 <span class="badge">Part 1 · Problem</span>
@@ -649,6 +650,7 @@
                 </div>
             </div>
         </div>
+
         <div id="langkah3" class="section-target">
             <div class="card">
                 <span class="badge">Part 3 · Experiment</span>
@@ -786,6 +788,7 @@
                 </div>
             </div>
         </div>
+
         <div id="langkah6" class="section-target">
             <div class="card">
                 <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
@@ -859,7 +862,6 @@
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
                     <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
-                    <!-- PERBAIKAN: Menambahkan (event) pada tombol -->
                     <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
                 </div>
                 <div id="pesan-validasi" class="feedback-box error" style="display: none;">
@@ -1719,7 +1721,7 @@
         }
 
         // ==========================================
-        // IDENTITAS & PENILAIAN
+        // IDENTITAS & PENILAIAN (MODEL SAMA DENGAN ws2)
         // ==========================================
         function updateIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1768,55 +1770,106 @@
             });
         }
 
+        // ==========================================
+        // FUNGSI esaiValid() — KEYWORD MATCHING (MODEL ws2)
+        // Mengembalikan 0 / 0.5 / 1 → dikalikan bobot 8 poin per esai
+        // ==========================================
         function esaiValid(text, minKata, keywordWajib, keywordOpsional) {
             const t = (text || '').toLowerCase().trim();
             const kata = t.split(/\s+/).filter(w => w.length > 0);
             if (kata.length < minKata) return 0;
             const adaWajib = keywordWajib.every(k => t.includes(k));
             const adaOpsional = keywordOpsional.some(k => t.includes(k));
-            if (adaWajib && adaOpsional) return 1;
-            if (adaWajib || adaOpsional) return 0.5;
-            return 0.2;
+            if (adaWajib && adaOpsional) return 1;   // Lengkap  → 8 poin
+            if (adaWajib || adaOpsional) return 0.5; // Sebagian → 4 poin
+            return 0.2;                              // Hanya panjang → 1.6 poin
         }
 
+        // ==========================================
+        // FUNGSI hitungNilaiOtomatis() — MODEL ws2 DISESUAIKAN
+        // ==========================================
         function hitungNilaiOtomatis() {
             let skorTotal = 0;
 
+            // ---------- 1. VALIDASI TABEL (Maks 25 poin) ----------
             const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
             let barisValid = 0;
             rows.forEach(row => {
                 const wu = parseFloat(row.querySelector('.input-wu').value);
                 const wa = parseFloat(row.querySelector('.input-wa').value);
+                const faTxt = row.querySelector('.fa-cell').innerText;
                 const volTxt = row.querySelector('.vol-cell').innerText;
-                
-                if (!isNaN(wu) && !isNaN(wa) && volTxt !== '–') {
-                    barisValid++;
+
+                // Valid jika W_u, W_a terisi, F_a > 0, dan V > 0
+                if (!isNaN(wu) && !isNaN(wa) && faTxt !== '–' && volTxt !== '–') {
+                    const fa = parseFloat(faTxt);
+                    const vol = parseFloat(volTxt);
+                    if (fa >= 0 && vol >= 0) barisValid++;
                 }
             });
             if (barisValid >= 3) skorTotal += 25;
             else if (barisValid > 0) skorTotal += 10;
 
+            // ---------- 2. VALIDASI ESAI (Maks 40 poin → 5 × 8) ----------
             const ans = document.querySelectorAll('.ans-field');
-            skorTotal += esaiValid(ans[0]?.value, 10, ['gaya', 'apung'], ['ke atas', 'archimedes', 'fluida', 'mendorong']) * 8;
-            skorTotal += esaiValid(ans[1]?.value, 10, ['volume', 'apung'], ['sebanding', 'archimedes', 'massa jenis', 'tercelup']) * 8;
-            skorTotal += esaiValid(ans[2]?.value, 10, ['volume', 'massa jenis'], ['udara', 'rongga', 'berat', 'total']) * 8;
-            skorTotal += esaiValid(ans[3]?.value, 10, ['gaya', 'apung'], ['gravitasi', 'seimbang', 'berat', 'sama']) * 8;
-            skorTotal += esaiValid(ans[4]?.value, 10, ['gaya', 'apung'], ['archimedes', 'massa jenis', 'berat', 'fluida']) * 8;
 
+            // Q1 — Mengapa berat benda di air lebih kecil?
+            skorTotal += esaiValid(
+                ans[0]?.value, 10,
+                ['gaya', 'apung'],
+                ['ke atas', 'archimedes', 'fluida', 'mendorong']
+            ) * 8;
+
+            // Q2 — Hubungan Fa dengan Volume
+            skorTotal += esaiValid(
+                ans[1]?.value, 10,
+                ['volume', 'apung'],
+                ['sebanding', 'archimedes', 'massa jenis', 'tercelup']
+            ) * 8;
+
+            // Q3 — Kapal besi terapung vs paku tenggelam
+            skorTotal += esaiValid(
+                ans[2]?.value, 10,
+                ['volume', 'massa jenis'],
+                ['udara', 'rongga', 'berat', 'total']
+            ) * 8;
+
+            // Q5 — Mengapa Fa bisa melayang/terapung?
+            skorTotal += esaiValid(
+                ans[3]?.value, 10,
+                ['gaya', 'apung'],
+                ['gravitasi', 'seimbang', 'berat', 'sama']
+            ) * 8;
+
+            // Q6 — Kesimpulan
+            skorTotal += esaiValid(
+                ans[4]?.value, 10,
+                ['gaya', 'apung'],
+                ['archimedes', 'massa jenis', 'berat', 'fluida']
+            ) * 8;
+
+            // ---------- 3. VALIDASI REFLEKSI (Maks 5 poin) ----------
             const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
-            if (!isNaN(refVal) && Math.abs(refVal - 20) <= 0.5) skorTotal += 10;
+            if (!isNaN(refVal) && Math.abs(refVal - 20) <= 0.5) skorTotal += 5;
 
+            // ---------- 4. BUKTI FOTO (Maks 15 poin) ----------
             const fileInput = document.getElementById('upload-bukti');
             let fotoUploaded = false;
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
                 fotoUploaded = true;
-                skorTotal += 12;
+                skorTotal += 15;
             }
 
+            // ---------- 5. SKOR TANTANGAN (Maks 40 poin) ----------
             skorTotal += Math.min(40, skorTantangan);
-            skorTotal -= (peringatanCurang * 10);
-            skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
 
+            // ---------- 6. POTONGAN KECURANGAN ----------
+            const potonganCurang = peringatanCurang * 10;
+            skorTotal -= potonganCurang;
+
+            skorTotal = Math.max(0, Math.round(skorTotal));
+
+            // ---------- 7. CAP NILAI MAKSIMAL (sama seperti ws2) ----------
             if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
             if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
 
@@ -1831,11 +1884,12 @@
             let labelPredikat = predikat;
             if (!fotoUploaded) labelPredikat += " (Foto blm diunggah!)";
             if (skorTantangan === 0) labelPredikat += " (Tantangan blm dikerjakan!)";
-            if (peringatanCurang > 0) labelPredikat += ` [Curang: -${peringatanCurang*10} poin]`;
+            if (peringatanCurang > 0) labelPredikat += ` [Curang: -${potonganCurang} poin]`;
 
             document.getElementById('val-predicate').innerText = labelPredikat;
             document.getElementById('val-predicate').style.color = warna;
 
+            // ---------- 8. LAPORAN KECURANGAN DI UI ----------
             let reportBox = document.getElementById('report-curang');
             if (reportBox) {
                 if (peringatanCurang > 0) {
@@ -1912,6 +1966,7 @@
             }
             hitungNilaiOtomatis();
         }
+
         // ==========================================
         // SISTEM GURU & CETAK
         // ==========================================
@@ -1949,7 +2004,7 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws9)
+        // KIRIM KE GOOGLE SHEETS (ws9)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
@@ -1975,15 +2030,13 @@
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
-            // Ubah tombol jadi loading
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
             btnKirim.innerText = "Mengirim data...";
             btnKirim.disabled = true;
 
-            // Kirim ke Google Sheets via fetch
             fetch(URL_GOOGLE_SCRIPT, {
                 method: "POST",
                 mode: "no-cors", 
@@ -1991,7 +2044,6 @@
                 body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
             })
             .then(() => {
-                // Simpan juga ke localStorage sebagai backup rekap guru
                 const auditKey = `lkpd_apung_audit_${kelas}_${nama}`;
                 const auditTersimpan = JSON.parse(localStorage.getItem(auditKey)) || [];
                 const gabungan = auditTersimpan.concat(auditLog).filter((v, i, arr) =>
@@ -2326,7 +2378,6 @@
             if (area) area.classList.add('protected');
         }
 
-        // Pilih 4 soal: 3 PG + 1 isian (acak)
         function pilihSoalBaru() {
             const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
             const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
@@ -2440,7 +2491,7 @@
             soalAktif = pilihSoalBaru();
             renderSoalAktif(null);
 
-            waktuSisa = 480; // 8 menit
+            waktuSisa = 480;
             peringatanCurang = 0;
             tantanganSelesai = false;
             challengeActive = true;
@@ -2505,7 +2556,6 @@
                 }
             });
 
-            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
             skorTantangan = benar * 10;
 
             let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;

@@ -764,11 +764,11 @@
 
                 <div class="question-block">
                     <p>Question 1. Mengapa momentum total sistem selalu kekal pada semua jenis tumbukan (lenting, lenting sebagian, tidak lenting)?</p>
-                    <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                    <textarea class="ans-field" id="ans-q1" placeholder="Tulis jawabanmu..."></textarea>
                 </div>
             </div>
         </div>
-        
+
         <div id="langkah3" class="section-target">
             <div class="card">
                 <span class="badge">Part 3 · Experiment</span>
@@ -850,7 +850,7 @@
 
                 <div class="question-block">
                     <p>Question 2. Berdasarkan tabel, bagaimana pengaruh ketinggian awal (h<sub>1</sub>) terhadap nilai koefisien restitusi (e)? Apakah nilainya tetap atau berubah? Mengapa?</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <textarea class="ans-field" id="ans-q2" placeholder="Tulis analisismu..."></textarea>
 
                     <div class="evidence-box">
                         <div class="evidence-input-row">
@@ -896,7 +896,7 @@
 
                 <div class="question-block">
                     <p>Question 3. Jelaskan hubungan antara impuls dan perubahan momentum menggunakan persamaan F·Δt = m·Δv!</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <textarea class="ans-field" id="ans-q3" placeholder="Tulis analisismu..."></textarea>
                 </div>
             </div>
         </div>
@@ -917,16 +917,16 @@
 
                 <div class="question-block">
                     <p>Question 5. Mengapa pada tumbukan tidak lenting sempurna energi kinetik berkurang, tetapi momentum tetap kekal?</p>
-                    <textarea class="ans-field" placeholder="Tulis penjelasanmu..."></textarea>
+                    <textarea class="ans-field" id="ans-q5" placeholder="Tulis penjelasanmu..."></textarea>
                 </div>
 
                 <div class="question-block">
                     <p>Question 6. Tulis kesimpulanmu dalam tiga kalimat.</p>
-                    <textarea class="ans-field" placeholder="Tulis kesimpulanmu..."></textarea>
+                    <textarea class="ans-field" id="ans-q6" placeholder="Tulis kesimpulanmu..."></textarea>
                 </div>
             </div>
         </div>
-        
+
         <div id="langkah6" class="section-target">
             <div class="card">
                 <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
@@ -1120,7 +1120,7 @@
         }
 
         // ==========================================
-        // LOGIKA SIMULASI MOBIL
+        // LOGIKA SIMULASI MOBIL (sama seperti ws5 asli)
         // ==========================================
         const scene = document.getElementById('scene');
         const car1 = document.getElementById('car1');
@@ -1496,7 +1496,6 @@
             const row = inputEl.closest('tr');
             const h1 = Number(row.querySelector('.input-h1').value) || 0;
             const dt = Number(row.querySelector('.input-dt').value);
-            const eInput = Number(row.querySelector('.input-e').value);
 
             const tdH2 = row.querySelector('.h2-cell');
             const tdE = row.querySelector('.e-cell');
@@ -1509,6 +1508,8 @@
                 tdH2.innerText = h2_cm.toFixed(1);
 
                 let e_hitung = Math.sqrt(h2_m / (h1 / 100));
+                if (!isFinite(e_hitung) || isNaN(e_hitung)) e_hitung = 0;
+                e_hitung = Math.max(0, Math.min(1, e_hitung));
                 tdE.innerText = e_hitung.toFixed(2);
             } else {
                 tdH2.innerText = '–';
@@ -1534,11 +1535,11 @@
                 const response = await fetch(endpoint);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
-                
+
                 if (data.buffer && data.buffer.time && data.buffer.time.buffer) {
                     const waktuArray = data.buffer.time.buffer;
                     let waktuValid = waktuArray.filter(t => t > 0.05 && t < 3.0).slice(0, 4);
-                    
+
                     const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
                     waktuValid.forEach((dt, index) => {
                         if (rows[index]) {
@@ -1566,7 +1567,7 @@
                 const content = e.target.result;
                 const lines = content.split(/\r?\n/);
                 let waktuList = [];
-                
+
                 lines.forEach(line => {
                     const matches = line.match(/[0-9]+\.[0-9]+/g);
                     if (matches) {
@@ -1582,7 +1583,7 @@
                 waktuList = [...new Set(waktuList)].sort((a, b) => a - b);
                 let indexWaktu = 0;
                 const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
-                
+
                 rows.forEach((row) => {
                     if (indexWaktu < waktuList.length) {
                         const dtInput = row.querySelector('.input-dt');
@@ -1612,7 +1613,7 @@
                     let h2_m = eAsli * eAsli * (h1_cm / 100);
                     let dt = Math.sqrt(8 * h2_m / g);
                     let dtAcak = dt + (Math.random() * 0.02 - 0.01);
-                    
+
                     row.querySelector('.input-dt').value = dtAcak.toFixed(2);
                     row.querySelector('.input-e').value = eAsli.toFixed(2);
                 }
@@ -1646,12 +1647,6 @@
             document.getElementById('out-impuls').innerText = impuls.toFixed(1) + ' N·s';
             document.getElementById('out-dp').innerText = impuls.toFixed(1) + ' kg·m/s';
 
-            const hasil = computeVelocities();
-            document.getElementById('out-ek').innerText = hasil.ek_hilang.toFixed(2) + ' J';
-            document.getElementById('out-e').innerText = hasil.e.toFixed(2);
-        }
-
-        function computeVelocities() {
             const ma = state.m1, mb = state.m2;
             const va = state.v1 * state.dir1;
             const vb = state.v2 * state.dir2;
@@ -1661,11 +1656,13 @@
             const ek_awal = 0.5*ma*va*va + 0.5*mb*vb*vb;
             const ek_akhir = 0.5*ma*v_a_after*v_a_after + 0.5*mb*v_b_after*v_b_after;
             const ek_hilang = Math.max(0, ek_awal - ek_akhir);
-            return { ek_hilang, e };
+
+            document.getElementById('out-ek').innerText = ek_hilang.toFixed(2) + ' J';
+            document.getElementById('out-e').innerText = e.toFixed(2);
         }
 
         // ==========================================
-        // IDENTITAS & PENILAIAN
+        // IDENTITAS (key localStorage → lkpd_mom_*)
         // ==========================================
         function updateIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1681,14 +1678,14 @@
                 return;
             }
 
-            const storageKey = `lkpd_kelompok_${kelas}_${kelompok}`;
+            const storageKey = `lkpd_mom_kelompok_${kelas}_${kelompok}`;
             let dataGrup = JSON.parse(localStorage.getItem(storageKey)) || [];
 
             if (nama !== '') {
-                let sessionId = localStorage.getItem('lkpd_session_id');
+                let sessionId = localStorage.getItem('lkpd_mom_session_id');
                 if (!sessionId) {
                     sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                    localStorage.setItem('lkpd_session_id', sessionId);
+                    localStorage.setItem('lkpd_mom_session_id', sessionId);
                 }
                 let indexSesi = dataGrup.findIndex(item => item.sessionId === sessionId);
                 if (indexSesi !== -1) { dataGrup[indexSesi].nama = nama; }
@@ -1714,38 +1711,29 @@
             });
         }
 
-        // Penilaian Esai (min 10 kata + kombinasi kata kunci)
-        function esaiValid(text, minKata, keywordWajib, keywordOpsional) {
-            const t = (text || '').toLowerCase().trim();
-            const kata = t.split(/\s+/).filter(w => w.length > 0);
-            
-            if (kata.length < minKata) return 0;
-            
-            const adaWajib = keywordWajib.every(k => t.includes(k));
-            const adaOpsional = keywordOpsional.some(k => t.includes(k));
-
-            if (adaWajib && adaOpsional) return 1;
-            if (adaWajib || adaOpsional) return 0.5;
-            
-            return 0.2;
-        }
-
+        // ==========================================
+        // PENILAIAN OTOMATIS — MODEL SAMA DENGAN ws1/ws2
+        // (keyword includes per pertanyaan, cap 60/75, potongan ×10)
+        // ==========================================
         function hitungNilaiOtomatis() {
             let skorTotal = 0;
 
-            // Tabel eksperimen: 25 poin
+            // ── 1. VALIDASI TABEL EKSPERIMEN (Maks 25) ──
+            // Butuh ≥3 baris valid (h1>0, dt>0, ePercobaan ≈ eHitung)
             const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
             let barisValid = 0;
             rows.forEach(row => {
-                const h1 = parseFloat(row.querySelector('.input-h1').value) || 0;
-                const dt = parseFloat(row.querySelector('.input-dt').value);
-                const ePercobaan = parseFloat(row.querySelector('.input-e').value);
-                
+                const h1 = parseFloat(row.querySelector('.input-h1')?.value) || 0;
+                const dt = parseFloat(row.querySelector('.input-dt')?.value);
+                const ePercobaan = parseFloat(row.querySelector('.input-e')?.value);
+
                 if (h1 > 0 && !isNaN(dt) && !isNaN(ePercobaan)) {
                     const g = 9.8;
                     let h2_m = (1/8) * g * Math.pow(dt, 2);
                     let eHitung = Math.sqrt(h2_m / (h1 / 100));
-                    
+                    if (!isFinite(eHitung) || isNaN(eHitung)) eHitung = 0;
+                    eHitung = Math.max(0, Math.min(1, eHitung));
+
                     if (Math.abs(ePercobaan - eHitung) / Math.max(eHitung, 0.01) < 0.10) {
                         barisValid++;
                     }
@@ -1754,20 +1742,50 @@
             if (barisValid >= 3) skorTotal += 25;
             else if (barisValid > 0) skorTotal += 10;
 
-            // Esai: Q1, Q2, Q3, Q5, Q6 (masing-masing maks 8 poin)
-            const ans = document.querySelectorAll('.ans-field');
-            
-            skorTotal += esaiValid(ans[0]?.value, 10, ['momentum', 'kekal'], ['gaya', 'luar', 'sistem']) * 8;
-            skorTotal += esaiValid(ans[1]?.value, 10, ['tetap', 'sama', 'konstan'], ['nilai', 'energi', 'momentum', 'benda']) * 8;
-            skorTotal += esaiValid(ans[2]?.value, 10, ['impuls', 'momentum'], ['gaya', 'waktu', 'kecepatan', 'perubahan']) * 8;
-            skorTotal += esaiValid(ans[3]?.value, 10, ['energi', 'momentum'], ['kekal', 'hilang', 'panas', 'bunyi', 'deformasi']) * 8;
-            skorTotal += esaiValid(ans[4]?.value, 10, ['momentum', 'kekal'], ['tumbukan', 'energi', 'impuls']) * 8;
+            // ── 2. ESAI PER PERTANYAAN (Maks 32) ──
+            // Model ws1/ws2: cek keyword includes(), bukan fungsi generik
 
-            // Refleksi Q4: 10 poin (harus positif ~3.5)
-            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            // Q1: momentum total kekal karena tidak ada gaya luar
+            const q1 = (document.getElementById('ans-q1')?.value || '').toLowerCase();
+            if (q1.length > 15 && (q1.includes('momentum') || q1.includes('kekal')) &&
+                (q1.includes('gaya') || q1.includes('luar') || q1.includes('sistem'))) {
+                skorTotal += 8;
+            } else if (q1.length > 15) skorTotal += 4;
+
+            // Q2: pengaruh h1 terhadap e — nilai tetap / konstan
+            const q2 = (document.getElementById('ans-q2')?.value || '').toLowerCase();
+            if (q2.length > 15 && (q2.includes('tetap') || q2.includes('sama') || q2.includes('konstan')) &&
+                (q2.includes('nilai') || q2.includes('energi') || q2.includes('benda') || q2.includes('sama'))) {
+                skorTotal += 8;
+            } else if (q2.length > 15) skorTotal += 4;
+
+            // Q3: impuls = perubahan momentum, F·Δt = m·Δv
+            const q3 = (document.getElementById('ans-q3')?.value || '').toLowerCase();
+            if (q3.length > 15 && (q3.includes('impuls') || q3.includes('momentum')) &&
+                (q3.includes('gaya') || q3.includes('waktu') || q3.includes('kecepatan') || q3.includes('perubahan'))) {
+                skorTotal += 8;
+            } else if (q3.length > 15) skorTotal += 4;
+
+            // Q5: energi mekanik berkurang (panas/bunyi/deformasi), momentum tetap kekal
+            const q5 = (document.getElementById('ans-q5')?.value || '').toLowerCase();
+            if (q5.length > 15 && (q5.includes('energi') || q5.includes('momentum')) &&
+                (q5.includes('kekal') || q5.includes('hilang') || q5.includes('panas') || q5.includes('bunyi') || q5.includes('deformasi'))) {
+                skorTotal += 8;
+            } else if (q5.length > 15) skorTotal += 4;
+
+            // ── 3. REFLEKSI HITUNGAN Q4 (Maks 10) ──
+            // Δp = m·(v' - v) = 0.5 × (-3 - 4) = -3.5 → |Δp| = 3.5 kg·m/s
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value);
             if (!isNaN(refVal) && refVal > 0 && Math.abs(refVal - 3.5) <= 0.2) skorTotal += 10;
 
-            // Foto: 12 poin
+            // ── 4. KESIMPULAN Q6 (Maks 8) ──
+            const q6 = (document.getElementById('ans-q6')?.value || '').toLowerCase();
+            if (q6.length > 20 && (q6.includes('momentum') || q6.includes('kekal')) &&
+                (q6.includes('tumbukan') || q6.includes('energi') || q6.includes('impuls'))) {
+                skorTotal += 8;
+            } else if (q6.length > 20) skorTotal += 4;
+
+            // ── 5. BUKTI FOTO (Maks 12) ──
             const fileInput = document.getElementById('upload-bukti');
             let fotoUploaded = false;
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
@@ -1775,19 +1793,20 @@
                 skorTotal += 12;
             }
 
-            // Tantangan (maks 40)
+            // ── 6. SKOR TANTANGAN (Maks 40) ──
             skorTotal += Math.min(40, skorTantangan);
 
-            // Potong curang
+            // ── 7. POTONGAN KECURANGAN ──
             skorTotal -= (peringatanCurang * 10);
-
             skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
 
+            // ── 8. CAP SAMA SEPERTI ws1/ws2 ──
             if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
             if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
 
             document.getElementById('val-score').innerText = skorTotal;
 
+            // ── 9. PREDIKAT & WARNA ──
             let predikat = "Needs Improvement";
             let warna = "#b91c1c";
             if (skorTotal >= 90) { predikat = "Excellent"; warna = "#15803d"; }
@@ -1802,6 +1821,7 @@
             document.getElementById('val-predicate').innerText = labelPredikat;
             document.getElementById('val-predicate').style.color = warna;
 
+            // ── 10. LAPORAN KECURANGAN ──
             let reportBox = document.getElementById('report-curang');
             if (reportBox) {
                 if (peringatanCurang > 0) {
@@ -1822,9 +1842,13 @@
             return { skor: skorTotal, predikat: predikat };
         }
 
+        // Listener: semua textarea .ans-field + input refleksi
         document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
         document.getElementById('input-jawaban-refleksi').addEventListener('input', hitungNilaiOtomatis);
 
+        // ==========================================
+        // PREVIEW FOTO BUKTI
+        // ==========================================
         function previewImage(input) {
             const container = input.closest('.evidence-box').querySelector('.preview-container');
             const img = container.querySelector('img');
@@ -1836,6 +1860,9 @@
             hitungNilaiOtomatis();
         }
 
+        // ==========================================
+        // CEK PREDIKSI AWAL
+        // ==========================================
         function cekPrediksi(pilihan) {
             const btnK = document.getElementById('opt-berkurang');
             const btnKe = document.getElementById('opt-kekal');
@@ -1857,6 +1884,9 @@
             }
         }
 
+        // ==========================================
+        // CEK REFLEKSI Q4 (jawaban |Δp| = 3.5 kg·m/s)
+        // ==========================================
         function cekRefleksi() {
             const input = document.getElementById('input-jawaban-refleksi').value;
             const jawaban = parseFloat(input);
@@ -1870,17 +1900,17 @@
             if (jawaban > 0 && Math.abs(jawaban - 3.5) <= 0.2) {
                 fb.className = 'feedback-box correct';
                 fb.style.display = 'block';
-                fb.innerHTML = '<strong>Correct.</strong> Δp = m·(v\' - v) = 0.5 × (-3 - 4) = -3.5 → |Δp| = 3.5 kg·m/s.';
+                fb.innerHTML = '<strong>Correct.</strong> Δp = m·(v\' − v) = 0,5 × (−3 − 4) = −3,5 → |Δp| = 3,5 kg·m/s.';
             } else {
                 fb.className = 'feedback-box wrong';
                 fb.style.display = 'block';
-                fb.innerHTML = '<strong>Belum tepat.</strong> Gunakan Δp = m·(v\' - v) dengan v\' berlawanan arah. Besar Δp harus positif.';
+                fb.innerHTML = '<strong>Belum tepat.</strong> Gunakan Δp = m·(v\' − v) dengan v\' berlawanan arah. Besar Δp harus positif.';
             }
             hitungNilaiOtomatis();
         }
 
         // ==========================================
-        // SISTEM GURU & CETAK
+        // VALIDASI IDENTITAS & CETAK
         // ==========================================
         function validasiIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1916,7 +1946,7 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws5)
+        // KIRIM KE GOOGLE SHEETS (ws5 — key lkpd_mom_*)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
@@ -1944,13 +1974,13 @@
                 skor: evaluasi.skor,
                 progres: "100%",
                 pelanggaran: peringatanCurang,
-                log: JSON.stringify(auditLog), 
-                benar: 0, 
-                totalSoal: 0, 
+                log: JSON.stringify(auditLog),
+                benar: 0,
+                totalSoal: 0,
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
@@ -1959,12 +1989,12 @@
 
             fetch(URL_GOOGLE_SCRIPT, {
                 method: "POST",
-                mode: "no-cors", 
+                mode: "no-cors",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
             })
             .then(() => {
-                let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_rekap_nilai_guru')) || [];
+                let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_mom_rekap_nilai_guru')) || [];
                 let existingIdx = rekapGlobal.findIndex(item => item.nama === nama && item.kelas === kelas);
                 let dataSiswa = {
                     nama: nama, kelas: kelas, kelompok: kelompok,
@@ -1975,7 +2005,7 @@
                 if (existingIdx !== -1) rekapGlobal[existingIdx] = dataSiswa;
                 else rekapGlobal.push(dataSiswa);
 
-                localStorage.setItem('lkpd_rekap_nilai_guru', JSON.stringify(rekapGlobal));
+                localStorage.setItem('lkpd_mom_rekap_nilai_guru', JSON.stringify(rekapGlobal));
 
                 alert("✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.");
                 btnKirim.innerText = teksAsli;
@@ -1989,6 +2019,9 @@
             });
         }
 
+        // ==========================================
+        // PANEL GURU (key lkpd_mom_*)
+        // ==========================================
         function bukaPanelGuru() {
             const pin = document.getElementById('input-pin-guru').value;
             if (pin === '2026') {
@@ -2004,7 +2037,7 @@
             const kelasFilter = document.getElementById('filter-kelas-guru').value;
             const tbody = document.getElementById('tabel-rekap-body');
             tbody.innerHTML = '';
-            let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_rekap_nilai_guru')) || [];
+            let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_mom_rekap_nilai_guru')) || [];
             let kelasData = rekapGlobal.filter(item => item.kelas === kelasFilter);
             if (kelasData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8;">Belum ada data siswa untuk kelas ${escHtml(kelasFilter)}</td></tr>`;
@@ -2036,10 +2069,10 @@
         }
 
         function tampilkanAuditLog(kelas, nama) {
-            const key = `lkpd_audit_${kelas}_${nama}`;
+            const key = `lkpd_mom_audit_${kelas}_${nama}`;
             let log = JSON.parse(localStorage.getItem(key)) || [];
             if (log.length === 0) {
-                const rekap = JSON.parse(localStorage.getItem('lkpd_rekap_nilai_guru')) || [];
+                const rekap = JSON.parse(localStorage.getItem('lkpd_mom_rekap_nilai_guru')) || [];
                 const siswa = rekap.find(x => x.nama === nama && x.kelas === kelas);
                 if (siswa && Array.isArray(siswa.auditLog)) log = siswa.auditLog;
             }
@@ -2138,7 +2171,7 @@
         ];
 
         let timerInterval = null;
-        let waktuSisa = 480; // 8 menit = 480 detik
+        let waktuSisa = 480;
         let peringatanCurang = 0;
         let soalAktif = [];
         let soalRiwayatId = [];
@@ -2292,7 +2325,6 @@
             if (area) area.classList.add('protected');
         }
 
-        // Pilih 4 soal: 3 PG + 1 isian (acak)
         function pilihSoalBaru() {
             const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
             const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
@@ -2324,16 +2356,24 @@
                 totalKejadian: peringatanCurang
             });
 
+            // Simpan audit log ke localStorage (key lkpd_mom_audit_*)
+            const namaAudit = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const kelasAudit = document.getElementById('select-kelas').value || '-';
+            try {
+                const auditKey = `lkpd_mom_audit_${kelasAudit}_${namaAudit}`;
+                localStorage.setItem(auditKey, JSON.stringify(auditLog));
+            } catch (err) { /* ignore */ }
+
             const cheatCountEl = document.getElementById('cheat-count');
             if (cheatCountEl) cheatCountEl.innerText = peringatanCurang;
 
             const namaSiswa = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
             document.getElementById('modal-nama-siswa').innerText = namaSiswa;
             document.getElementById('modal-total-curang').innerText = peringatanCurang;
-            
+
             const alasanMap = {
                 'tab': 'Sistem mendeteksi Anda meninggalkan halaman ujian.',
-                'blur': 'Sistem mendeteksi Anda membuka jendela/aplikasi lain (seperti Snipping Tool, Kalkulator, dll). Dilarang keluar dari halaman ujian!',
+                'blur': 'Sistem mendeteksi Anda membuka jendela/aplikasi lain. Dilarang keluar dari halaman ujian!',
                 'printscreen': 'Sistem mendeteksi Anda menekan tombol PrintScreen. Screenshot dilarang!',
                 'shortcut': 'Sistem mendeteksi Anda menekan shortcut copy/select/print/save. Menyalin soal dilarang!'
             };
@@ -2406,7 +2446,7 @@
             soalAktif = pilihSoalBaru();
             renderSoalAktif(null);
 
-            waktuSisa = 480; // 8 menit = 480 detik
+            waktuSisa = 480;
             peringatanCurang = 0;
             tantanganSelesai = false;
             challengeActive = true;
@@ -2471,7 +2511,7 @@
                 }
             });
 
-            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
+            // 4 soal × 10 poin = maks 40
             skorTantangan = benar * 10;
 
             let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
@@ -2487,7 +2527,7 @@
         }
 
         // ==========================================
-        // KALKULATOR AMAN (tanpa eval)
+        // KALKULATOR AMAN (TANPA eval)
         // ==========================================
         let calcExp = "";
 

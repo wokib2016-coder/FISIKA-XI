@@ -538,7 +538,6 @@
                 </div>
             </div>
         </div>
-
         <div id="langkah2" class="section-target">
             <div class="card">
                 <span class="badge">Part 2 · Simulation</span>
@@ -954,6 +953,7 @@
         100% { transform: translateX(0); }
     }
     </style>
+    <!-- ================= JAVASCRIPT ================= -->
     <script>
         document.getElementById('input-tanggal').valueAsDate = new Date();
         const deg2rad = Math.PI / 180;
@@ -1290,7 +1290,6 @@
                 feedbackBox.innerHTML = '<strong>Belum tepat.</strong> Coba jalankan simulasi untuk melihat kenyataannya.';
             }
         }
-
         function hitungTabel(inputElement) {
             let row = inputElement.closest('tr');
             let va = parseFloat(row.querySelector('.val-va').value);
@@ -1360,33 +1359,42 @@
         function hitungNilaiOtomatis() {
             let skorTotal = 0;
 
+            // 1. ESAI (Maks 30)
             const textareas = document.querySelectorAll('.ans-field');
             let terisiCount = 0;
             textareas.forEach(ta => { if(ta.value.trim().length > 5) terisiCount++; });
             if (textareas.length > 0) skorTotal += (terisiCount / textareas.length) * 30;
 
+            // 2. TABEL (Maks 20)
             const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
             let barisTerisi = 0;
             rows.forEach(row => {
-                let valTheta = row.querySelector('.input-theta').value.trim();
-                let valVx = row.querySelector('.input-vx').value.trim();
+                let valTheta = row.querySelector('.input-theta')?.value.trim() || '';
+                let valVx = row.querySelector('.input-vx')?.value.trim() || '';
                 if(valTheta !== '' && valVx !== '') barisTerisi++;
             });
             if(barisTerisi >= 3) skorTotal += 20;
 
-            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            // 3. REFLEKSI HITUNGAN (Maks 15)
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value || 0);
             if(!isNaN(refVal) && Math.abs(refVal - 143.13) <= 1.0) skorTotal += 15;
 
+            // 4. PILIHAN GANDA Q8 (Maks 15) -> INI DITAMBAHKAN AGAR OPSI Q8 DINILAI
             if(statusBenar8) skorTotal += 15;
 
+            // 5. BUKTI FOTO (Maks 20)
             const fileInput = document.getElementById('upload-foto-bukti');
-            if (fileInput && fileInput.files && fileInput.files.length > 0) skorTotal += 20;
+            let fotoUploaded = false;
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                fotoUploaded = true;
+                skorTotal += 20;
+            }
 
+            // 6. TANTANGAN & KECURANGAN
             skorTotal += skorTantangan;
             skorTotal -= (peringatanCurang * 10);
             skorTotal = Math.max(0, Math.round(skorTotal));
 
-            const fotoUploaded = (fileInput && fileInput.files && fileInput.files.length > 0);
             if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
             if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
 
@@ -1499,7 +1507,6 @@
             }
             hitungNilaiOtomatis();
         }
-
         // --- SISTEM GURU & CETAK ---
         function validasiIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1530,7 +1537,7 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS
+        // KIRIM KE GOOGLE SHEETS (URL SUDAH BENAR)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
@@ -1556,7 +1563,7 @@
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
@@ -1678,7 +1685,6 @@
             window.print();
             setTimeout(() => document.body.classList.remove('print-mode-guru'), 1000);
         }
-
         // ==========================================
         // MODUL 6: CHALLENGE MODE (4 SOAL: 3 PG + 1 ISIAN, 8 MENIT)
         // ==========================================
@@ -2003,7 +2009,6 @@
                 renderSoalAktif('⚠️ Karena terdeteksi pelanggaran, soal Anda telah DIGANTI dengan 4 soal baru!');
             }
         }
-
         function mulaiTantangan() {
             document.getElementById('challenge-start-box').style.display = 'none';
             document.getElementById('challenge-area').style.display = 'block';

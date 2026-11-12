@@ -671,6 +671,7 @@
                 </div>
             </div>
         </div>
+
         <div id="langkah1" class="section-target">
             <div class="card">
                 <span class="badge">Part 1 · Problem</span>
@@ -821,6 +822,7 @@
                 </div>
             </div>
         </div>
+
         <div id="langkah3" class="section-target">
             <div class="card">
                 <span class="badge">Part 3 · Experiment</span>
@@ -1030,6 +1032,7 @@
                 </div>
             </div>
         </div>
+
         <div id="langkah4" class="section-target">
             <div class="card">
                 <span class="badge">Part 4 · Force Analysis</span>
@@ -1098,129 +1101,129 @@
                     <p>Total Score: <strong id="val-score">0</strong> / 100</p>
                     <p>Predicate: <strong id="val-predicate" style="color: #b45309;">Needs Improvement</strong></p>
                 </div>
+                <div id="report-curang" style="display:none; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 6px; margin-top: 10px; color: #b91c1c; font-weight: bold; margin-bottom: 15px;">
+                    <!-- Laporan kecurangan diisi oleh JS -->
+                </div>
             </div>
-            <!-- ================= BAGIAN 6: TIME CHALLENGE ================= -->
-            <div id="langkah6" class="section-target">
-                <div class="card">
-                    <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
-                    <h2>🔥 Mode Tantangan (HOTS)</h2>
-                    <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar Hukum Pascal & sistem hidrolik. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
-                    <p style="font-size:0.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
-                    
-                    <div id="challenge-start-box" style="text-align: center; padding: 20px;">
-                        <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size: 1.2rem; padding: 15px 30px; background: var(--dark-green); color: white;">▶ Mulai Tantangan</button>
-                        <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain.</div>
+        </div>
+
+        <div id="langkah6" class="section-target">
+            <div class="card">
+                <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
+                <h2>🔥 Mode Tantangan (HOTS)</h2>
+                <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar Hukum Pascal & sistem hidrolik. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
+                <p style="font-size:0.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
+                
+                <div id="challenge-start-box" style="text-align: center; padding: 20px;">
+                    <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size: 1.2rem; padding: 15px 30px; background: var(--dark-green); color: white;">▶ Mulai Tantangan</button>
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain.</div>
+                </div>
+
+                <div id="challenge-area" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <div><strong>Waktu:</strong> <span id="timer-display" style="font-family: monospace; font-size: 1.2rem; color: var(--red); font-weight: bold;">08:00</span></div>
+                        <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color: var(--red); font-weight: bold;">0</span></div>
                     </div>
 
-                    <div id="challenge-area" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
-                            <div><strong>Waktu:</strong> <span id="timer-display" style="font-family: monospace; font-size: 1.2rem; color: var(--red); font-weight: bold;">08:00</span></div>
-                            <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color: var(--red); font-weight: bold;">0</span></div>
+                    <div id="soal-container" style="margin-bottom: 15px;"></div>
+
+                    <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                        <input type="text" id="calc-display" readonly style="width: 100%; padding: 10px; font-size: 1.2rem; text-align: right; background: #f8fafc; border: none; border-radius: 4px; margin-bottom: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                            <button class="calc-btn" onclick="calcInput('sin')" style="background: #8b5cf6;">sin</button>
+                            <button class="calc-btn" onclick="calcInput('cos')" style="background: #3b82f6;">cos</button>
+                            <button class="calc-btn" onclick="calcInput('tan')" style="background: #0ea5e9;">tan</button>
+                            <button class="calc-btn" onclick="calcInput('(')" style="background: #64748b;">(</button>
+                            <button class="calc-btn" onclick="calcInput(')')" style="background: #64748b;">)</button>
+                            
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn" onclick="calcInput('/')" style="background: #f59e0b;">÷</button>
+                            <button class="calc-btn" onclick="calcClear()" style="background: #ef4444;">C</button>
+
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn" onclick="calcInput('*')" style="background: #f59e0b;">×</button>
+                            <button class="calc-btn" onclick="calcInput('-')" style="background: #f59e0b;">-</button>
+
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn" onclick="calcInput('+')" style="background: #f59e0b;">+</button>
+                            <button class="calc-btn" onclick="calcSolve()" style="background: #10b981; grid-row: span 2; font-size: 1.2rem;">=</button>
+
+                            <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
                         </div>
-
-                        <div id="soal-container" style="margin-bottom: 15px;"></div>
-
-                        <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-                            <input type="text" id="calc-display" readonly style="width: 100%; padding: 10px; font-size: 1.2rem; text-align: right; background: #f8fafc; border: none; border-radius: 4px; margin-bottom: 8px;">
-                            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
-                                <button class="calc-btn" onclick="calcInput('sin')" style="background: #8b5cf6;">sin</button>
-                                <button class="calc-btn" onclick="calcInput('cos')" style="background: #3b82f6;">cos</button>
-                                <button class="calc-btn" onclick="calcInput('tan')" style="background: #0ea5e9;">tan</button>
-                                <button class="calc-btn" onclick="calcInput('(')" style="background: #64748b;">(</button>
-                                <button class="calc-btn" onclick="calcInput(')')" style="background: #64748b;">)</button>
-                                
-                                <button class="calc-btn" onclick="calcInput('7')">7</button>
-                                <button class="calc-btn" onclick="calcInput('8')">8</button>
-                                <button class="calc-btn" onclick="calcInput('9')">9</button>
-                                <button class="calc-btn" onclick="calcInput('/')" style="background: #f59e0b;">÷</button>
-                                <button class="calc-btn" onclick="calcClear()" style="background: #ef4444;">C</button>
-
-                                <button class="calc-btn" onclick="calcInput('4')">4</button>
-                                <button class="calc-btn" onclick="calcInput('5')">5</button>
-                                <button class="calc-btn" onclick="calcInput('6')">6</button>
-                                <button class="calc-btn" onclick="calcInput('*')" style="background: #f59e0b;">×</button>
-                                <button class="calc-btn" onclick="calcInput('-')" style="background: #f59e0b;">-</button>
-
-                                <button class="calc-btn" onclick="calcInput('1')">1</button>
-                                <button class="calc-btn" onclick="calcInput('2')">2</button>
-                                <button class="calc-btn" onclick="calcInput('3')">3</button>
-                                <button class="calc-btn" onclick="calcInput('+')" style="background: #f59e0b;">+</button>
-                                <button class="calc-btn" onclick="calcSolve()" style="background: #10b981; grid-row: span 2; font-size: 1.2rem;">=</button>
-
-                                <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
-                                <button class="calc-btn" onclick="calcInput('.')">.</button>
-                            </div>
-                        </div>
-
-                        <button class="btn btn-primary" onclick="selesaiTantangan()" style="width: 100%;">Kumpulkan Jawaban Tantangan</button>
                     </div>
+
+                    <button class="btn btn-primary" onclick="selesaiTantangan()" style="width: 100%;">Kumpulkan Jawaban Tantangan</button>
                 </div>
             </div>
+        </div>
 
-            <div class="card no-print">
-                <h2>Cetak hasil kerja</h2>
-                <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
-                    <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
-                    <!-- PERBAIKAN: Menambahkan (event) pada tombol -->
-                    <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
-                </div>
-                <div id="pesan-validasi" class="feedback-box error" style="display: none;">
-                    Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.
-                </div>
-
-                <p class="no-print" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; line-height: 1.5;">Konsep STEM: Science (Hukum Pascal), Technology (sistem hidrolik), Engineering (desain dongkrak), Mathematics (perbandingan dan luas penampang).</p>
+        <div class="card no-print">
+            <h2>Cetak hasil kerja</h2>
+            <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
+                <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
+                <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
+            </div>
+            <div id="pesan-validasi" class="feedback-box error" style="display: none;">
+                Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.
             </div>
 
-            <div class="card" id="teacher-login-section">
-                <h2>Teacher Portal (Login)</h2>
-                <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
-                <div style="display: flex; gap: 10px; margin-top: 10px; flex-direction: column;">
-                    <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
-                    <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
-                </div>
-            </div>
+            <p class="no-print" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; line-height: 1.5;">Konsep STEM: Science (Hukum Pascal), Technology (sistem hidrolik), Engineering (desain dongkrak), Mathematics (perbandingan dan luas penampang).</p>
+        </div>
 
-            <div id="teacher-panel">
-                <h2>Dashboard Rekap Nilai Siswa</h2>
-                <div style="margin-bottom: 15px;">
-                    <label style="margin-right: 10px;">Pilih Kelas:</label>
-                    <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding: 6px 10px; border-radius: 6px;">
-                        <option value="XI-A">XI-A</option>
-                        <option value="XI-B">XI-B</option>
-                        <option value="XI-C">XI-C</option>
-                        <option value="XI-D">XI-D</option>
-                        <option value="XI-E">XI-E</option>
-                        <option value="XI-F">XI-F</option>
-                    </select>
-                    <button class="btn btn-outline" style="margin-left: 10px; color: white; border-color: white;" onclick="tutupPanelGuru()">Tutup Panel</button>
-                    <button class="btn btn-primary" style="margin-left: 10px; background: #10b981; color: white; border: none;" onclick="cetakRekapGuru()">🖨️ Cetak Rekap Nilai</button>
-                </div>
-                <div class="table-responsive">
-                    <table style="color: white; border-color: #475569;">
-                        <thead>
-                            <tr style="background-color: #334155;">
-                                <th>No</th>
-                                <th>Student Name</th>
-                                <th>Group</th>
-                                <th>Score</th>
-                                <th>Predicate</th>
-                                <th>Pelanggaran</th>
-                                <th>Date</th>
-                                <th>Log</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabel-rekap-body"></tbody>
-                    </table>
-                </div>
+        <div class="card" id="teacher-login-section">
+            <h2>Teacher Portal (Login)</h2>
+            <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
+            <div style="display: flex; gap: 10px; margin-top: 10px; flex-direction: column;">
+                <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+                <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
             </div>
+        </div>
 
+        <div id="teacher-panel">
+            <h2>Dashboard Rekap Nilai Siswa</h2>
+            <div style="margin-bottom: 15px;">
+                <label style="margin-right: 10px;">Pilih Kelas:</label>
+                <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding: 6px 10px; border-radius: 6px;">
+                    <option value="XI-A">XI-A</option>
+                    <option value="XI-B">XI-B</option>
+                    <option value="XI-C">XI-C</option>
+                    <option value="XI-D">XI-D</option>
+                    <option value="XI-E">XI-E</option>
+                    <option value="XI-F">XI-F</option>
+                </select>
+                <button class="btn btn-outline" style="margin-left: 10px; color: white; border-color: white;" onclick="tutupPanelGuru()">Tutup Panel</button>
+                <button class="btn btn-primary" style="margin-left: 10px; background: #10b981; color: white; border: none;" onclick="cetakRekapGuru()">🖨️ Cetak Rekap Nilai</button>
+            </div>
+            <div class="table-responsive">
+                <table style="color: white; border-color: #475569;">
+                    <thead>
+                        <tr style="background-color: #334155;">
+                            <th>No</th>
+                            <th>Student Name</th>
+                            <th>Group</th>
+                            <th>Score</th>
+                            <th>Predicate</th>
+                            <th>Pelanggaran</th>
+                            <th>Date</th>
+                            <th>Log</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-rekap-body"></tbody>
+                </table>
+            </div>
         </div>
 
     </div>
 
-    <!-- ================= MODAL PERINGATAN KECURANGAN ================= -->
     <div id="cheat-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; text-align: center; padding: 20px; backdrop-filter: blur(5px);">
         <div style="background: #fee2e2; border: 4px dashed #dc2626; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: shake 0.5s;">
             <div style="font-size: 4rem; margin-bottom: 10px;">🚨</div>
@@ -1238,7 +1241,6 @@
         </div>
     </div>
 
-    <!-- ================= MODAL AUDIT LOG GURU ================= -->
     <div id="audit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);">
         <div style="background: white; border: 4px solid #1e293b; border-radius: 12px; padding: 24px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -1278,6 +1280,144 @@
         let currentMode = 'luas';
         let particleAnimId = null;
         let particlePositions = [];
+
+        // ============================================================
+        // FUNGSI hitungNilaiOtomatis() — MODEL PENILAIAN SAMA DENGAN ws2
+        // ============================================================
+        function hitungNilaiOtomatis() {
+            let skorTotal = 0;
+
+            // 1. VALIDASI TABEL DATA (Maks 25 poin)
+            //    Baris VALID jika F1 percobaan berada di ±15% dari teori
+            const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+            let barisValid = 0;
+
+            rows.forEach(row => {
+                const a1 = parseFloat(row.querySelector('.val-a1')?.value || 0);
+                const a2 = parseFloat(row.querySelector('.val-a2')?.value || 0);
+                const f1Percobaan = parseFloat(row.querySelector('.table-input')?.value || 0);
+                const beban = parseFloat(document.getElementById('massa-asli')?.value || 1000);
+
+                if (!isNaN(a1) && !isNaN(a2) && a1 > 0 && a2 > 0 &&
+                    !isNaN(f1Percobaan) && f1Percobaan > 0) {
+                    const teoriF1 = (beban * a1) / a2;
+                    if (f1Percobaan >= (teoriF1 * 0.85) && f1Percobaan <= (teoriF1 * 1.15)) {
+                        barisValid++;
+                    }
+                }
+            });
+
+            if (barisValid >= 4) skorTotal += 25;
+            else if (barisValid > 0) skorTotal += 10;
+
+            // 2. VALIDASI ESAI (Maks 30 poin) — Keyword Matching
+            const ans = document.querySelectorAll('.ans-field');
+
+            // Q1a — "Jika A1 = A2, berapa keuntungan mekanisnya? Mengapa?"
+            const q1a = (ans[0]?.value || '').toLowerCase();
+            if (q1a.length > 15 &&
+                (q1a.includes('sama') || q1a.includes('1x') || q1a.includes('satu') || q1a.includes('1 x')) &&
+                (q1a.includes('keuntungan') || q1a.includes('mekanis') || q1a.includes('tidak ada'))) {
+                skorTotal += 10;
+            } else if (q1a.length > 15) {
+                skorTotal += 4;
+            }
+
+            // Q1b — "Jika F1 digandakan, apa yang terjadi pada F2?"
+            const q1b = (ans[1]?.value || '').toLowerCase();
+            if (q1b.length > 15 &&
+                (q1b.includes('dua') || q1b.includes('2x') || q1b.includes('ganda') ||
+                 q1b.includes('naik') || q1b.includes('bertambah') || q1b.includes('berlipat')) &&
+                (q1b.includes('f2') || q1b.includes('p2') || q1b.includes('tekanan') || q1b.includes('beban'))) {
+                skorTotal += 10;
+            } else if (q1b.length > 15) {
+                skorTotal += 4;
+            }
+
+            // Q2 — "Pengaruh rasio A2/A1 terhadap F1"
+            const q2 = (ans[2]?.value || '').toLowerCase();
+            if (q2.length > 15 &&
+                (q2.includes('rasio') || q2.includes('perbandingan') || q2.includes('a2') || q2.includes('a1')) &&
+                (q2.includes('kecil') || q2.includes('turun') || q2.includes('berkurang') ||
+                 q2.includes('berbanding') || q2.includes('makin'))) {
+                skorTotal += 10;
+            } else if (q2.length > 15) {
+                skorTotal += 4;
+            }
+
+            // Q3 — "Apakah keuntungan mekanis besar selalu menguntungkan?"
+            const q3 = (ans[3]?.value || '').toLowerCase();
+            if (q3.length > 15 &&
+                (q3.includes('tidak') || q3.includes('rugi') || q3.includes('jarak') ||
+                 q3.includes('langkah') || q3.includes('usaha') || q3.includes('energi'))) {
+                skorTotal += 10;
+            } else if (q3.length > 15) {
+                skorTotal += 4;
+            }
+
+            // 3. VALIDASI REFLEKSI (Maks 5 poin) — jawaban 100 N ± 5
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value || 0);
+            if (!isNaN(refVal) && Math.abs(refVal - 100) <= 5) skorTotal += 5;
+
+            // 4. BUKTI FOTO (Maks 15 poin)
+            const fileInput = document.getElementById('upload-foto-bukti');
+            let fotoUploaded = false;
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                fotoUploaded = true;
+                skorTotal += 15;
+            }
+
+            // 5. SKOR TANTANGAN (Maks 40 poin)
+            skorTotal += skorTantangan;
+
+            // 6. POTONGAN KECURANGAN (-10 poin per pelanggaran)
+            const potonganCurang = peringatanCurang * 10;
+            skorTotal -= potonganCurang;
+
+            skorTotal = Math.max(0, Math.round(skorTotal));
+
+            // 7. CAP NILAI MAKSIMAL (sama seperti ws2)
+            if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
+            if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
+
+            document.getElementById('val-score').innerText = skorTotal;
+
+            let predikat = "Needs Improvement";
+            let warna = "#b91c1c";
+            if (skorTotal >= 90) { predikat = "Excellent"; warna = "#15803d"; }
+            else if (skorTotal >= 75) { predikat = "Good"; warna = "#0369a1"; }
+            else if (skorTotal >= 60) { predikat = "Fair"; warna = "#b45309"; }
+
+            let labelPredikat = predikat;
+            if (!fotoUploaded) labelPredikat += " (Foto blm diunggah!)";
+            if (skorTantangan === 0) labelPredikat += " (Tantangan blm dikerjakan!)";
+            if (peringatanCurang > 0) labelPredikat += ` [Curang: -${potonganCurang} poin]`;
+
+            const elPredikat = document.getElementById('val-predicate');
+            elPredikat.innerText = labelPredikat;
+            elPredikat.style.color = warna;
+
+            // 8. LAPORAN KECURANGAN DI UI
+            let reportBox = document.getElementById('report-curang');
+            if (reportBox) {
+                if (peringatanCurang > 0) {
+                    reportBox.style.display = 'block';
+                    let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai telah dipotong otomatis.`;
+                    if (auditLog.length > 0) {
+                        ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
+                        auditLog.forEach(it => {
+                            ringkasan += `<li>[${it.waktu}] ${it.detail} (Soal ID: ${it.soalId ?? '—'})</li>`;
+                        });
+                        ringkasan += '</ul>';
+                    }
+                    reportBox.innerHTML = ringkasan;
+                } else {
+                    reportBox.style.display = 'none';
+                }
+            }
+
+            return { skor: skorTotal, predikat: predikat };
+        }
 
         function previewImage(input) {
             const container = input.closest('.evidence-box').querySelector('.preview-container');
@@ -1348,65 +1488,6 @@
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
-        }
-
-        function hitungNilaiOtomatis() {
-            let skorTotal = 0;
-
-            const textareas = document.querySelectorAll('.ans-field');
-            let terisiCount = 0;
-            textareas.forEach(ta => { if(ta.value.trim().length > 5) terisiCount++; });
-            if (textareas.length > 0) skorTotal += (terisiCount / textareas.length) * 30;
-
-            const tableInputs = document.querySelectorAll('.table-input');
-            let tableTerisi = 0;
-            tableInputs.forEach(inp => { if(inp.value.trim() !== '') tableTerisi++; });
-            if(tableTerisi >= 4) skorTotal += 20;
-
-            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
-            if(!isNaN(refVal) && Math.abs(refVal - 100) <= 5) skorTotal += 15;
-
-            const fileInput = document.getElementById('upload-foto-bukti');
-            if (fileInput && fileInput.files && fileInput.files.length > 0) skorTotal += 15;
-
-            skorTotal += skorTantangan;
-            skorTotal -= (peringatanCurang * 10);
-
-            skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
-
-            document.getElementById('val-score').innerText = skorTotal;
-
-            let predikat = "Needs Improvement";
-            let warna = "#b91c1c";
-            if (skorTotal >= 85) { predikat = "Excellent"; warna = "#15803d"; }
-            else if (skorTotal >= 70) { predikat = "Good"; warna = "#0369a1"; }
-            else if (skorTotal >= 50) { predikat = "Fair"; warna = "#b45309"; }
-
-            let labelPredikat = predikat;
-            if (peringatanCurang > 0) labelPredikat += ` [Curang: -${peringatanCurang*10} poin]`;
-
-            const elPredikat = document.getElementById('val-predicate');
-            elPredikat.innerText = labelPredikat;
-            elPredikat.style.color = warna;
-
-            let reportBox = document.getElementById('report-curang');
-            if (reportBox) {
-                if (peringatanCurang > 0) {
-                    reportBox.style.display = 'block';
-                    let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai telah dipotong otomatis.`;
-                    if (auditLog.length > 0) {
-                        ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
-                        auditLog.forEach(it => {
-                            ringkasan += `<li>[${it.waktu}] ${it.detail} (Soal ID: ${it.soalId ?? '—'})</li>`;
-                        });
-                        ringkasan += '</ul>';
-                    }
-                    reportBox.innerHTML = ringkasan;
-                } else {
-                    reportBox.style.display = 'none';
-                }
-            }
-            return { skor: skorTotal, predikat: predikat };
         }
 
         document.querySelectorAll('.ans-field').forEach(ta => {
@@ -1757,6 +1838,7 @@
             }
             hitungNilaiOtomatis();
         }
+
         function validasiIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
             const kelas = document.getElementById('select-kelas').value;
@@ -1787,9 +1869,6 @@
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws8)
-        // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
             
@@ -1814,15 +1893,13 @@
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
-            // Ubah tombol jadi loading
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
             btnKirim.innerText = "Mengirim data...";
             btnKirim.disabled = true;
 
-            // Kirim ke Google Sheets via fetch
             fetch(URL_GOOGLE_SCRIPT, {
                 method: "POST",
                 mode: "no-cors", 
@@ -1830,7 +1907,6 @@
                 body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
             })
             .then(() => {
-                // Simpan juga ke localStorage sebagai backup rekap guru
                 const auditKey = `lkpd_audit_${kelas}_${nama}`;
                 const auditTersimpan = JSON.parse(localStorage.getItem(auditKey)) || [];
                 const gabungan = auditTersimpan.concat(auditLog).filter((v, i, arr) =>
@@ -1967,6 +2043,20 @@
         }
 
         // ==========================================
+        // VARIABEL GLOBAL UNTUK CHALLENGE MODE
+        // (dideklarasikan di sini agar hitungNilaiOtomatis bisa akses)
+        // ==========================================
+        let timerInterval = null;
+        let waktuSisa = 480;
+        let peringatanCurang = 0;
+        let soalAktif = [];
+        let soalRiwayatId = [];
+        let tantanganSelesai = false;
+        let skorTantangan = 0;
+        let challengeActive = false;
+        let blurGuardTimer = null;
+        let auditLog = [];
+        // ==========================================
         // MODUL 6: CHALLENGE MODE (HUKUM PASCAL)
         // 4 SOAL (3 PG + 1 ISIAN), DURASI 8 MENIT
         // ==========================================
@@ -2020,17 +2110,6 @@
             { id: 204, tipe: 'isian', teks: "Beban 4000 N diangkat dengan F₁ = 100 N. Berapa keuntungan mekanis dongkrak? (x)", jawaban: 40, satuan: "x", toleransi: 0.5 },
             { id: 205, tipe: 'isian', teks: "Dongkrak hidrolik dengan A₁ = 5 cm² dan A₂ = 150 cm². Berapa keuntungan mekanisnya? (x)", jawaban: 30, satuan: "x", toleransi: 0.5 }
         ];
-
-        let timerInterval = null;
-        let waktuSisa = 480; // 8 menit = 480 detik
-        let peringatanCurang = 0;
-        let soalAktif = [];
-        let soalRiwayatId = [];
-        let tantanganSelesai = false;
-        let skorTantangan = 0;
-        let challengeActive = false;
-        let blurGuardTimer = null;
-        let auditLog = [];
 
         function getWatermarkText() {
             const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
@@ -2176,7 +2255,6 @@
             if (area) area.classList.add('protected');
         }
 
-        // Pilih 4 soal: 3 PG + 1 isian (acak)
         function pilihSoalBaru() {
             const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
             const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
@@ -2296,7 +2374,7 @@
             soalAktif = pilihSoalBaru();
             renderSoalAktif(null);
 
-            waktuSisa = 480; // 8 menit
+            waktuSisa = 480;
             peringatanCurang = 0;
             tantanganSelesai = false;
             challengeActive = true;
@@ -2361,7 +2439,6 @@
                 }
             });
 
-            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
             skorTantangan = benar * 10;
 
             let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
@@ -2409,8 +2486,10 @@
             }
         }
 
+        // --- INISIALISASI AWAL ---
         hitungKerugian();
         updateGrafik();
+        hitungNilaiOtomatis();
     </script>
 </body>
 </html>

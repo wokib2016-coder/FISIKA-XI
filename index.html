@@ -284,7 +284,7 @@
                         <div id="form-siswa" class="form-group full-width" style="display: block;">
                             <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="Ketik nama lengkapmu..."></div>
                             
-                            <!-- DROPDOWN KELAS -->
+                            <!-- DROPDOWN KELAS (XI-A s.d. XI-F) -->
                             <div class="form-group">
                                 <label>Kelas</label>
                                 <select id="kelas">
@@ -295,8 +295,6 @@
                                     <option value="XI-D">XI-D</option>
                                     <option value="XI-E">XI-E</option>
                                     <option value="XI-F">XI-F</option>
-                                    <option value="XI-G">XI-G</option>
-                                    <option value="XI-H">XI-H</option>
                                 </select>
                             </div>
 
@@ -322,7 +320,7 @@
                         <div id="form-operator-dropdown">
                             <div class="form-group" style="margin-top: 10px; text-align: left;">
                                 <label>Token Kelas</label>
-                                <input type="text" id="token-operator" placeholder="Contoh: XIA" style="width:100%; padding: 8px; border-radius:6px; border:1px solid #cbd5e1;">
+                                <input type="text" id="token-operator" placeholder="Contoh: XIA atau XI-A" style="width:100%; padding: 8px; border-radius:6px; border:1px solid #cbd5e1;">
                                 <p style="font-size: 0.75rem; color: #ef4444; margin-top: 5px; text-align:left;" id="pesan-error-operator"></p>
                             </div>
                             <button type="button" class="btn-semester" style="padding: 10px; font-size: 1rem; background:#0f172a;" onclick="loginOperator()">Masuk Form Absensi</button>
@@ -480,15 +478,21 @@
         }
 
         function loginOperator() {
-            const token = document.getElementById('token-operator').value.trim().toUpperCase();
-            const kelasValid = ["XIA", "XIB", "XIC", "XID", "XIE", "XIF", "XIG", "XIH"];
+            // Terima input "XIA" atau "XI-A" → normalisasi ke "XI-A"
+            let token = document.getElementById('token-operator').value.trim().toUpperCase();
+            // Jika user ketik "XIA", ubah jadi "XI-A"
+            if (/^XI[A-F]$/.test(token)) {
+                token = 'XI-' + token.charAt(2);
+            }
+            
+            const kelasValid = ["XI-A", "XI-B", "XI-C", "XI-D", "XI-E", "XI-F"];
             
             if (kelasValid.includes(token)) {
                 alert(`Login Operator Berhasil! Membuka form absensi untuk kelas ${token}.`);
                 localStorage.setItem('kelas_operator', token);
-                window.location.href = "form-absensi.html"; // Mengarahkan ke file form absensi
+                window.location.href = "form-absensi.html";
             } else {
-                document.getElementById('pesan-error-operator').innerText = "Token Kelas Tidak Valid! (Contoh: XIA, XIB)";
+                document.getElementById('pesan-error-operator').innerText = "Token Kelas Tidak Valid! (Contoh: XIA atau XI-A)";
             }
         }
 

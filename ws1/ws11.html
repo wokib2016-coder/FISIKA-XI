@@ -189,7 +189,6 @@ canvas{display:block;width:100%;height:100%;}
       <div class="info-box"><strong>Tujuan:</strong> memahami konsep debit fluida (Q = A·v), Asas Torricelli (v = √(2gh)), dan hubungan kedalaman lubang dengan kecepatan pancaran.</div>
     </div>
   </div>
-
   <!-- PART 2 -->
   <div id="langkah2" class="section-target">
     <div class="card">
@@ -291,7 +290,6 @@ canvas{display:block;width:100%;height:100%;}
       </div>
     </div>
   </div>
-
   <!-- PART 4 -->
   <div id="langkah4" class="section-target">
     <div class="card">
@@ -352,6 +350,7 @@ canvas{display:block;width:100%;height:100%;}
       </div>
     </div>
   </div>
+
   <!-- PART 6 -->
   <div id="langkah6" class="section-target">
     <div class="card">
@@ -417,7 +416,6 @@ canvas{display:block;width:100%;height:100%;}
       <div class="action-buttons">
         <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
         <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
-        <!-- PERBAIKAN: Menambahkan (event) pada tombol -->
         <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
       </div>
       <div id="pesan-validasi" class="feedback-box error" style="display:none;">Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.</div>
@@ -825,6 +823,7 @@ document.getElementById('numHolesSelect').addEventListener('change', (e) => {
   renderHoleControls();
   updateResultPanel();
 });
+
 /* =====================================================
    TABEL EKSPERIMEN
    ===================================================== */
@@ -902,7 +901,7 @@ function hitungAnalisis() {
 }
 
 /* =====================================================
-   IDENTITAS & PENILAIAN
+   IDENTITAS & PENILAIAN (MODEL SAMA DENGAN ws2)
    ===================================================== */
 function updateIdentitas() {
   const nama = document.getElementById('input-nama').value.trim();
@@ -947,74 +946,162 @@ function renderDaftarAnggota(dataGrup) {
   });
 }
 
+/* ============================================================
+   FUNGSI esaiValid() — KEYWORD MATCHING (MODEL ws2)
+   Mengembalikan 0 / 0.5 / 1 → dikalikan bobot 4 poin per esai
+   ============================================================ */
 function esaiValid(text, minKata, keywordWajib, keywordOpsional) {
   const t = (text || '').toLowerCase().trim();
   const kata = t.split(/\s+/).filter(w => w.length > 0);
   if (kata.length < minKata) return 0;
   const adaWajib = keywordWajib.every(k => t.includes(k));
   const adaOpsional = keywordOpsional.some(k => t.includes(k));
-  if (adaWajib && adaOpsional) return 1;
-  if (adaWajib || adaOpsional) return 0.5;
-  return 0.2;
+  if (adaWajib && adaOpsional) return 1;   // Lengkap  → 4 poin
+  if (adaWajib || adaOpsional) return 0.5; // Sebagian → 2 poin
+  return 0.2;                              // Hanya panjang → 0.8 poin
 }
 
+/* ============================================================
+   FUNGSI hitungNilaiOtomatis() — MODEL ws2 DISESUAIKAN ws11
+   Bobot: Tabel 25 + Esai 40 (10×4) + Refleksi 5
+          + Foto 15 + Tantangan 40 = 125 → cap 100
+   ============================================================ */
 function hitungNilaiOtomatis() {
-  let skor = 0, barisA = 0;
+  let skor = 0;
+
+  // ---------- 1. VALIDASI TABEL DEBIT (Maks 25) ----------
+  let barisA = 0;
   document.querySelectorAll('#tabel-debit tbody tr').forEach(row => {
     const h1 = parseFloat(row.querySelector('.input-h1').value);
     const r1 = parseFloat(row.querySelector('.input-r1').value);
     const vTxt = row.querySelector('.v-cell').innerText;
-    if (!isNaN(h1) && !isNaN(r1) && vTxt !== '–') barisA++;
+    const qTxt = row.querySelector('.q-cell').innerText;
+    if (!isNaN(h1) && !isNaN(r1) && h1 > 0 && r1 > 0 && vTxt !== '–' && qTxt !== '–') barisA++;
   });
-  if (barisA >= 3) skor += 15; else if (barisA > 0) skor += 6;
+  if (barisA >= 3) skor += 25;
+  else if (barisA > 0) skor += 10;
 
+  // ---------- 2. VALIDASI ESAI (10 × 4 = 40) ----------
   const ans = document.querySelectorAll('.ans-field');
-  skor += esaiValid(ans[0]?.value, 8, ['kedalaman', 'kecepatan'], ['torricelli', 'tekanan', 'hidrostatis', 'akar']) * 5;
-  skor += esaiValid(ans[1]?.value, 8, ['radius', 'debit'], ['luas', 'kecepatan', 'sebanding', 'kuadrat']) * 5;
-  skor += esaiValid(ans[2]?.value, 8, ['kedalaman', 'kecepatan'], ['torricelli', 'tekanan', 'hidrostatis', 'sebanding']) * 5;
-  skor += esaiValid(ans[3]?.value, 8, ['kecepatan', 'debit'], ['sebanding', 'luas', 'lubang', 'q']) * 5;
-  skor += esaiValid(ans[4]?.value, 8, ['kedalaman', 'gravitasi'], ['torricelli', 'kecepatan', 'mempengaruhi']) * 5;
-  skor += esaiValid(ans[5]?.value, 8, ['lubang', 'debit'], ['luas', 'kecepatan', 'q', 'sebanding']) * 5;
-  skor += esaiValid(ans[6]?.value, 8, ['tekanan', 'air'], ['hidrostatis', 'lubang', 'dorong', 'keluar', 'torricelli']) * 5;
-  skor += esaiValid(ans[7]?.value, 8, ['tekanan', 'udara'], ['terkompresi', 'dorong', 'keluar', 'diperas', 'menyembur']) * 5;
-  skor += esaiValid(ans[8]?.value, 8, ['tidak', 'udara'], ['tekanan', 'masuk', 'tertahan', 'seimbang', 'atmosfer']) * 5;
-  skor += esaiValid(ans[9]?.value, 8, ['debit', 'bocor'], ['torricelli', 'kecepatan', 'lubang', 'kedalaman']) * 5;
 
+  // Q1 — Mengapa v bergantung h (Torricelli)
+  skor += esaiValid(
+    ans[0]?.value, 8,
+    ['kedalaman', 'kecepatan'],
+    ['torricelli', 'tekanan', 'hidrostatis', 'akar']
+  ) * 4;
+
+  // Q2 — Radius lubang → debit
+  skor += esaiValid(
+    ans[1]?.value, 8,
+    ['radius', 'debit'],
+    ['luas', 'kecepatan', 'sebanding', 'kuadrat']
+  ) * 4;
+
+  // Q3 — Hubungan h dengan v (Tabel A)
+  skor += esaiValid(
+    ans[2]?.value, 8,
+    ['kedalaman', 'kecepatan'],
+    ['torricelli', 'tekanan', 'hidrostatis', 'sebanding']
+  ) * 4;
+
+  // Q4 — Hubungan v dengan Q (Tabel A)
+  skor += esaiValid(
+    ans[3]?.value, 8,
+    ['kecepatan', 'debit'],
+    ['sebanding', 'luas', 'lubang', 'q']
+  ) * 4;
+
+  // Q5 — Pengaruh h dan g terhadap v
+  skor += esaiValid(
+    ans[4]?.value, 8,
+    ['kedalaman', 'gravitasi'],
+    ['torricelli', 'kecepatan', 'mempengaruhi']
+  ) * 4;
+
+  // Q6 — Mengapa r besar → Q besar
+  skor += esaiValid(
+    ans[5]?.value, 8,
+    ['lubang', 'debit'],
+    ['luas', 'kecepatan', 'q', 'sebanding']
+  ) * 4;
+
+  // Q8A — Tabung terbuka → semburan
+  skor += esaiValid(
+    ans[6]?.value, 8,
+    ['tekanan', 'air'],
+    ['hidrostatis', 'lubang', 'dorong', 'keluar', 'torricelli']
+  ) * 4;
+
+  // Q8B — Botol diperas → semburan
+  skor += esaiValid(
+    ans[7]?.value, 8,
+    ['tekanan', 'udara'],
+    ['terkompresi', 'dorong', 'keluar', 'diperas', 'menyembur']
+  ) * 4;
+
+  // Q8C — Botol tertutup tanpa diperas → tidak menyembur
+  skor += esaiValid(
+    ans[8]?.value, 8,
+    ['tidak', 'udara'],
+    ['tekanan', 'masuk', 'tertahan', 'seimbang', 'atmosfer']
+  ) * 4;
+
+  // Q9 — Kesimpulan
+  skor += esaiValid(
+    ans[9]?.value, 8,
+    ['debit', 'bocor'],
+    ['torricelli', 'kecepatan', 'lubang', 'kedalaman']
+  ) * 4;
+
+  // ---------- 3. VALIDASI REFLEKSI (Maks 5) ----------
   const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
-  if (!isNaN(refVal) && Math.abs(refVal - 0.006) <= 0.001) skor += 10;
+  if (!isNaN(refVal) && Math.abs(refVal - 0.006) <= 0.001) skor += 5;
 
+  // ---------- 4. BUKTI FOTO (Maks 15) ----------
   const fileInput = document.getElementById('upload-bukti');
   let fotoUploaded = false;
   if (fileInput && fileInput.files && fileInput.files.length > 0) {
     fotoUploaded = true;
-    skor += 8;
+    skor += 15;
   }
+
+  // ---------- 5. TANTANGAN (Maks 40) ----------
   skor += Math.min(40, skorTantangan);
-  skor -= (peringatanCurang * 10);
-  skor = Math.max(0, Math.min(100, Math.round(skor)));
+
+  // ---------- 6. POTONGAN KECURANGAN ----------
+  const potonganCurang = peringatanCurang * 10;
+  skor -= potonganCurang;
+
+  skor = Math.max(0, Math.round(skor));
+
+  // ---------- 7. CAP NILAI MAKSIMAL (sama seperti ws2) ----------
   if (!fotoUploaded && skor > 60) skor = 60;
   if (skorTantangan === 0 && skor > 75) skor = 75;
 
   document.getElementById('val-score').innerText = skor;
+
   let predikat = "Needs Improvement";
   let warna = "#b91c1c";
   if (skor >= 90) { predikat = "Excellent"; warna = "#15803d"; }
   else if (skor >= 75) { predikat = "Good"; warna = "#0369a1"; }
   else if (skor >= 60) { predikat = "Fair"; warna = "#b45309"; }
+
   let label = predikat;
   if (!fotoUploaded) label += " (Foto blm diunggah!)";
   if (skorTantangan === 0) label += " (Tantangan blm dikerjakan!)";
-  if (peringatanCurang > 0) label += ` [Curang: -${peringatanCurang * 10} poin]`;
+  if (peringatanCurang > 0) label += ` [Curang: -${potonganCurang} poin]`;
   document.getElementById('val-predicate').innerText = label;
   document.getElementById('val-predicate').style.color = warna;
 
+  // ---------- 8. LAPORAN KECURANGAN UI ----------
   const reportBox = document.getElementById('report-curang');
   if (reportBox) {
     if (peringatanCurang > 0) {
       reportBox.style.display = 'block';
-      let ringkasan = `⚠️ Terdeteksi ${peringatanCurang} pelanggaran. Nilai dipotong otomatis.`;
+      let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai dipotong otomatis.`;
       if (auditLog.length > 0) {
-        ringkasan += '<br><br><b>Detail:</b><ul style="margin-left:18px;font-weight:normal;">';
+        ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
         auditLog.forEach(it => {
           ringkasan += `<li>[${escHtml(it.waktu)}] ${escHtml(it.detail)} (Soal: ${escHtml(it.soalId ?? '—')})</li>`;
         });
@@ -1116,9 +1203,6 @@ function prosesUnduhWord() {
   document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
-// ==========================================
-// PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws11)
-// ==========================================
 function simpanTugasKeSistem(event) {
   if (!validasiIdentitas()) return;
   
@@ -1130,36 +1214,27 @@ function simpanTugasKeSistem(event) {
   const evaluasi = hitungNilaiOtomatis();
 
   const dataUntukDikirim = {
-    nama: nama,
-    kelas: kelas,
-    sekolah: sekolah,
+    nama: nama, kelas: kelas, sekolah: sekolah,
     materi: "Worksheet 11 - Debit Fluida & Tabung Bocor",
-    skor: evaluasi.skor,
-    progres: "100%",
+    skor: evaluasi.skor, progres: "100%",
     pelanggaran: peringatanCurang,
     log: JSON.stringify(auditLog), 
-    benar: 0, 
-    totalSoal: 0, 
-    tipeUjian: "Worksheet"
+    benar: 0, totalSoal: 0, tipeUjian: "Worksheet"
   };
 
-  const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+  const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
-  // Ubah tombol jadi loading
   const btnKirim = event.target;
   const teksAsli = btnKirim.innerText;
   btnKirim.innerText = "Mengirim data...";
   btnKirim.disabled = true;
 
-  // Kirim ke Google Sheets via fetch
   fetch(URL_GOOGLE_SCRIPT, {
-    method: "POST",
-    mode: "no-cors", 
+    method: "POST", mode: "no-cors", 
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
   })
   .then(() => {
-    // Simpan juga ke localStorage sebagai backup rekap guru
     const auditKey = `lkpd_debit_audit_${kelas}_${nama}`;
     const auditTersimpan = JSON.parse(localStorage.getItem(auditKey)) || [];
     const gabungan = auditTersimpan.concat(auditLog).filter((v, i, arr) =>
@@ -1270,45 +1345,41 @@ function cetakRekapGuru() {
   window.print();
   setTimeout(bersihkan, 5000);
 }
+
 /* =====================================================
-   MODUL 6: CHALLENGE MODE — 4 SOAL (3 PG + 1 ISIAN), 8 MENIT
+   CHALLENGE MODE — 4 SOAL (3 PG + 1 ISIAN), 8 MENIT
    ===================================================== */
 const bankSoalPG = [
   {
-    id: 101,
-    tipe: 'pg',
+    id: 101, tipe: 'pg',
     teks: "Sebuah lubang dengan luas A = 2 mm² memiliki kecepatan pancaran v = 3 m/s. Berapa debit airnya?",
     pilihan: ["0,002 L/s", "0,004 L/s", "0,006 L/s", "0,012 L/s"],
     jawaban: 2,
     pembahasan: "Q = A·v = (2×10⁻⁶ m²)(3 m/s) = 6×10⁻⁶ m³/s = 0,006 L/s."
   },
   {
-    id: 102,
-    tipe: 'pg',
+    id: 102, tipe: 'pg',
     teks: "Tabung bocor dengan kedalaman lubang h = 45 cm dan g = 10 m/s². Berapa kecepatan pancaran air?",
     pilihan: ["1,5 m/s", "2,0 m/s", "3,0 m/s", "4,5 m/s"],
     jawaban: 2,
     pembahasan: "v = √(2gh) = √(2 × 10 × 0,45) = √9 = 3 m/s."
   },
   {
-    id: 103,
-    tipe: 'pg',
+    id: 103, tipe: 'pg',
     teks: "Sebuah tabung bocor dengan kedalaman lubang h = 1,25 m (g = 10 m/s²). Berapa kecepatan pancaran air?",
     pilihan: ["2,5 m/s", "5,0 m/s", "7,5 m/s", "12,5 m/s"],
     jawaban: 1,
     pembahasan: "v = √(2gh) = √(2 × 10 × 1,25) = √25 = 5 m/s."
   },
   {
-    id: 104,
-    tipe: 'pg',
+    id: 104, tipe: 'pg',
     teks: "Air mengalir dengan debit 0,5 L/s melalui pipa berpenampang 5 cm². Berapa kecepatan air? (1 L = 10⁻³ m³)",
     pilihan: ["0,5 m/s", "1,0 m/s", "2,0 m/s", "5,0 m/s"],
     jawaban: 1,
     pembahasan: "Q = 0,5 L/s = 5×10⁻⁴ m³/s. A = 5 cm² = 5×10⁻⁴ m². v = Q/A = 1 m/s."
   },
   {
-    id: 105,
-    tipe: 'pg',
+    id: 105, tipe: 'pg',
     teks: "Sebuah tabung bocor dengan kedalaman lubang h = 80 cm (g = 10 m/s²). Berapa kecepatan air di lubang?",
     pilihan: ["2,0 m/s", "3,0 m/s", "4,0 m/s", "8,0 m/s"],
     jawaban: 2,

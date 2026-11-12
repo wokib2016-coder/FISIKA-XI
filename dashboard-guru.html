@@ -148,7 +148,7 @@
     // ========================================================
     // URL GOOGLE APPS SCRIPT KAMU
     // ========================================================
-    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec"; 
+    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec"; 
     const PIN_GURU = "2026"; 
 
     async function muatDataDariSheets() {
@@ -184,13 +184,13 @@
 
             // Looping data dari Google Sheets
             dataSiswa.forEach((siswa, index) => {
-                // Ambil data berdasarkan nama Header (Judul Kolom) di Google Sheets
-                const nama = siswa['Nama'] || siswa['nama'] || '-';
-                const kelas = siswa['Kelas'] || siswa['kelas'] || '-';
-                const waktu = siswa['Waktu'] || siswa['waktu'] || '-';
-                const skor = siswa['Skor'] !== undefined ? siswa['Skor'] : (siswa['skor'] || 0);
-                const benar = siswa['Benar'] !== undefined ? siswa['Benar'] : (siswa['benar'] || 0);
-                const totalSoal = siswa['TotalSoal'] !== undefined ? siswa['TotalSoal'] : (siswa['totalSoal'] || 50);
+                // PERBAIKAN: Nama key disesuaikan 100% dengan Header di Google Sheets Anda
+                const nama = siswa['NAMA'] || '-';
+                const kelas = siswa['KELAS'] || '-';
+                const waktu = siswa['WAKTU'] || '-';
+                const skor = siswa['SKOR'] || 0;
+                const benar = siswa['BENAR'] || 0;
+                const totalSoal = siswa['TOTAL SOAL'] || 50; // Perhatikan ada spasinya
                 
                 // Hitung persentase progres
                 const progresPersen = totalSoal > 0 ? (benar / totalSoal) * 100 : 0;

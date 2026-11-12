@@ -15,6 +15,7 @@
     input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
     button { width: 100%; padding: 12px; background: #1a3c34; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
     button:hover { background: #2a5c52; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-kembali { background: #64748b; margin-top: 10px; }
     .btn-kembali:hover { background: #475569; }
     #pesan { margin-top: 15px; text-align: center; font-weight: bold; }
@@ -47,53 +48,111 @@
             </select>
         </div>
         <button type="submit" id="btn-simpan">Simpan Absensi</button>
-        <button type="button" class="btn-kembali" onclick="window.location.href='!DOCTYPE html.txt'">← Kembali ke Login</button>
+        <button type="button" class="btn-kembali" onclick="window.location.href='index.html'">← Kembali ke Login</button>
     </form>
 
     <div id="pesan"></div>
 </div>
 
 <script>
-    // Ambil kelas dari local storage (disimpan saat login operator)
-    const kelasOperator = localStorage.getItem('kelas_operator') || 'Tidak Diketahui';
+    /* ==========================================================
+       1. VALIDASI KELAS OPERATOR (XI-A s.d. XI-F)
+       ========================================================== */
+    const daftarKelasValid = ['XI-A', 'XI-B', 'XI-C', 'XI-D', 'XI-E', 'XI-F'];
+    let kelasOperator = (localStorage.getItem('kelas_operator') || '').trim().toUpperCase();
+
+    if (!daftarKelasValid.includes(kelasOperator)) {
+        // Jika tidak valid, minta operator pilih ulang
+        const pilihan = prompt(
+            "Kelas tidak terdeteksi. Pilih kelas Anda:\n(XI-A / XI-B / XI-C / XI-D / XI-E / XI-F)",
+            "XI-A"
+        );
+        const pilihanBersih = (pilihan || '').trim().toUpperCase();
+        if (daftarKelasValid.includes(pilihanBersih)) {
+            kelasOperator = pilihanBersih;
+            localStorage.setItem('kelas_operator', kelasOperator);
+        } else {
+            alert("❌ Kelas tidak valid. Silakan login ulang dari halaman operator.");
+            window.location.href = 'index.html'; // sesuaikan dengan nama file login
+            throw new Error("Kelas tidak valid");
+        }
+    }
+
     document.getElementById('info-kelas').innerText = `Kelas: ${kelasOperator}`;
 
-    // URL Web App milikmu sudah dimasukkan di sini
-    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+    /* ==========================================================
+       2. URL WEB APP GOOGLE APPS SCRIPT
+       (disamakan dengan ws8.html, ws9.html, ws10.html, ws11.html,
+        dan dashboard-guru.html)
+       ========================================================== */
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
+    /* ==========================================================
+       3. SET DEFAULT TANGGAL = HARI INI
+       ========================================================== */
+    const inputTanggal = document.getElementById('tanggal');
+    if (inputTanggal && !inputTanggal.value) {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        inputTanggal.value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    /* ==========================================================
+       4. SUBMIT FORM → KIRIM KE GOOGLE SHEETS
+       ========================================================== */
     document.getElementById('form-absensi').addEventListener('submit', async function(e) {
         e.preventDefault();
+
         const btn = document.getElementById('btn-simpan');
         const pesan = document.getElementById('pesan');
-        
+
+        const tanggal = document.getElementById('tanggal').value;
+        const nama = document.getElementById('nama').value.trim();
+        const keterangan = document.getElementById('keterangan').value;
+
+        // Validasi dasar
+        if (!tanggal || !nama || !keterangan) {
+            pesan.style.color = 'red';
+            pesan.innerText = "⚠️ Mohon lengkapi semua data terlebih dahulu.";
+            return;
+        }
+
         btn.disabled = true;
         btn.innerText = "Menyimpan...";
         pesan.innerText = "";
 
         const data = {
-            tanggal: document.getElementById('tanggal').value,
+            tanggal: tanggal,
             kelas: kelasOperator,
-            nama: document.getElementById('nama').value,
-            keterangan: document.getElementById('keterangan').value
+            nama: nama,
+            keterangan: keterangan
         };
 
         try {
             const response = await fetch(URL_WEB_APP, {
                 method: 'POST',
+                // Gunakan text/plain agar tidak memicu preflight CORS
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(data)
             });
+
             const result = await response.json();
-            
+
             if (result.status === 'success') {
                 pesan.style.color = 'green';
                 pesan.innerText = "✅ Data absensi berhasil disimpan ke Google Sheet!";
-                document.getElementById('form-absensi').reset();
+                // Reset form tetapi pertahankan tanggal hari ini
+                document.getElementById('nama').value = '';
+                document.getElementById('keterangan').value = '';
             } else {
-                throw new Error(result.message);
+                throw new Error(result.message || 'Gagal menyimpan data.');
             }
         } catch (error) {
             pesan.style.color = 'red';
-            pesan.innerText = "❌ Gagal menyimpan: " + error.message;
+            pesan.innerText = "❌ Gagal menyimpan: " + (error.message || 'Cek koneksi internet Anda.');
+            console.error('Error:', error);
         } finally {
             btn.disabled = false;
             btn.innerText = "Simpan Absensi";

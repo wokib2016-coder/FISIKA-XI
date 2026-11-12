@@ -29,17 +29,7 @@
         .header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
         .header h1 span { color: var(--accent-yellow); }
         .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
-
-        /* Tambahan: tagline emas di bawah Physics XI - Phase F */
-        .header .tagline-gold {
-            font-size: 0.95rem;
-            font-weight: 700;
-            font-style: italic;
-            color: var(--accent-yellow);
-            margin-top: 10px;
-            letter-spacing: 0.3px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.35);
-        }
+        .header .tagline-gold { font-size: 0.95rem; font-weight: 700; font-style: italic; color: var(--accent-yellow); margin-top: 10px; letter-spacing: 0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
 
         .nav-tabs { display: flex; justify-content: flex-start; background-color: white; border-bottom: 1px solid var(--border-color); padding: 10px 15px; overflow-x: auto; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); white-space: nowrap; -webkit-overflow-scrolling: touch; }
         .nav-tabs::-webkit-scrollbar { display: none; }
@@ -303,7 +293,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ================= PART 2: SIMULATION (DUA ANIMASI GAYA GESEK) ================= -->
         <div id="langkah2" class="section-target">
             <div class="card">
@@ -506,7 +495,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ================= PART 4: ANALYSIS ================= -->
         <div id="langkah4" class="section-target">
             <div class="card">
@@ -1134,7 +1122,6 @@
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             drawCar2(carX2, 260, 0, lastInfoText2);
         }
-
         function checkQuiz2() {
             const checkboxes = document.querySelectorAll('input[name="quizOption2"]:checked');
             const feedbackEl = document.getElementById('quizFeedback2');
@@ -1148,21 +1135,27 @@
             let correctCount = 0;
             selectedValues.forEach(val => { if (validOptions.includes(val)) correctCount++; });
             let incorrectCount = selectedValues.length - correctCount;
+            
             if (selectedValues.length === 2 && correctCount === 2) {
                 feedbackEl.style.color = '#10b981';
                 feedbackEl.innerText = "Luar biasa! Kedua pilihan Anda tepat. Skor: 1.0 (Sempurna)";
+                window.statusBenarSim2 = true; // SIMPAN STATUS UNTUK PENILAIAN
             } else if (correctCount === 1 && incorrectCount === 0) {
                 feedbackEl.style.color = '#38bdf8';
                 feedbackEl.innerText = "Cukup baik! Anda memilih satu jawaban yang benar. Skor: 0.5";
+                window.statusBenarSim2 = false;
             } else if (selectedValues.length === 2 && correctCount === 1) {
                 feedbackEl.style.color = '#38bdf8';
                 feedbackEl.innerText = "Sebagian tepat! Satu pilihan benar dan satu pengecoh. Skor: 0.5";
+                window.statusBenarSim2 = false;
             } else if (correctCount === 2 && selectedValues.length > 2) {
                 feedbackEl.style.color = '#f59e0b';
                 feedbackEl.innerText = "Mohon pilih tepat dua (2) jawaban sesuai instruksi soal!";
+                window.statusBenarSim2 = false;
             } else {
                 feedbackEl.style.color = '#f43f5e';
                 feedbackEl.innerText = "Belum tepat. Silakan tinjau kembali konsep gaya gesek statis dan kinetis. Skor: 0";
+                window.statusBenarSim2 = false;
             }
             hitungNilaiOtomatis();
         }
@@ -1345,6 +1338,9 @@
                 fotoUploaded = true;
                 skorTotal += 15;
             }
+            
+            // 4b. KUIS SIM 2 (Bonus)
+            if (window.statusBenarSim2) skorTotal += 5;
 
             // 5. SKOR TANTANGAN (maks 40 → 4 soal × 10)
             skorTotal += skorTantangan;
@@ -1445,7 +1441,6 @@
             }
             hitungNilaiOtomatis();
         }
-
         /* =====================================================
            VALIDASI & CETAK
            ===================================================== */
@@ -1480,7 +1475,7 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws3)
+        // KIRIM KE GOOGLE SHEETS (URL SUDAH BENAR)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
@@ -1506,7 +1501,7 @@
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
@@ -1617,7 +1612,6 @@
             if (pred === 'Fair') return '#b45309';
             return '#b91c1c';
         }
-
         /* =====================================================
            CHALLENGE MODE — 4 SOAL (3 PG + 1 ISIAN), 8 MENIT
            ===================================================== */
@@ -1960,7 +1954,6 @@
                 }
             });
 
-            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
             skorTantangan = benar * 10;
 
             let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
@@ -1973,7 +1966,6 @@
             alert(pesan);
             hitungNilaiOtomatis();
         }
-
         /* =====================================================
            KALKULATOR ILMIAH
            ===================================================== */

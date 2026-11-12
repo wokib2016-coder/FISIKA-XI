@@ -647,7 +647,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ================= BAGIAN 2: SIMULATION ================= -->
         <div id="langkah2" class="section-target">
             <div class="card">
@@ -844,7 +843,6 @@
                 </div>
             </div>
         </div>
-
         <!-- ================= BAGIAN 4: LOSS ANALYSIS ================= -->
         <div id="langkah4" class="section-target">
             <div class="card">
@@ -1099,7 +1097,6 @@
             </div>
         </div>
     </div>
-
     <style>
     /* Animasi Goyang (Shake) untuk efek dramatis */
     @keyframes shake {
@@ -1110,6 +1107,7 @@
         100% { transform: translateX(0); }
     }
     </style>
+    
     <!-- ================= JAVASCRIPT ================= -->
     <script>
         document.getElementById('input-tanggal').valueAsDate = new Date();
@@ -1315,7 +1313,6 @@
                 hitungTabel(row.querySelector('.input-sudut'));
             });
         }
-
         // --- FUNGSI LAINNYA (IDENTITAS, NILAI, DLL) ---
         function previewImage(input) {
             const container = input.closest('.evidence-box').querySelector('.preview-container');
@@ -1382,7 +1379,7 @@
         }
 
         // ==========================================
-        // SISTEM PENILAIAN OTOMATIS
+        // SISTEM PENILAIAN OTOMATIS (SUDAH DIPERBAIKI)
         // ==========================================
         function hitungNilaiOtomatis() {
             let skorTotal = 0;
@@ -1392,11 +1389,11 @@
             let barisValid = 0;
             
             rows.forEach(row => {
-                let sudut = parseFloat(row.querySelector('.input-sudut').value);
-                let massaPercobaan = parseFloat(row.querySelector('.input-massa').value);
-                let massaAsli = parseFloat(document.getElementById('massa-asli').value) || 1.000;
+                let sudut = parseFloat(row.querySelector('.input-sudut')?.value || 0);
+                let massaPercobaan = parseFloat(row.querySelector('.input-massa')?.value || 0);
+                let massaAsli = parseFloat(document.getElementById('massa-asli')?.value || 1.000);
                 
-                if (!isNaN(sudut) && !isNaN(massaPercobaan)) {
+                if (!isNaN(sudut) && !isNaN(massaPercobaan) && massaPercobaan > 0) {
                     let massaTeori = massaAsli * Math.cos(sudut * Math.PI / 180);
                     if (massaPercobaan <= massaAsli && massaPercobaan >= (massaTeori * 0.85) && massaPercobaan <= (massaTeori * 1.15)) {
                         barisValid++;
@@ -1407,24 +1404,30 @@
             if (barisValid >= 4) skorTotal += 25; 
             else if (barisValid > 0) skorTotal += 10; 
 
-            // 2. VALIDASI ESAI (Maks 20)
-            const q1 = document.querySelectorAll('.ans-field')[0].value.toLowerCase();
+            // 2. VALIDASI ESAI (Maks 30) - Diberi tanda ?. agar aman jika kotak tidak ada
+            const ans = document.querySelectorAll('.ans-field');
+            
+            // Q1
+            const q1 = (ans[0]?.value || '').toLowerCase();
             if (q1.length > 15 && (q1.includes('normal') || q1.includes('cos') || q1.includes('komponen'))) skorTotal += 10;
             else if (q1.length > 15) skorTotal += 4;
 
-            const q2 = document.querySelectorAll('.ans-field')[1].value.toLowerCase();
+            // Q2
+            const q2 = (ans[1]?.value || '').toLowerCase();
             if (q2.length > 15 && (q2.includes('meningkat') || q2.includes('besar') || q2.includes('sudut'))) skorTotal += 10;
             else if (q2.length > 15) skorTotal += 4;
 
-            const q3 = document.querySelectorAll('.ans-field')[2].value.toLowerCase();
+            // Q3 (Kadang ada di index 2, kadang di index 3)
+            const q3 = (ans[2]?.value || ans[3]?.value || '').toLowerCase();
             if (q3.length > 15 && (q3.includes('rugi') || q3.includes('besar') || q3.includes('pedagang'))) skorTotal += 10;
             else if (q3.length > 15) skorTotal += 4;
 
             // 3. VALIDASI REFLEKSI & KESIMPULAN (Maks 15)
-            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
-            if(!isNaN(refVal) && Math.abs(refVal - 18.2) <= 0.5) skorTotal += 5;
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value || 0);
+            if (!isNaN(refVal) && Math.abs(refVal - 18.2) <= 0.5) skorTotal += 5;
 
-            const q6 = document.querySelectorAll('.ans-field')[5].value.toLowerCase();
+            // Q6 (Kesimpulan biasanya ada di kotak terakhir)
+            const q6 = (ans[ans.length - 1]?.value || '').toLowerCase();
             if (q6.length > 20 && (q6.includes('miring') || q6.includes('cos') || q6.includes('massa'))) skorTotal += 10;
             else if (q6.length > 20) skorTotal += 4;
 
@@ -1467,19 +1470,21 @@
 
             // Laporan Cetak PDF + ringkasan audit log
             let reportBox = document.getElementById('report-curang');
-            if (peringatanCurang > 0) {
-                reportBox.style.display = 'block';
-                let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai telah dipotong otomatis.`;
-                if (auditLog.length > 0) {
-                    ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
-                    auditLog.forEach(it => {
-                        ringkasan += `<li>[${it.waktu}] ${it.detail} (Soal ID: ${it.soalId ?? '—'})</li>`;
-                    });
-                    ringkasan += '</ul>';
+            if (reportBox) {
+                if (peringatanCurang > 0) {
+                    reportBox.style.display = 'block';
+                    let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai telah dipotong otomatis.`;
+                    if (auditLog.length > 0) {
+                        ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
+                        auditLog.forEach(it => {
+                            ringkasan += `<li>[${it.waktu}] ${it.detail} (Soal ID: ${it.soalId ?? '—'})</li>`;
+                        });
+                        ringkasan += '</ul>';
+                    }
+                    reportBox.innerHTML = ringkasan;
+                } else {
+                    reportBox.style.display = 'none';
                 }
-                reportBox.innerHTML = ringkasan;
-            } else {
-                reportBox.style.display = 'none';
             }
             
             return { skor: skorTotal, predikat: predikat };
@@ -1510,7 +1515,6 @@
                 feedbackBox.innerHTML = '<strong>Not quite right.</strong> Save your prediction and test it in the simulation.';
             }
         }
-
         const angleSlider = document.getElementById('angle-slider');
         const massSlider = document.getElementById('mass-slider');
         const angleDisplay = document.getElementById('angle-display');
@@ -1668,7 +1672,7 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws2)
+        // KIRIM KE GOOGLE SHEETS (URL SUDAH BENAR)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
@@ -1694,7 +1698,7 @@
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
@@ -1727,7 +1731,6 @@
                 btnKirim.disabled = false;
             });
         }
-
         function bukaPanelGuru() {
             const pin = document.getElementById('input-pin-guru').value;
             if(pin === '2026') {
@@ -2151,7 +2154,6 @@
                 renderSoalAktif('⚠️ Karena terdeteksi pelanggaran, soal Anda telah DIGANTI dengan 4 soal baru!');
             }
         }
-
         function mulaiTantangan() {
             document.getElementById('challenge-start-box').style.display = 'none';
             document.getElementById('challenge-area').style.display = 'block';

@@ -30,7 +30,6 @@
         .header h1 span { color: var(--accent-yellow); }
         .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
 
-        /* Tambahan: tagline emas di bawah Physics XI - Phase F */
         .header .tagline-gold {
             font-size: 0.95rem;
             font-weight: 700;
@@ -80,14 +79,12 @@
         .guide-box ol, .guide-box ul { margin-left: 20px; font-size: 0.9rem; color: #334155; }
         .guide-box li { margin-bottom: 6px; }
 
-        /* ---- SIM TABS ---- */
         .sim-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
         .sim-tab-btn { flex: 1; min-width: 120px; background: white; border: 2px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; color: #475569; }
         .sim-tab-btn.active { background: var(--dark-green); color: white; border-color: var(--dark-green); }
         .sim-panel { display: none; }
         .sim-panel.active { display: block; }
 
-        /* ---- DARK WRAPPER UNTUK SEMUA SIM ---- */
         .sim-dark-wrap { background: #0f172a; border-radius: 12px; padding: 15px; margin-bottom: 15px; color: #f8fafc; }
         .sim-canvas-box { position: relative; width: 100%; height: 320px; background: #090d16; border-radius: 10px; overflow: hidden; border: 2px solid #334155; }
         .sim-canvas-box canvas { display: block; width: 100%; height: 100%; }
@@ -110,7 +107,6 @@
         .sim-panel-dark .data-panel-mini .row { display: flex; justify-content: space-between; margin-bottom: 3px; }
         .sim-panel-dark .data-panel-mini .row span:last-child { color: #38bdf8; font-weight: 700; }
 
-        /* ---- SIM 3 (Momen Inersia) ---- */
         .moi-dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
         .moi-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 8px; text-align: center; }
         .moi-card .lbl { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 3px; }
@@ -157,7 +153,6 @@
         #soal-container { position: relative; }
         #wm-soal { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: rgba(220,38,38,0.12); transform: rotate(-25deg); white-space: nowrap; z-index: 5; }
 
-        /* Opsi PG di mode tantangan */
         .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
         .pg-option {
             display: flex; align-items: center; gap: 8px;
@@ -350,7 +345,8 @@
 
                     <div class="question-block">
                         <p>Question 1. Bandingkan percepatan beban pada katrol ideal (tanpa rotasi) dan katrol berotasi. Mengapa katrol berotasi menghasilkan percepatan beban yang lebih kecil?</p>
-                        <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                        <!-- ✏️ EDIT: id="ans-q1" -->
+                        <textarea class="ans-field" id="ans-q1" placeholder="Tulis jawabanmu..."></textarea>
                     </div>
                 </div>
 
@@ -410,7 +406,8 @@
 
                     <div class="question-block">
                         <p>Question 2. Berdasarkan Sim 2, jelaskan mengapa jungkat-jungkit bisa seimbang meskipun jumlah jeruk di kedua keranjang berbeda. Kaitkan dengan rumus τ = r × F.</p>
-                        <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                        <!-- ✏️ EDIT: id="ans-q2" -->
+                        <textarea class="ans-field" id="ans-q2" placeholder="Tulis jawabanmu..."></textarea>
                     </div>
                 </div>
 
@@ -457,13 +454,14 @@
 
                     <div class="question-block">
                         <p>Question 3. Berdasarkan Sim 3, bagaimana pengaruh jumlah partikel terhadap momen inersia total? Jelaskan dengan rumus I = Σ m·r².</p>
-                        <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                        <!-- ✏️ EDIT: id="ans-q3" -->
+                        <textarea class="ans-field" id="ans-q3" placeholder="Tulis jawabanmu..."></textarea>
                     </div>
                 </div>
 
             </div>
         </div>
-        
+
         <!-- ================= PART 3: EXPERIMENT (JUNGKAT-JUNGKIT) ================= -->
         <div id="langkah3" class="section-target">
             <div class="card">
@@ -509,12 +507,14 @@
 
                 <div class="question-block">
                     <p>Question 4. Berdasarkan Tabel A, apa syarat agar jungkat-jungkit seimbang? Tuliskan hubungan matematis antara τ₁ dan τ₂.</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q4" -->
+                    <textarea class="ans-field" id="ans-q4" placeholder="Tulis analisismu..."></textarea>
                 </div>
 
                 <div class="question-block">
                     <p>Question 5. Jika r₁ diperbesar dua kali (dengan W₁ tetap), apa yang harus dilakukan pada W₂ agar tetap seimbang? Jelaskan.</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q5" -->
+                    <textarea class="ans-field" id="ans-q5" placeholder="Tulis analisismu..."></textarea>
                 </div>
 
                 <div class="evidence-box">
@@ -543,17 +543,20 @@
 
                 <div class="question-block">
                     <p>Question 6. Berdasarkan Sim 1, jelaskan mengapa percepatan beban pada katrol berotasi lebih kecil daripada katrol ideal. Gunakan konsep momen inersia.</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q6" -->
+                    <textarea class="ans-field" id="ans-q6" placeholder="Tulis analisismu..."></textarea>
                 </div>
 
                 <div class="question-block">
                     <p>Question 7. Berdasarkan Sim 3, jelaskan pengaruh distribusi massa (jumlah partikel dan jarak r) terhadap momen inersia. Mengapa momen inersia disebut "ukuran kelembaman rotasi"?</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q7" -->
+                    <textarea class="ans-field" id="ans-q7" placeholder="Tulis analisismu..."></textarea>
                 </div>
 
                 <div class="question-block">
                     <p>Question 8. Jelaskan hubungan antara torsi (τ), momen inersia (I), dan percepatan sudut (α) menggunakan hukum Newton II untuk rotasi: τ = I·α.</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q8" -->
+                    <textarea class="ans-field" id="ans-q8" placeholder="Tulis analisismu..."></textarea>
                 </div>
             </div>
         </div>
@@ -575,16 +578,18 @@
 
                 <div class="question-block">
                     <p>Question 10. Berikan satu contoh nyata (selain jungkat-jungkit) yang memanfaatkan prinsip torsi dan momen inersia. Jelaskan bagaimana prinsip tersebut bekerja pada alat/kejadian tersebut.</p>
-                    <textarea class="ans-field" placeholder="Tulis penjelasanmu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q10" -->
+                    <textarea class="ans-field" id="ans-q10" placeholder="Tulis penjelasanmu..."></textarea>
                 </div>
 
                 <div class="question-block">
                     <p>Question 11. Tulis kesimpulanmu dalam tiga kalimat tentang torsi, momen inersia, dan gerak rotasi.</p>
-                    <textarea class="ans-field" placeholder="Tulis kesimpulanmu..."></textarea>
+                    <!-- ✏️ EDIT: id="ans-q11" -->
+                    <textarea class="ans-field" id="ans-q11" placeholder="Tulis kesimpulanmu..."></textarea>
                 </div>
             </div>
         </div>
-        
+
         <!-- ================= PART 6: CHALLENGE ================= -->
         <div id="langkah6" class="section-target">
             <div class="card">
@@ -750,6 +755,31 @@
     <script>
         document.getElementById('input-tanggal').valueAsDate = new Date();
         const g = 10;
+
+        // ==========================================
+        // UTIL: escape HTML (anti-XSS)
+        // ==========================================
+        function escHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ==========================================
+        // DEKLARASI GLOBAL — dipindah ke ATAS (fix bug auditLog)
+        // ==========================================
+        let peringatanCurang = 0;
+        let skorTantangan = 0;
+        let auditLog = [];
+        let challengeActive = false;
+        let tantanganSelesai = false;
+        let timerInterval = null;
+        let waktuSisa = 480;
+        let soalAktif = [];
+        let blurGuardTimer = null;
 
         /* =====================================================
            TAB SIMULASI
@@ -1215,10 +1245,6 @@
             mctx.ellipse(cx, cy, orbitRx, orbitRy, 0, 0, Math.PI * 2);
             mctx.stroke();
 
-            const I = moiCountN * moiM * moiR * moiR;
-            let omega = L_CONST / Math.max(I, 0.1);
-            if (omega > 8.0) omega = 8.0;
-
             const positions = [];
             for (let i = 0; i < moiCountN; i++) {
                 const angle = moiTheta + (i * 2 * Math.PI / moiCountN);
@@ -1343,7 +1369,7 @@
         }
 
         /* =====================================================
-           IDENTITAS
+           IDENTITAS (key lkpd_rotasi_*)
            ===================================================== */
         function updateIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1402,30 +1428,18 @@
         }
 
         /* =====================================================
-           SISTEM PENILAIAN OTOMATIS
+           PENILAIAN OTOMATIS — MODEL ws2
+           - Tabel 25/10
+           - Esai 10 × 3.2 = 32 (pakai pola keyword per Q)
+           - Refleksi Q9 = 10
+           - Foto = 15
+           - Tantangan = 40
+           - Cap 60/75, potong ×10
            ===================================================== */
-        let peringatanCurang = 0;
-        let skorTantangan = 0;
-        let auditLog = [];
-        let challengeActive = false;
-        let tantanganSelesai = false;
-        let timerInterval = null;
-        let waktuSisa = 480;
-        let soalAktif = [];
-        let soalRiwayatId = [];
-        let blurGuardTimer = null;
-
-        function escHtml(s) {
-            return String(s == null ? '' : s)
-                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
-
         function hitungNilaiOtomatis() {
-            let skor = 0;
+            let skorTotal = 0;
 
-            // 1. TABEL EKSPERIMEN (maks 20)
+            // ── 1. TABEL EKSPERIMEN (Maks 25) ──
             const rows = document.querySelectorAll('#tabel-seesaw tbody tr');
             let validRows = 0;
             rows.forEach(row => {
@@ -1433,65 +1447,124 @@
                 const t2 = row.querySelector('.out-t2').innerText;
                 if (t1 !== '–' && t2 !== '–') validRows++;
             });
-            if (validRows >= 4) skor += 20;
-            else if (validRows > 0) skor += 8;
+            if (validRows >= 4) skorTotal += 25;
+            else if (validRows > 0) skorTotal += 10;
 
-            // 2. ESAI (10 field × 4.5 = 45)
-            const ans = document.querySelectorAll('.ans-field');
-            function esaiValid(text, minKata, wajib, opsional) {
-                const t = (text || '').toLowerCase().trim();
+            // ── 2. ESAI PER PERTANYAAN (Maks 32 = 10 × 3.2) ──
+            // Helper: cek keyword per pertanyaan → 1 / 0.5 / 0.2
+            function cekEsai(id, wajib, opsional) {
+                const t = (document.getElementById(id)?.value || '').toLowerCase();
                 const kata = t.split(/\s+/).filter(w => w.length > 0);
-                if (kata.length < minKata) return 0;
+                if (kata.length < 8) return 0;
                 const adaWajib = wajib.every(k => t.includes(k));
                 const adaOpsional = opsional.some(k => t.includes(k));
                 if (adaWajib && adaOpsional) return 1;
                 if (adaWajib || adaOpsional) return 0.5;
                 return 0.2;
             }
-            skor += esaiValid(ans[0]?.value, 8, ['katrol', 'percepatan'], ['inersia', 'kecil', 'rotasi', 'momen']) * 4.5;
-            skor += esaiValid(ans[1]?.value, 8, ['torsi', 'seimbang'], ['sama', 'berbeda', 'jarak', 'r']) * 4.5;
-            skor += esaiValid(ans[2]?.value, 8, ['partikel', 'inersia'], ['momen', 'jumlah', 'bertambah', 'kuadrat']) * 4.5;
-            skor += esaiValid(ans[3]?.value, 8, ['torsi', 'seimbang'], ['sama', 'kiri', 'kanan', 'τ']) * 4.5;
-            skor += esaiValid(ans[4]?.value, 8, ['jarak', 'berat'], ['torsi', 'dua', 'kali', 'kompensasi']) * 4.5;
-            skor += esaiValid(ans[5]?.value, 8, ['inersia', 'percepatan'], ['katrol', 'kecil', 'momen', 'α']) * 4.5;
-            skor += esaiValid(ans[6]?.value, 8, ['inersia', 'massa'], ['momen', 'jarak', 'distribusi', 'kelembaman']) * 4.5;
-            skor += esaiValid(ans[7]?.value, 8, ['torsi', 'inersia'], ['alpha', 'α', 'percepatan', 'newton', 'τ']) * 4.5;
-            skor += esaiValid(ans[8]?.value, 8, ['torsi', 'inersia'], ['nyata', 'contoh', 'roda', 'penerapan']) * 4.5;
-            skor += esaiValid(ans[9]?.value, 8, ['rotasi', 'torsi'], ['inersia', 'momen', 'gerak', 'benda']) * 4.5;
 
-            // 3. REFLEKSI NUMERIK Q9: I = ½ M R² = ½ × 2 × 0.01 = 0.010 kg·m² (toleransi 0.002)
-            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
-            if (!isNaN(refVal) && Math.abs(refVal - 0.010) <= 0.002) skor += 10;
+            // Q1: katrol berotasi → percepatan lebih kecil karena momen inersia
+            skorTotal += cekEsai('ans-q1',
+                ['katrol', 'percepatan'],
+                ['inersia', 'kecil', 'rotasi', 'momen', 'torsi']
+            ) * 3.2;
 
-            // 4. FOTO (maks 15)
+            // Q2: jungkat-jungkit seimbang karena τ₁ = τ₂ (W·r sama)
+            skorTotal += cekEsai('ans-q2',
+                ['torsi', 'seimbang'],
+                ['sama', 'berbeda', 'jarak', 'r', 'kali']
+            ) * 3.2;
+
+            // Q3: jumlah partikel bertambah → I bertambah (Σmr²)
+            skorTotal += cekEsai('ans-q3',
+                ['partikel', 'inersia'],
+                ['momen', 'jumlah', 'bertambah', 'kuadrat', 'r']
+            ) * 3.2;
+
+            // Q4: syarat seimbang: τ₁ = τ₂ → W₁·r₁ = W₂·r₂
+            skorTotal += cekEsai('ans-q4',
+                ['torsi', 'seimbang'],
+                ['sama', 'kiri', 'kanan', 'τ', 'w·r', 'kali']
+            ) * 3.2;
+
+            // Q5: r₁ 2× → W₂ harus diperkecil/kompensasi
+            skorTotal += cekEsai('ans-q5',
+                ['jarak', 'berat'],
+                ['torsi', 'dua', 'kali', 'kompensasi', 'kecil', 'perbesar']
+            ) * 3.2;
+
+            // Q6: percepatan lebih kecil karena momen inersia (τ = I·α)
+            skorTotal += cekEsai('ans-q6',
+                ['inersia', 'percepatan'],
+                ['katrol', 'kecil', 'momen', 'α', 'torsi', 'alpha']
+            ) * 3.2;
+
+            // Q7: I = Σmr² — distribusi massa & jarak → kelembaman rotasi
+            skorTotal += cekEsai('ans-q7',
+                ['inersia', 'massa'],
+                ['momen', 'jarak', 'distribusi', 'kelembaman', 'r']
+            ) * 3.2;
+
+            // Q8: τ = I·α — Hukum Newton II rotasi
+            skorTotal += cekEsai('ans-q8',
+                ['torsi', 'inersia'],
+                ['alpha', 'α', 'percepatan', 'newton', 'τ', 'sudut']
+            ) * 3.2;
+
+            // Q10: contoh nyata torsi/inersia
+            skorTotal += cekEsai('ans-q10',
+                ['torsi', 'inersia'],
+                ['nyata', 'contoh', 'roda', 'penerapan', 'alat', 'sehari']
+            ) * 3.2;
+
+            // Q11: kesimpulan
+            skorTotal += cekEsai('ans-q11',
+                ['rotasi', 'torsi'],
+                ['inersia', 'momen', 'gerak', 'benda', 'α']
+            ) * 3.2;
+
+            // ── 3. REFLEKSI HITUNGAN Q9 (Maks 10) ──
+            // I = ½ M R² = ½ × 2 × (0.1)² = 0.010 kg·m², toleransi ±0.002
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value);
+            if (!isNaN(refVal) && Math.abs(refVal - 0.010) <= 0.002) skorTotal += 10;
+
+            // ── 4. BUKTI FOTO (Maks 15) ──
             const fileInput = document.getElementById('upload-bukti');
             let fotoUploaded = false;
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
                 fotoUploaded = true;
-                skor += 15;
+                skorTotal += 15;
             }
 
-            // 5. TANTANGAN (maks 40 = 4 × 10)
-            skor += Math.min(40, skorTantangan);
+            // ── 5. TANTANGAN (Maks 40) ──
+            skorTotal += Math.min(40, skorTantangan);
 
-            // 6. POTONGAN
-            skor -= peringatanCurang * 10;
-            skor = Math.max(0, Math.min(100, Math.round(skor)));
-            if (!fotoUploaded && skor > 60) skor = 60;
-            if (skorTantangan === 0 && skor > 75) skor = 75;
+            // ── 6. POTONGAN KECURANGAN ──
+            skorTotal -= peringatanCurang * 10;
+            skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
 
-            document.getElementById('val-score').innerText = skor;
-            let pred = 'Needs Improvement', warna = '#b91c1c';
-            if (skor >= 90) { pred = 'Excellent'; warna = '#15803d'; }
-            else if (skor >= 75) { pred = 'Good'; warna = '#0369a1'; }
-            else if (skor >= 60) { pred = 'Fair'; warna = '#b45309'; }
-            let label = pred;
+            // ── 7. CAP SAMA SEPERTI ws1/ws2 ──
+            if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
+            if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
+
+            document.getElementById('val-score').innerText = skorTotal;
+
+            // ── 8. PREDIKAT ──
+            let predikat = 'Needs Improvement';
+            let warna = '#b91c1c';
+            if (skorTotal >= 90) { predikat = 'Excellent'; warna = '#15803d'; }
+            else if (skorTotal >= 75) { predikat = 'Good'; warna = '#0369a1'; }
+            else if (skorTotal >= 60) { predikat = 'Fair'; warna = '#b45309'; }
+
+            let label = predikat;
             if (!fotoUploaded) label += ' (Foto blm diunggah!)';
             if (skorTantangan === 0) label += ' (Tantangan blm dikerjakan!)';
             if (peringatanCurang > 0) label += ` [Curang: -${peringatanCurang * 10} poin]`;
+
             document.getElementById('val-predicate').innerText = label;
             document.getElementById('val-predicate').style.color = warna;
 
+            // ── 9. LAPORAN KECURANGAN ──
             const reportBox = document.getElementById('report-curang');
             if (reportBox) {
                 if (peringatanCurang > 0) {
@@ -1499,7 +1572,9 @@
                     let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran.`;
                     if (auditLog.length > 0) {
                         ringkasan += '<br><br><b>Detail:</b><ul style="margin-left:18px;font-weight:normal;">';
-                        auditLog.forEach(it => { ringkasan += `<li>[${escHtml(it.waktu)}] ${escHtml(it.detail)} (Soal: ${it.soalId ?? '—'})</li>`; });
+                        auditLog.forEach(it => {
+                            ringkasan += `<li>[${escHtml(it.waktu)}] ${escHtml(it.detail)} (Soal: ${escHtml(it.soalId ?? '—')})</li>`;
+                        });
                         ringkasan += '</ul>';
                     }
                     reportBox.innerHTML = ringkasan;
@@ -1507,7 +1582,7 @@
                     reportBox.style.display = 'none';
                 }
             }
-            return { skor, predikat: pred };
+            return { skor: skorTotal, predikat: predikat };
         }
 
         document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
@@ -1583,11 +1658,19 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws6)
+        // KIRIM KE GOOGLE SHEETS (ws6 — key lkpd_rotasi_*)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
-            
+            const ans = document.querySelectorAll('.ans-field');
+            let terisi = 0;
+            ans.forEach(a => { if (a.value.trim().length > 5) terisi++; });
+            if (terisi === 0) {
+                alert('Mohon isi minimal satu jawaban esai sebelum mengumpulkan tugas.');
+                return;
+            }
+            if (!confirm('Kumpulkan tugas sekarang? Pastikan semua jawaban sudah benar.')) return;
+
             const nama = document.getElementById('input-nama').value.trim();
             const kelas = document.getElementById('select-kelas').value;
             const kelompok = document.getElementById('select-kelompok').value;
@@ -1599,27 +1682,27 @@
                 nama: nama,
                 kelas: kelas,
                 sekolah: sekolah,
-                materi: "Worksheet 6 - Rotasi",
+                materi: 'Worksheet 6 - Rotasi',
                 skor: evaluasi.skor,
-                progres: "100%",
+                progres: '100%',
                 pelanggaran: peringatanCurang,
-                log: JSON.stringify(auditLog), 
-                benar: 0, 
-                totalSoal: 0, 
-                tipeUjian: "Worksheet"
+                log: JSON.stringify(auditLog),
+                benar: 0,
+                totalSoal: 0,
+                tipeUjian: 'Worksheet'
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = 'https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec';
 
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
-            btnKirim.innerText = "Mengirim data...";
+            btnKirim.innerText = 'Mengirim data...';
             btnKirim.disabled = true;
 
             fetch(URL_GOOGLE_SCRIPT, {
-                method: "POST",
-                mode: "no-cors", 
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
             })
             .then(() => {
@@ -1633,13 +1716,13 @@
                 if (idx !== -1) rekap[idx] = data; else rekap.push(data);
                 localStorage.setItem('lkpd_rotasi_rekap_nilai_guru', JSON.stringify(rekap));
 
-                alert("✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.");
+                alert('✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.');
                 btnKirim.innerText = teksAsli;
                 btnKirim.disabled = false;
             })
             .catch(error => {
-                console.error("Error:", error);
-                alert("❌ Gagal mengirim data. Pastikan internet lancar.");
+                console.error('Error:', error);
+                alert('❌ Gagal mengirim data. Pastikan internet lancar.');
                 btnKirim.innerText = teksAsli;
                 btnKirim.disabled = false;
             });
@@ -1669,7 +1752,7 @@
                 const warnaPel = pel > 0 ? '#dc2626' : '#22c55e';
                 const punyaLog = pel > 0 && Array.isArray(s.auditLog) && s.auditLog.length > 0;
                 const tombol = punyaLog
-                    ? `<button class="btn btn-outline" style="padding:4px 8px;font-size:0.75rem;width:100%;color:white;border-color:white;" onclick="tampilkanAuditLog('${escHtml(s.kelas)}','${escHtml(s.nama.replace(/'/g, "\\'"))}')">Lihat Log</button>`
+                    ? '<button class="btn btn-outline" style="padding:4px 8px;font-size:0.75rem;width:100%;color:white;border-color:white;" data-kelas="' + escHtml(s.kelas) + '" data-nama="' + escHtml(s.nama) + '">Lihat Log</button>'
                     : '<span style="color:#64748b;">—</span>';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -1683,6 +1766,9 @@
                     <td>${tombol}</td>
                 `;
                 tbody.appendChild(tr);
+            });
+            tbody.querySelectorAll('button[data-kelas]').forEach(btn => {
+                btn.addEventListener('click', () => tampilkanAuditLog(btn.dataset.kelas, btn.dataset.nama));
             });
         }
 
@@ -1729,51 +1815,51 @@
             {
                 id: 101,
                 tipe: 'pg',
-                teks: "Sebuah torsi 20 N·m bekerja pada roda dengan momen inersia 4 kg·m². Berapa percepatan sudutnya?",
-                pilihan: ["2 rad/s²", "4 rad/s²", "5 rad/s²", "8 rad/s²"],
+                teks: 'Sebuah torsi 20 N·m bekerja pada roda dengan momen inersia 4 kg·m². Berapa percepatan sudutnya?',
+                pilihan: ['2 rad/s²', '4 rad/s²', '5 rad/s²', '8 rad/s²'],
                 jawaban: 2,
-                pembahasan: "α = τ / I = 20 / 4 = 5 rad/s²."
+                pembahasan: 'α = τ / I = 20 / 4 = 5 rad/s².'
             },
             {
                 id: 102,
                 tipe: 'pg',
-                teks: "Silinder pejal massa 4 kg, radius 0,5 m. Berapa momen inersianya? (I = ½ M R²)",
-                pilihan: ["0,25 kg·m²", "0,50 kg·m²", "1,00 kg·m²", "2,00 kg·m²"],
+                teks: 'Silinder pejal massa 4 kg, radius 0,5 m. Berapa momen inersianya? (I = ½ M R²)',
+                pilihan: ['0,25 kg·m²', '0,50 kg·m²', '1,00 kg·m²', '2,00 kg·m²'],
                 jawaban: 1,
-                pembahasan: "I = ½ × 4 × (0,5)² = ½ × 4 × 0,25 = 0,5 kg·m²."
+                pembahasan: 'I = ½ × 4 × (0,5)² = ½ × 4 × 0,25 = 0,5 kg·m².'
             },
             {
                 id: 103,
                 tipe: 'pg',
-                teks: "Gaya 30 N bekerja tegak lurus pada lengan 0,4 m. Berapa torsinya?",
-                pilihan: ["7,5 N·m", "12 N·m", "30 N·m", "75 N·m"],
+                teks: 'Gaya 30 N bekerja tegak lurus pada lengan 0,4 m. Berapa torsinya?',
+                pilihan: ['7,5 N·m', '12 N·m', '30 N·m', '75 N·m'],
                 jawaban: 1,
-                pembahasan: "τ = r × F = 0,4 × 30 = 12 N·m."
+                pembahasan: 'τ = r × F = 0,4 × 30 = 12 N·m.'
             },
             {
                 id: 104,
                 tipe: 'pg',
-                teks: "Jungkat-jungkit: beban kiri 30 N pada r = 1,2 m. Berapa beban kanan (N) pada r = 1,8 m agar seimbang?",
-                pilihan: ["15 N", "20 N", "25 N", "30 N"],
+                teks: 'Jungkat-jungkit: beban kiri 30 N pada r = 1,2 m. Berapa beban kanan (N) pada r = 1,8 m agar seimbang?',
+                pilihan: ['15 N', '20 N', '25 N', '30 N'],
                 jawaban: 1,
-                pembahasan: "τ₁ = τ₂ → 30 × 1,2 = F₂ × 1,8 → 36 = 1,8 F₂ → F₂ = 20 N."
+                pembahasan: 'τ₁ = τ₂ → 30 × 1,2 = F₂ × 1,8 → 36 = 1,8 F₂ → F₂ = 20 N.'
             },
             {
                 id: 105,
                 tipe: 'pg',
-                teks: "Cincin massa 3 kg, radius 0,5 m. Berapa momen inersianya? (I = M R²)",
-                pilihan: ["0,375 kg·m²", "0,750 kg·m²", "1,500 kg·m²", "3,000 kg·m²"],
+                teks: 'Cincin massa 3 kg, radius 0,5 m. Berapa momen inersianya? (I = M R²)',
+                pilihan: ['0,375 kg·m²', '0,750 kg·m²', '1,500 kg·m²', '3,000 kg·m²'],
                 jawaban: 1,
-                pembahasan: "I = M R² = 3 × (0,5)² = 3 × 0,25 = 0,75 kg·m²."
+                pembahasan: 'I = M R² = 3 × (0,5)² = 3 × 0,25 = 0,75 kg·m².'
             }
         ];
 
         const bankSoalIsian = [
-            { id: 201, tipe: 'isian', teks: "Benda bermassa 2 kg pada jarak 1,5 m dari poros. Berapa momen inersianya? (kg·m²)", jawaban: 4.5, satuan: "kg·m²", toleransi: 0.05 },
-            { id: 202, tipe: 'isian', teks: "Momentum sudut 12 kg·m²/s, momen inersia 3 kg·m². Berapa kecepatan sudutnya? (rad/s)", jawaban: 4, satuan: "rad/s", toleransi: 0.1 },
-            { id: 203, tipe: 'isian', teks: "Bola pejal massa 5 kg, radius 0,2 m. Berapa momen inersianya? (I = 0,4 M R², kg·m²)", jawaban: 0.08, satuan: "kg·m²", toleransi: 0.005 },
-            { id: 204, tipe: 'isian', teks: "Partikel 3 buah masing-masing 2 kg pada jarak 1 m dari poros. Berapa I total? (kg·m²)", jawaban: 6, satuan: "kg·m²", toleransi: 0.1 },
-            { id: 205, tipe: 'isian', teks: "Roda berputar 5 rad/s dengan I = 4 kg·m². Berapa energi kinetik rotasinya? (½ I ω², Joule)", jawaban: 50, satuan: "J", toleransi: 0.5 }
+            { id: 201, tipe: 'isian', teks: 'Benda bermassa 2 kg pada jarak 1,5 m dari poros. Berapa momen inersianya? (kg·m²)', jawaban: 4.5, satuan: 'kg·m²', toleransi: 0.05 },
+            { id: 202, tipe: 'isian', teks: 'Momentum sudut 12 kg·m²/s, momen inersia 3 kg·m². Berapa kecepatan sudutnya? (rad/s)', jawaban: 4, satuan: 'rad/s', toleransi: 0.1 },
+            { id: 203, tipe: 'isian', teks: 'Bola pejal massa 5 kg, radius 0,2 m. Berapa momen inersianya? (I = 0,4 M R², kg·m²)', jawaban: 0.08, satuan: 'kg·m²', toleransi: 0.005 },
+            { id: 204, tipe: 'isian', teks: 'Partikel 3 buah masing-masing 2 kg pada jarak 1 m dari poros. Berapa I total? (kg·m²)', jawaban: 6, satuan: 'kg·m²', toleransi: 0.1 },
+            { id: 205, tipe: 'isian', teks: 'Roda berputar 5 rad/s dengan I = 4 kg·m². Berapa energi kinetik rotasinya? (½ I ω², Joule)', jawaban: 50, satuan: 'J', toleransi: 0.5 }
         ];
 
         function getWatermarkText() {
@@ -1888,16 +1974,10 @@
             wm.innerText = getWatermarkText();
         }
 
-        // Pilih 4 soal: 3 PG + 1 isian (acak)
         function pilihSoalBaru() {
             const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
             const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
-            const dipilih = [
-                shuffledPG[0],
-                shuffledPG[1],
-                shuffledPG[2],
-                shuffledIsian[0]
-            ];
+            const dipilih = [shuffledPG[0], shuffledPG[1], shuffledPG[2], shuffledIsian[0]];
             return dipilih.sort(() => 0.5 - Math.random());
         }
 
@@ -1911,10 +1991,24 @@
                 shortcut: 'Menekan shortcut copy/select/print/save'
             };
             const soalId = (soalAktif && soalAktif[0]) ? soalAktif[0].id : null;
-            auditLog.push({ waktu: new Date().toLocaleString('id-ID'), jenis: reason, detail: detailMap[reason] || 'Aktivitas terlarang', soalId, totalKejadian: peringatanCurang });
+            auditLog.push({
+                waktu: new Date().toLocaleString('id-ID'),
+                jenis: reason,
+                detail: detailMap[reason] || 'Aktivitas terlarang',
+                soalId: soalId,
+                totalKejadian: peringatanCurang
+            });
+
+            // Simpan audit log ke localStorage
+            const namaAudit = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const kelasAudit = document.getElementById('select-kelas').value || '-';
+            try {
+                localStorage.setItem(`lkpd_rotasi_audit_${kelasAudit}_${namaAudit}`, JSON.stringify(auditLog));
+            } catch (err) { /* ignore */ }
+
             const c = document.getElementById('cheat-count');
             if (c) c.innerText = peringatanCurang;
-            const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+            const nama = namaAudit;
             document.getElementById('modal-nama-siswa').innerText = nama;
             document.getElementById('modal-total-curang').innerText = peringatanCurang;
             const alasanMap = {
@@ -1976,7 +2070,7 @@
             document.getElementById('challenge-area').style.display = 'block';
             soalAktif = pilihSoalBaru();
             renderSoalAktif(null);
-            waktuSisa = 480; // 8 menit
+            waktuSisa = 480;
             peringatanCurang = 0;
             tantanganSelesai = false;
             challengeActive = true;
@@ -2017,8 +2111,7 @@
                     const isBenar = (val === soal.jawaban);
                     if (isBenar) benar++;
                     detailJawaban.push({
-                        no: idx + 1,
-                        tipe: 'PG',
+                        no: idx + 1, tipe: 'PG',
                         jawaban: val >= 0 ? String.fromCharCode(65 + val) : '—',
                         kunci: String.fromCharCode(65 + soal.jawaban),
                         benar: isBenar
@@ -2029,8 +2122,7 @@
                     const isBenar = (!isNaN(val) && Math.abs(val - soal.jawaban) <= soal.toleransi);
                     if (isBenar) benar++;
                     detailJawaban.push({
-                        no: idx + 1,
-                        tipe: 'Isian',
+                        no: idx + 1, tipe: 'Isian',
                         jawaban: isNaN(val) ? '—' : val,
                         kunci: soal.jawaban,
                         benar: isBenar
@@ -2038,7 +2130,6 @@
                 }
             });
 
-            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
             skorTantangan = benar * 10;
 
             let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
@@ -2053,7 +2144,7 @@
         }
 
         /* =====================================================
-           KALKULATOR ILMIAH
+           KALKULATOR AMAN (safeCalc — tanpa eval)
            ===================================================== */
         let calcExp = '';
         function calcInput(val) {
@@ -2062,13 +2153,88 @@
             document.getElementById('calc-display').value = calcExp;
         }
         function calcClear() { calcExp = ''; document.getElementById('calc-display').value = ''; }
+
+        function safeCalc(expr) {
+            expr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/\s+/g, '');
+            if (!/^[0-9+\-*/().sincota]+$/.test(expr)) throw new Error('Karakter tidak valid');
+
+            const tokens = [];
+            let i = 0;
+            while (i < expr.length) {
+                const c = expr[i];
+                if (/[0-9.]/.test(c)) {
+                    let num = c; i++;
+                    while (i < expr.length && /[0-9.]/.test(expr[i])) { num += expr[i]; i++; }
+                    tokens.push({ type: 'num', val: parseFloat(num) });
+                } else if (/[a-z]/.test(c)) {
+                    let name = c; i++;
+                    while (i < expr.length && /[a-z]/.test(expr[i])) { name += expr[i]; i++; }
+                    if (!['sin', 'cos', 'tan'].includes(name)) throw new Error('Fungsi tidak dikenal: ' + name);
+                    tokens.push({ type: 'func', val: name });
+                } else if ('+-*/()'.includes(c)) {
+                    tokens.push({ type: 'op', val: c }); i++;
+                } else {
+                    throw new Error('Karakter tidak valid: ' + c);
+                }
+            }
+
+            const prec = { '+': 1, '-': 1, '*': 2, '/': 2 };
+            const output = [], ops = [];
+            for (const t of tokens) {
+                if (t.type === 'num') output.push(t);
+                else if (t.type === 'func') ops.push(t);
+                else if (t.val === '(') ops.push(t);
+                else if (t.val === ')') {
+                    while (ops.length && ops[ops.length - 1].val !== '(') output.push(ops.pop());
+                    if (!ops.length) throw new Error('Kurung tidak seimbang');
+                    ops.pop();
+                    if (ops.length && ops[ops.length - 1].type === 'func') output.push(ops.pop());
+                } else {
+                    while (ops.length && ops[ops.length - 1].type === 'op' &&
+                           prec[ops[ops.length - 1].val] >= prec[t.val]) {
+                        output.push(ops.pop());
+                    }
+                    ops.push(t);
+                }
+            }
+            while (ops.length) {
+                const o = ops.pop();
+                if (o.val === '(') throw new Error('Kurung tidak seimbang');
+                output.push(o);
+            }
+
+            const stack = [];
+            for (const t of output) {
+                if (t.type === 'num') stack.push(t.val);
+                else if (t.type === 'func') {
+                    if (!stack.length) throw new Error('Argumen fungsi kosong');
+                    const x = stack.pop();
+                    const rad = x * Math.PI / 180;
+                    if (t.val === 'sin') stack.push(Math.sin(rad));
+                    else if (t.val === 'cos') stack.push(Math.cos(rad));
+                    else stack.push(Math.tan(rad));
+                } else {
+                    if (stack.length < 2) throw new Error('Operand kurang');
+                    const b = stack.pop(), a = stack.pop();
+                    if (t.val === '+') stack.push(a + b);
+                    else if (t.val === '-') stack.push(a - b);
+                    else if (t.val === '*') stack.push(a * b);
+                    else {
+                        if (b === 0) throw new Error('Bagi nol');
+                        stack.push(a / b);
+                    }
+                }
+            }
+            if (stack.length !== 1) throw new Error('Ekspresi tidak valid');
+            return stack[0];
+        }
+
         function calcSolve() {
             try {
                 let open = (calcExp.match(/\(/g) || []).length;
                 let close = (calcExp.match(/\)/g) || []).length;
                 for (let i = 0; i < open - close; i++) calcExp += ')';
-                let toEval = calcExp.replace(/(sin|cos|tan)\(([^)]+)\)/g, (m, f, x) => `Math.${f}((${x}) * Math.PI / 180)`);
-                const res = Math.round(eval(toEval) * 10000) / 10000;
+                const res = Math.round(safeCalc(calcExp) * 10000) / 10000;
                 document.getElementById('calc-display').value = res;
                 calcExp = res.toString();
             } catch (e) {

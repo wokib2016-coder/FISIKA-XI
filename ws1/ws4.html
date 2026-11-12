@@ -376,7 +376,6 @@
             z-index: 5;
         }
 
-        /* Opsi PG di mode tantangan */
         .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
         .pg-option {
             display: flex; align-items: center; gap: 8px;
@@ -388,7 +387,6 @@
         .pg-option.selected { border-color: #10b981; background: #ecfdf5; }
         .pg-option .pg-letter { font-weight: bold; min-width: 18px; }
 
-        /* ====== SIMULASI USAHA & ENERGI ====== */
         .simulation-area {
             background-color: #f0f9ff;
             border-radius: 8px;
@@ -402,7 +400,7 @@
             position: relative;
             width: 100%;
             height: 260px;
-            background: #090d16; 
+            background: #090d16;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -612,7 +610,7 @@
                 <div class="simulation-area">
                     <div class="scene" id="scene">
                         <canvas id="simCanvas"></canvas>
-                        
+
                         <div class="energy-bar-track">
                             <div class="energy-bar-fill-ke" id="barKE"></div>
                         </div>
@@ -668,11 +666,12 @@
 
                 <div class="question-block">
                     <p>Question 1. Mengapa energi mekanik total (Ek + Ep) selalu kekal pada bidang miring licin, tetapi berkurang jika ada gesekan?</p>
-                    <textarea class="ans-field" placeholder="Tulis jawabanmu..."></textarea>
+                    <!-- ✏️ EDIT: tambah id="ans-q1" -->
+                    <textarea class="ans-field" id="ans-q1" placeholder="Tulis jawabanmu..."></textarea>
                 </div>
             </div>
         </div>
-        
+
         <div id="langkah3" class="section-target">
             <div class="card">
                 <span class="badge">Part 3 · Experiment</span>
@@ -755,7 +754,8 @@
 
                 <div class="question-block">
                     <p>Question 2. Berdasarkan tabel, bagaimana hubungan antara ketinggian awal (h) dengan energi kinetik (Ek) saat menyentuh tanah? Jelaskan!</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: tambah id="ans-q2" -->
+                    <textarea class="ans-field" id="ans-q2" placeholder="Tulis analisismu..."></textarea>
 
                     <div class="evidence-box">
                         <div class="evidence-input-row">
@@ -805,7 +805,8 @@
 
                 <div class="question-block">
                     <p>Question 3. Jelaskan hubungan antara usaha dan perubahan energi kinetik menggunakan persamaan W = ΔEk = ½m(v² - v₀²)!</p>
-                    <textarea class="ans-field" placeholder="Tulis analisismu..."></textarea>
+                    <!-- ✏️ EDIT: tambah id="ans-q3" -->
+                    <textarea class="ans-field" id="ans-q3" placeholder="Tulis analisismu..."></textarea>
                 </div>
             </div>
         </div>
@@ -826,16 +827,18 @@
 
                 <div class="question-block">
                     <p>Question 5. Mengapa pada sistem dengan gesekan energi mekanik berkurang, tetapi energi total (termasuk energi panas) tetap kekal?</p>
-                    <textarea class="ans-field" placeholder="Tulis penjelasanmu..."></textarea>
+                    <!-- ✏️ EDIT: tambah id="ans-q5" -->
+                    <textarea class="ans-field" id="ans-q5" placeholder="Tulis penjelasanmu..."></textarea>
                 </div>
 
                 <div class="question-block">
                     <p>Question 6. Tulis kesimpulanmu dalam tiga kalimat.</p>
-                    <textarea class="ans-field" placeholder="Tulis kesimpulanmu..."></textarea>
+                    <!-- ✏️ EDIT: tambah id="ans-q6" -->
+                    <textarea class="ans-field" id="ans-q6" placeholder="Tulis kesimpulanmu..."></textarea>
                 </div>
             </div>
         </div>
-        
+
         <div id="langkah6" class="section-target">
             <div class="card">
                 <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
@@ -1087,7 +1090,7 @@
             resultPanel.classList.remove('locked');
             state.running = true;
             state.finished = false;
-            state.vx = 0; 
+            state.vx = 0;
             document.getElementById('startBtn').disabled = true;
             updateResult('⏳ Balok sedang meluncur menuruni bidang miring...');
 
@@ -1103,7 +1106,7 @@
 
             const thetaRad = state.theta * Math.PI / 180;
             const a = state.g * Math.sin(thetaRad);
-            
+
             state.vx += a * dt;
             state.x += state.vx * dt;
 
@@ -1114,12 +1117,12 @@
             updateEnergyBars(Ep, Ek);
 
             const maxDist = state.h / Math.sin(thetaRad);
-            
+
             if (state.x >= maxDist || state.currentH <= 0.02) {
                 state.running = false;
                 state.finished = true;
                 document.getElementById('startBtn').disabled = false;
-                
+
                 const vAkhir = Math.sqrt(2 * state.g * state.h);
                 showResults(state.m, state.g, state.h, vAkhir);
                 drawScene();
@@ -1134,16 +1137,16 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             let thetaRad = (state.theta * Math.PI) / 180;
-            
+
             let baseX = 50;
             let baseY = canvas.height - 40;
-            
-            let maxPixelH = canvas.height - 100; 
-            let scale = Math.min(30, maxPixelH / state.h); 
+
+            let maxPixelH = canvas.height - 100;
+            let scale = Math.min(30, maxPixelH / state.h);
 
             let rampPixelH = state.h * scale;
             let rampPixelW = rampPixelH / Math.tan(thetaRad);
-            
+
             let maxW = canvas.width - baseX - 50;
             if (rampPixelW > maxW) {
                 let ratio = maxW / rampPixelW;
@@ -1185,12 +1188,12 @@
             ctx.translate(boxX, boxY);
             ctx.rotate(-thetaRad);
 
-            let wW = 40; 
-            let wH = 30; 
+            let wW = 40;
+            let wH = 30;
 
             ctx.fillStyle = '#ef4444';
             ctx.fillRect(-wW / 2, -wH, wW, wH);
-            
+
             ctx.fillStyle = 'rgba(255,255,255,0.3)';
             ctx.fillRect(-wW / 2 + 2, -wH + 2, wW - 4, 6);
 
@@ -1439,7 +1442,7 @@
         }
 
         // ==========================================
-        // IDENTITAS & PENILAIAN
+        // IDENTITAS
         // ==========================================
         function updateIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1488,31 +1491,24 @@
             });
         }
 
-        function esaiValid(text, minKata, keywordWajib, keywordOpsional) {
-            const t = (text || '').toLowerCase().trim();
-            const kata = t.split(/\s+/).filter(w => w.length > 0);
-            if (kata.length < minKata) return 0;
-            const adaWajib = keywordWajib.every(k => t.includes(k));
-            const adaOpsional = keywordOpsional.some(k => t.includes(k));
-            if (adaWajib && adaOpsional) return 1;
-            if (adaWajib || adaOpsional) return 0.5;
-            return 0.2;
-        }
-
+        // ==========================================
+        // PENILAIAN OTOMATIS — MODEL SAMA DENGAN ws1/ws2
+        // (keyword includes per pertanyaan, cap 60/75, potongan ×10)
+        // ==========================================
         function hitungNilaiOtomatis() {
             let skorTotal = 0;
 
+            // ── 1. VALIDASI TABEL EKSPERIMEN (Maks 25) ──
+            // Butuh ≥3 baris valid (h>0, dt>0, eManual ≈ Ep)
             const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
             let barisValid = 0;
             rows.forEach(row => {
-                const h1 = parseFloat(row.querySelector('.input-h1').value) || 0;
-                const dt = parseFloat(row.querySelector('.input-dt').value);
-                const eManual = parseFloat(row.querySelector('.input-e').value);
+                const h1 = parseFloat(row.querySelector('.input-h1')?.value) || 0;
+                const dt = parseFloat(row.querySelector('.input-dt')?.value);
+                const eManual = parseFloat(row.querySelector('.input-e')?.value);
                 if (h1 > 0 && !isNaN(dt) && !isNaN(eManual)) {
                     const g = 10;
-                    const v = g * dt;
-                    const Ek = 0.5 * 2 * v * v;
-                    const Ep = 2 * g * (h1 / 100);
+                    const Ep = 2 * g * (h1 / 100); // massa bola 2 kg
                     if (Math.abs(eManual - Ep) / Math.max(Ep, 0.01) < 0.15) {
                         barisValid++;
                     }
@@ -1521,16 +1517,49 @@
             if (barisValid >= 3) skorTotal += 25;
             else if (barisValid > 0) skorTotal += 10;
 
-            const ans = document.querySelectorAll('.ans-field');
-            skorTotal += esaiValid(ans[0]?.value, 10, ['energi', 'kekal'], ['mekanik', 'gesek', 'usaha', 'total']) * 8;
-            skorTotal += esaiValid(ans[1]?.value, 10, ['energi', 'kinetik'], ['tinggi', 'potensial', 'bertambah', 'h']) * 8;
-            skorTotal += esaiValid(ans[2]?.value, 10, ['usaha', 'energi'], ['kinetik', 'perubahan', 'gaya', 'perpindahan']) * 8;
-            skorTotal += esaiValid(ans[3]?.value, 10, ['energi', 'panas'], ['gesek', 'kekal', 'mekanik', 'kalor']) * 8;
-            skorTotal += esaiValid(ans[4]?.value, 10, ['energi', 'kekal'], ['usaha', 'kinetik', 'potensial', 'mekanik']) * 8;
+            // ── 2. ESAI PER PERTANYAAN (Maks 32) ──
+            // Model ws1/ws2: cek keyword includes(), bukan fungsi generik
+            // Q1: energi mekanik kekal di bidang licin
+            const q1 = (document.getElementById('ans-q1')?.value || '').toLowerCase();
+            if (q1.length > 15 && (q1.includes('energi') || q1.includes('kekal')) &&
+                (q1.includes('mekanik') || q1.includes('gesek') || q1.includes('total'))) {
+                skorTotal += 8;
+            } else if (q1.length > 15) skorTotal += 4;
 
-            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi').value);
+            // Q2: hubungan h dengan Ek
+            const q2 = (document.getElementById('ans-q2')?.value || '').toLowerCase();
+            if (q2.length > 15 && (q2.includes('energi') || q2.includes('kinetik')) &&
+                (q2.includes('tinggi') || q2.includes('bertambah') || q2.includes('h'))) {
+                skorTotal += 8;
+            } else if (q2.length > 15) skorTotal += 4;
+
+            // Q3: usaha = perubahan energi kinetik
+            const q3 = (document.getElementById('ans-q3')?.value || '').toLowerCase();
+            if (q3.length > 15 && (q3.includes('usaha') || q3.includes('energi')) &&
+                (q3.includes('kinetik') || q3.includes('perubahan'))) {
+                skorTotal += 8;
+            } else if (q3.length > 15) skorTotal += 4;
+
+            // Q5: energi mekanik berkurang, energi total kekal (gesek → panas)
+            const q5 = (document.getElementById('ans-q5')?.value || '').toLowerCase();
+            if (q5.length > 15 && (q5.includes('energi') || q5.includes('panas')) &&
+                (q5.includes('gesek') || q5.includes('kekal') || q5.includes('kalor'))) {
+                skorTotal += 8;
+            } else if (q5.length > 15) skorTotal += 4;
+
+            // ── 3. REFLEKSI HITUNGAN Q4 (Maks 10) ──
+            // W = F·s·cos 0° = 10 × 5 × 1 = 50 J
+            const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value);
             if (!isNaN(refVal) && Math.abs(refVal - 50) <= 0.5) skorTotal += 10;
 
+            // ── 4. KESIMPULAN Q6 (Maks 8) ──
+            const q6 = (document.getElementById('ans-q6')?.value || '').toLowerCase();
+            if (q6.length > 20 && (q6.includes('energi') || q6.includes('kekal')) &&
+                (q6.includes('usaha') || q6.includes('kinetik') || q6.includes('potensial') || q6.includes('mekanik'))) {
+                skorTotal += 8;
+            } else if (q6.length > 20) skorTotal += 4;
+
+            // ── 5. BUKTI FOTO (Maks 12) ──
             const fileInput = document.getElementById('upload-bukti');
             let fotoUploaded = false;
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
@@ -1538,15 +1567,20 @@
                 skorTotal += 12;
             }
 
+            // ── 6. SKOR TANTANGAN (Maks 40) ──
             skorTotal += Math.min(40, skorTantangan);
+
+            // ── 7. POTONGAN KECURANGAN ──
             skorTotal -= (peringatanCurang * 10);
             skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
 
+            // ── 8. CAP SAMA SEPERTI ws1/ws2 ──
             if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
             if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
 
             document.getElementById('val-score').innerText = skorTotal;
 
+            // ── 9. PREDIKAT & WARNA ──
             let predikat = "Needs Improvement";
             let warna = "#b91c1c";
             if (skorTotal >= 90) { predikat = "Excellent"; warna = "#15803d"; }
@@ -1561,6 +1595,7 @@
             document.getElementById('val-predicate').innerText = labelPredikat;
             document.getElementById('val-predicate').style.color = warna;
 
+            // ── 10. LAPORAN KECURANGAN ──
             let reportBox = document.getElementById('report-curang');
             if (reportBox) {
                 if (peringatanCurang > 0) {
@@ -1581,9 +1616,14 @@
             return { skor: skorTotal, predikat: predikat };
         }
 
+        // Listener: semua textarea .ans-field + input refleksi
         document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
-        document.getElementById('input-jawaban-refleksi').addEventListener('input', hitungNilaiOtomatis);
+        const elRefleksi = document.getElementById('input-jawaban-refleksi');
+        if (elRefleksi) elRefleksi.addEventListener('input', hitungNilaiOtomatis);
 
+        // ==========================================
+        // PREVIEW FOTO BUKTI
+        // ==========================================
         function previewImage(input) {
             const container = input.closest('.evidence-box').querySelector('.preview-container');
             const img = container.querySelector('img');
@@ -1595,6 +1635,9 @@
             hitungNilaiOtomatis();
         }
 
+        // ==========================================
+        // CEK PREDIKSI AWAL
+        // ==========================================
         function cekPrediksi(pilihan) {
             const btnK = document.getElementById('opt-berkurang');
             const btnKe = document.getElementById('opt-kekal');
@@ -1616,6 +1659,9 @@
             }
         }
 
+        // ==========================================
+        // CEK REFLEKSI Q4 (jawaban 50 J)
+        // ==========================================
         function cekRefleksi() {
             const input = document.getElementById('input-jawaban-refleksi').value;
             const jawaban = parseFloat(input);
@@ -1639,7 +1685,7 @@
         }
 
         // ==========================================
-        // SISTEM GURU & CETAK
+        // VALIDASI IDENTITAS & CETAK
         // ==========================================
         function validasiIdentitas() {
             const nama = document.getElementById('input-nama').value.trim();
@@ -1675,7 +1721,7 @@
         }
 
         // ==========================================
-        // PERBAIKAN: KIRIM KE GOOGLE SHEETS (ws4)
+        // KIRIM KE GOOGLE SHEETS (ws4)
         // ==========================================
         function simpanTugasKeSistem(event) {
             if (!validasiIdentitas()) return;
@@ -1703,13 +1749,13 @@
                 skor: evaluasi.skor,
                 progres: "100%",
                 pelanggaran: peringatanCurang,
-                log: JSON.stringify(auditLog), 
-                benar: 0, 
-                totalSoal: 0, 
+                log: JSON.stringify(auditLog),
+                benar: 0,
+                totalSoal: 0,
                 tipeUjian: "Worksheet"
             };
 
-            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbyjup0_7A-8fM-mJ1cry74-8IN-14DcqkdApfs_A07HjT-rV_LkMJe4KdktpkpoSLRq/exec";
+            const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
 
             const btnKirim = event.target;
             const teksAsli = btnKirim.innerText;
@@ -1718,7 +1764,7 @@
 
             fetch(URL_GOOGLE_SCRIPT, {
                 method: "POST",
-                mode: "no-cors", 
+                mode: "no-cors",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
             })
@@ -1748,6 +1794,9 @@
             });
         }
 
+        // ==========================================
+        // PANEL GURU
+        // ==========================================
         function bukaPanelGuru() {
             const pin = document.getElementById('input-pin-guru').value;
             if (pin === '2026') {
@@ -1897,7 +1946,7 @@
         ];
 
         let timerInterval = null;
-        let waktuSisa = 480; // 8 menit = 480 detik
+        let waktuSisa = 480;
         let peringatanCurang = 0;
         let soalAktif = [];
         let soalRiwayatId = [];
@@ -2051,7 +2100,6 @@
             if (area) area.classList.add('protected');
         }
 
-        // Pilih 4 soal: 3 PG + 1 isian (acak)
         function pilihSoalBaru() {
             const shuffledPG = [...bankSoalPG].sort(() => 0.5 - Math.random());
             const shuffledIsian = [...bankSoalIsian].sort(() => 0.5 - Math.random());
@@ -2165,7 +2213,7 @@
             soalAktif = pilihSoalBaru();
             renderSoalAktif(null);
 
-            waktuSisa = 480; // 8 menit = 480 detik
+            waktuSisa = 480;
             peringatanCurang = 0;
             tantanganSelesai = false;
             challengeActive = true;
@@ -2230,7 +2278,7 @@
                 }
             });
 
-            // Setiap jawaban benar bernilai 10 poin (4 soal × 10 = 40 poin maksimal)
+            // 4 soal × 10 poin = maks 40
             skorTantangan = benar * 10;
 
             let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
@@ -2246,7 +2294,7 @@
         }
 
         // ==========================================
-        // KALKULATOR AMAN
+        // KALKULATOR AMAN (TANPA eval)
         // ==========================================
         let calcExp = "";
 
