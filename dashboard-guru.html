@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rekap Skor – Latihan TKA Fisika</title>
+<title>Rekap Nilai LKPD – Fisika XI</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f3f4f6; color: #1f2937; padding: 20px; }
@@ -39,15 +39,6 @@
     
     /* Warna Status */
     .status-selesai { color: #16a34a; font-weight: bold; }
-    
-    /* Progress Bar */
-    .progress-bar { background: #e5e7eb; border-radius: 10px; height: 8px; width: 80px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 5px; }
-    .progress-fill { background: #3b82f6; height: 100%; border-radius: 10px; }
-
-    /* Tabel Analisis */
-    .table-analisis { width: 100%; max-width: 700px; border-collapse: collapse; font-size: 0.9rem; background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-top: 10px;}
-    .table-analisis th { background: #e0f2fe; color: #0369a1; padding: 10px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-    .table-analisis td { padding: 10px; border-bottom: 1px solid #e5e7eb; }
     .text-red { color: #dc2626; font-weight: bold; }
 </style>
 </head>
@@ -55,7 +46,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>Rekap Skor – Latihan TKA Fisika</h1>
+        <h1>Rekap Nilai LKPD – Fisika XI</h1>
         <a href="index.html" class="btn-keluar">Keluar / Kembali ke Login</a>
     </div>
 
@@ -66,13 +57,6 @@
             <select id="filter-tampilan" onchange="filterData()">
                 <option value="terbaik">Terbaik per siswa</option>
                 <option value="semua">Semua percobaan</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Status</label>
-            <select id="filter-status" onchange="filterData()">
-                <option value="Semua">Semua</option>
-                <option value="Selesai">Selesai</option>
             </select>
         </div>
         <div class="filter-group">
@@ -87,7 +71,7 @@
                 <option value="XI-F">XI-F</option>
             </select>
         </div>
-        <input type="text" id="filter-cari" placeholder="Cari NIS / nama..." oninput="filterData()">
+        <input type="text" id="filter-cari" placeholder="Cari nama siswa..." oninput="filterData()">
         <button class="btn-action" onclick="unduhCSV()">Unduh CSV</button>
         <button class="btn-action" onclick="muatDataDariSheets()">Muat ulang data</button>
     </div>
@@ -106,61 +90,21 @@
                     <th>#</th>
                     <th>Nama</th>
                     <th>Kelas</th>
-                    <th>Status</th>
-                    <th>Progres</th>
+                    <th>Materi / LKPD</th>
                     <th>Waktu</th>
-                    <th>Benar</th>
+                    <th>Pelanggaran</th>
                     <th>Skor</th>
                 </tr>
             </thead>
             <tbody id="tabel-data-siswa">
-                <tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat data dari Google Sheets...</td></tr>
+                <tr><td colspan="7" style="text-align:center; padding: 20px;">Memuat data dari Google Sheets...</td></tr>
             </tbody>
         </table>
     </div>
     
     <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 30px;">
-        Klik baris untuk melihat rincian. Baris miring = draft yang belum dikirim (skor sementara, bisa berubah). Soal yang tidak dijawab dihitung salah.
+        Klik baris untuk melihat rincian. Nilai maksimal adalah 100. Sistem telah dilengkapi proteksi anti-curang.
     </p>
-
-    <!-- Tabel Analisis (Disesuaikan dengan Materi Proyek) -->
-    <h3 style="margin-bottom: 10px; font-size: 1.1rem;">Analisis per indikator (soal yang paling banyak salah di urutan atas)</h3>
-    <table class="table-analisis">
-        <thead>
-            <tr>
-                <th>Indikator</th>
-                <th>Elemen › Subelemen</th>
-                <th>Benar</th>
-                <th>% benar</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Dinamika › Vektor dan Hukum Newton</td>
-                <td>0/10</td>
-                <td class="text-red">0%</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>Dinamika › Usaha dan Energi</td>
-                <td>0/10</td>
-                <td class="text-red">0%</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Fluida › Statis</td>
-                <td>0/10</td>
-                <td class="text-red">0%</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>Fluida › Dinamis</td>
-                <td>0/10</td>
-                <td class="text-red">0%</td>
-            </tr>
-        </tbody>
-    </table>
 </div>
 
 <script>
@@ -181,24 +125,24 @@
         const summaryTotal = document.getElementById('total-data');
         const summaryStatus = document.getElementById('status-koneksi');
 
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat ulang data dari Google Sheets...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px;">Memuat ulang data dari Google Sheets...</td></tr>`;
 
         try {
             const response = await fetch(`${URL_GOOGLE_SCRIPT}?pin=${PIN_GURU}`);
             const result = await response.json();
 
             if (result.status !== 'ok') {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:red; padding: 20px;">Gagal: ${result.message || 'Akses ditolak (PIN salah)'}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; padding: 20px;">Gagal: ${result.message || 'Akses ditolak (PIN salah)'}</td></tr>`;
                 summaryStatus.innerHTML = `<span style="color:red;">Koneksi Gagal.</span>`;
                 return;
             }
 
             semuaDataSiswa = result.data;
-            summaryTotal.innerText = semuaDataSiswa.length + " siswa";
+            summaryTotal.innerText = semuaDataSiswa.length + " data";
             summaryStatus.innerHTML = `<span style="color:#16a34a;">Berhasil terhubung ke Google Sheets.</span>`;
 
             if (semuaDataSiswa.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px;">Belum ada data siswa yang masuk.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px;">Belum ada data siswa yang masuk.</td></tr>`;
                 return;
             }
 
@@ -208,7 +152,7 @@
         } catch (error) {
             console.error("Gagal mengambil data:", error);
             tbody.innerHTML = `
-                <tr><td colspan="8" style="text-align:center; color:red; padding: 20px;">Gagal memuat data. Cek koneksi internet atau pastikan Web App di Apps Script sudah di-deploy dengan akses "Siapa Saja (Anyone)".</td></tr>
+                <tr><td colspan="7" style="text-align:center; color:red; padding: 20px;">Gagal memuat data. Cek koneksi internet atau pastikan Web App di Apps Script sudah di-deploy.</td></tr>
             `;
             summaryStatus.innerHTML = `<span style="color:red;">Koneksi Error.</span>`;
         }
@@ -219,24 +163,21 @@
     // ========================================================
     function filterData() {
         const kelasFilter = document.getElementById('filter-kelas').value;
-        const statusFilter = document.getElementById('filter-status').value;
         const cariFilter = document.getElementById('filter-cari').value.toLowerCase();
         const tbody = document.getElementById('tabel-data-siswa');
 
-        // 1. Filter berdasarkan dropdown
+        // 1. Filter berdasarkan dropdown kelas dan pencarian nama
         dataTampil = semuaDataSiswa.filter(siswa => {
             const nama = (siswa['NAMA'] || '').toLowerCase();
             const kelas = siswa['KELAS'] || '';
-            const status = 'Selesai'; // Karena semua data di tabel ini dianggap selesai
 
             const cocokKelas = (kelasFilter === 'Semua' || kelas === kelasFilter);
-            const cocokStatus = (statusFilter === 'Semua' || status === statusFilter);
             const cocokCari = (nama.includes(cariFilter));
 
-            return cocokKelas && cocokStatus && cocokCari;
+            return cocokKelas && cocokCari;
         });
 
-        // 2. Filter Tampilan "Terbaik per Siswa" (Hapus duplikat nama, ambil skor tertinggi)
+        // 2. Filter Tampilan "Terbaik per Siswa"
         const tampilanMode = document.getElementById('filter-tampilan').value;
         if (tampilanMode === 'terbaik') {
             const mapTerbaik = new Map();
@@ -257,7 +198,7 @@
         tbody.innerHTML = '';
         
         if (dataTampil.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 20px; color: #6b7280;">Tidak ada data yang cocok dengan filter.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #6b7280;">Tidak ada data yang cocok dengan filter.</td></tr>`;
             return;
         }
 
@@ -265,11 +206,16 @@
             const nama = siswa['NAMA'] || '-';
             const kelas = siswa['KELAS'] || '-';
             const waktuMentah = siswa['WAKTU'] || '-';
-            const skor = siswa['SKOR'] || 0;
-            const benar = siswa['BENAR'] || 0;
-            const totalSoal = siswa['TOTAL SOAL'] || 50; 
+            const materi = siswa['MATERI'] || 'LKPD';
+            let pelanggaran = Number(siswa['PELANGGARAN']) || 0;
+            if (pelanggaran < 0) pelanggaran = 0; // Validasi UI
+
+            // PENGAMAN GANDA: Paksa skor maksimal 100
+            let skor = Number(siswa['SKOR']) || 0;
+            if (skor > 100) skor = 100;
+            if (skor < 0) skor = 0;
             
-            // Format Tanggal agar rapi (Contoh: 11 Nov 2026, 22:54)
+            // Format Tanggal
             let waktuRapi = waktuMentah;
             if (waktuMentah !== '-') {
                 const dateObj = new Date(waktuMentah);
@@ -281,25 +227,21 @@
                 }
             }
 
-            const progresPersen = totalSoal > 0 ? (benar / totalSoal) * 100 : 0;
-
             const tr = document.createElement('tr');
-            // Menambahkan onclick untuk melihat detail (munculkan alert sederhana)
             tr.onclick = () => {
-                alert(`Rincian Nilai:\n\nNama: ${nama}\nKelas: ${kelas}\nWaktu: ${waktuRapi}\nSkor Akhir: ${skor}\nJawaban Benar: ${benar} dari ${totalSoal} soal.`);
+                alert(`Rincian Nilai:\n\nNama: ${nama}\nKelas: ${kelas}\nMateri: ${materi}\nWaktu: ${waktuRapi}\nPelanggaran: ${pelanggaran}\nSkor Akhir: ${skor}`);
             };
+
+            // Tampilkan warna merah jika ada pelanggaran
+            const warnaPelanggaran = pelanggaran > 0 ? 'color: #dc2626; font-weight: bold;' : 'color: #16a34a;';
 
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td><strong>${nama}</strong></td>
                 <td>${kelas}</td>
-                <td class="status-selesai">Selesai</td>
-                <td>
-                    <div class="progress-bar"><div class="progress-fill" style="width: ${progresPersen}%;"></div></div> 
-                    ${benar}/${totalSoal}
-                </td>
+                <td>${materi}</td>
                 <td>${waktuRapi}</td>
-                <td>${benar}</td>
+                <td style="${warnaPelanggaran}">${pelanggaran}</td>
                 <td class="text-red">${skor}</td>
             `;
             tbody.appendChild(tr);
@@ -317,25 +259,27 @@
 
         let csvContent = "data:text/csv;charset=utf-8,";
         // Header CSV
-        csvContent += "No,Nama,Kelas,Status,Benar,Total Soal,Skor,Waktu\n";
+        csvContent += "No,Nama,Kelas,Materi,Waktu,Pelanggaran,Skor\n";
 
         // Isi CSV
         dataTampil.forEach((siswa, index) => {
             const nama = siswa['NAMA'] || '-';
             const kelas = siswa['KELAS'] || '-';
-            const skor = siswa['SKOR'] || 0;
-            const benar = siswa['BENAR'] || 0;
-            const totalSoal = siswa['TOTAL SOAL'] || 50;
+            const materi = siswa['MATERI'] || 'LKPD';
             const waktu = siswa['WAKTU'] || '-';
+            const pelanggaran = Number(siswa['PELANGGARAN']) || 0;
             
-            // Bungkus string dengan tanda kutip agar aman jika ada koma di nama
-            csvContent += `${index + 1},"${nama}","${kelas}","Selesai",${benar},${totalSoal},${skor},"${waktu}"\n`;
+            let skor = Number(siswa['SKOR']) || 0;
+            if (skor > 100) skor = 100;
+            if (skor < 0) skor = 0;
+            
+            csvContent += `${index + 1},"${nama}","${kelas}","${materi}","${waktu}",${pelanggaran},${skor}\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "Rekap_Nilai_Fisika.csv");
+        link.setAttribute("download", "Rekap_Nilai_LKPD.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
