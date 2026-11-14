@@ -1,0 +1,2371 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LKPD Usaha & Energi - Interaktif</title>
+<style>
+    :root {
+        --dark-green: #1a3c34;
+        --accent-yellow: #f2c94c;
+        --bg-light: #f8faf9;
+        --border-color: #d1d5db;
+        --text-dark: #1f2937;
+        --text-muted: #6b7280;
+        --light-green: #e6f4ea;
+        --red: #dc2626;
+        --green-text: #15803d;
+        --red-text: #b91c1c;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .header {
+        background-color: var(--dark-green);
+        color: white;
+        padding: 30px 15px;
+        text-align: left;
+        position: relative;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .header-left, .header-right { display: flex; flex-direction: column; }
+    .header-right { text-align: right; }
+
+    .gold-text {
+        color: var(--accent-yellow);
+        text-decoration: underline;
+        text-decoration-color: rgba(255, 255, 255, 0.9);
+        text-underline-offset: 4px;
+        text-decoration-thickness: 2px;
+    }
+
+    .cyan-text { color: #38bdf8; margin-top: 4px; font-size: 0.85rem; font-weight: 500; }
+
+    .header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+    .header h1 span { color: var(--accent-yellow); }
+    .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
+
+    .header .tagline-gold {
+        font-size: 0.95rem;
+        font-weight: 700;
+        font-style: italic;
+        color: var(--accent-yellow);
+        margin-top: 10px;
+        letter-spacing: 0.3px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    }
+
+    .nav-tabs {
+        display: flex;
+        justify-content: flex-start;
+        background-color: white;
+        border-bottom: 1px solid var(--border-color);
+        padding: 10px 15px;
+        overflow-x: auto;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+        background: none;
+        border: 2px solid transparent;
+        padding: 8px 16px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-radius: 20px;
+        margin-right: 8px;
+        transition: all 0.3s;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+        background-color: var(--light-green);
+        color: var(--dark-green);
+        border-color: #34d399;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 20px auto 40px auto;
+        padding: 0 15px;
+    }
+
+    .section-target {
+        scroll-margin-top: 80px;
+        padding-top: 5px;
+        margin-bottom: 25px;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        word-wrap: break-word;
+    }
+
+    .card h2 { font-size: 1.3rem; margin-bottom: 12px; color: var(--text-dark); }
+    .card p { margin-bottom: 12px; color: #4b5563; font-size: 0.95rem; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .form-group { display: flex; flex-direction: column; width: 100%; }
+    .form-group.full-width { grid-column: span 2; }
+    .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; }
+
+    .form-group input, .form-group select {
+        width: 100% !important;
+        padding: 10px 12px;
+        border: 1px solid #93c5fd;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        outline: none;
+        background-color: white;
+    }
+
+    .rekap-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 5px;
+        width: 100%;
+    }
+
+    .rekap-box h3 { font-size: 1rem; color: var(--dark-green); margin-bottom: 8px; }
+
+    #daftar-teman-kelompok {
+        list-style-type: decimal;
+        padding-left: 20px;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+
+    #daftar-teman-kelompok li { padding: 3px 0; font-weight: 500; }
+
+    .badge {
+        display: inline-block;
+        background-color: var(--light-green);
+        color: #047857;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .options { display: flex; gap: 8px; flex-direction: column; margin-bottom: 15px; }
+
+    .option-btn {
+        background: white;
+        border: 2px solid var(--text-dark);
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+        font-size: 0.9rem;
+        width: 100%;
+    }
+
+    .option-btn:hover { background-color: #f3f4f6; }
+    .option-btn.selected-correct { border-color: var(--green-text); background-color: var(--light-green); color: var(--green-text); }
+    .option-btn.selected-wrong { border-color: var(--red); background-color: #fee2e2; color: var(--red-text); }
+
+    .feedback-box {
+        display: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    .feedback-box.correct { background-color: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
+    .feedback-box.wrong { background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }
+    .feedback-box.error { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+
+    .info-box {
+        background-color: var(--light-green);
+        border-left: 4px solid #10b981;
+        padding: 12px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #065f46;
+        margin-bottom: 15px;
+    }
+
+    .guide-box {
+        background-color: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-left: 5px solid #10b981;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .guide-box h4 { color: #065f46; margin-bottom: 8px; font-size: 1rem; }
+    .guide-box ol, .guide-box ul { margin-left: 20px; font-size: 0.9rem; color: #334155; }
+    .guide-box li { margin-bottom: 6px; }
+
+    textarea {
+        width: 100% !important;
+        min-height: 90px;
+        padding: 12px;
+        border: 1px solid #93c5fd;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        resize: vertical;
+        outline: none;
+        background-color: white;
+    }
+    textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .question-block { margin-top: 20px; }
+    .question-block p {
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+    }
+
+    .evidence-box {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+    .evidence-box label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .evidence-input-row {
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+        margin-bottom: 8px;
+    }
+    .file-upload-input, .url-video-input {
+        width: 100%;
+        padding: 8px;
+        font-size: 0.85rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: white;
+    }
+    .preview-container {
+        margin-top: 8px;
+        display: none;
+        max-width: 220px;
+        position: relative;
+    }
+    .preview-container img {
+        width: 100%;
+        border-radius: 6px;
+        border: 1px solid #94a3b8;
+    }
+
+    .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 15px; }
+    table { width: 100%; min-width: 550px; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-color); }
+    th { background-color: var(--light-green); color: var(--dark-green); font-weight: 600; }
+    tr:nth-child(even) { background-color: #f9fafb; }
+    .table-input { width: 80px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; }
+    .table-input-cell { width: 60px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; background-color: #f8fafc; }
+
+    .action-buttons { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 12px; flex-direction: column; }
+    .btn { width: 100%; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; text-align: center; }
+    .btn-outline { background: white; border: 2px solid var(--text-dark); color: var(--text-dark); }
+    .btn-primary { background: white; border: 2px solid var(--dark-green); color: var(--dark-green); font-weight: bold; }
+    .btn-primary:hover { background: var(--light-green); }
+
+    .grading-box {
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+    .grading-box h3 { font-size: 1rem; color: #92400e; margin-bottom: 6px; }
+
+    .calc-btn {
+        padding: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 4px;
+        background: #475569;
+        color: white;
+        cursor: pointer;
+        transition: 0.1s;
+    }
+    .calc-btn:hover { background: #64748b; }
+    .calc-btn:active { transform: scale(0.95); }
+
+    #teacher-panel {
+        display: none;
+        background: #1e293b;
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-top: 30px;
+    }
+    #teacher-panel h2 { color: var(--accent-yellow); margin-bottom: 15px; }
+
+    #soal-container, #soal-container * {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+    }
+    #soal-container { position: relative; }
+    #wm-soal {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 900;
+        color: rgba(220, 38, 38, 0.12);
+        transform: rotate(-25deg);
+        white-space: nowrap;
+        z-index: 5;
+    }
+
+    .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+    .pg-option {
+        display: flex; align-items: center; gap: 8px;
+        padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+        background: #fff; font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+    }
+    .pg-option:hover { background: #f1f5f9; }
+    .pg-option input[type="radio"] { width: auto; margin: 0; cursor: pointer; }
+    .pg-option.selected { border-color: #10b981; background: #ecfdf5; }
+    .pg-option .pg-letter { font-weight: bold; min-width: 18px; }
+
+    .nav-soal-wrap {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .nav-soal-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #cbd5e1;
+        background: #fff;
+        font-weight: bold;
+        font-size: 0.95rem;
+        cursor: pointer;
+        color: #1f2937;
+        transition: all 0.2s;
+    }
+    .nav-soal-btn:hover { border-color: #0ea5e9; }
+    .nav-soal-btn.active {
+        background: #0ea5e9;
+        color: #fff;
+        border-color: #0ea5e9;
+        box-shadow: 0 2px 6px rgba(14,165,233,0.4);
+    }
+    .nav-soal-btn.answered {
+        background: #dcfce7;
+        color: #166534;
+        border-color: #22c55e;
+    }
+    .nav-soal-btn.answered.active {
+        background: #0ea5e9;
+        color: #fff;
+        border-color: #0ea5e9;
+    }
+    .soal-nav-info {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-left: auto;
+        font-weight: 600;
+    }
+    .soal-single-wrap {
+        position: relative;
+        min-height: 240px;
+        padding: 10px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+    }
+
+    .simulation-area {
+        background-color: #f0f9ff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #bae6fd;
+        position: relative;
+    }
+
+    .scene {
+        position: relative;
+        width: 100%;
+        height: 260px;
+        background: #090d16;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+    }
+
+    .energy-bar-track {
+        position: absolute;
+        top: 10px; right: 10px;
+        width: 140px; height: 12px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 6px; overflow: hidden; z-index: 5;
+    }
+    .energy-bar-fill-ke {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        transition: width 0.2s linear;
+    }
+    .energy-bar-fill-pe {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        transition: width 0.2s linear;
+    }
+
+    .energy-legend {
+        position: absolute; top: 26px; right: 10px;
+        font-size: 0.65rem; color: #e2e8f0; font-weight: bold; z-index: 5;
+    }
+    .energy-legend .dot-ke { color: #60a5fa; }
+    .energy-legend .dot-pe { color: #fbbf24; }
+
+    .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+    .panel {
+        background: rgba(255,255,255,0.8);
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 10px 12px;
+    }
+    .panel h3 {
+        margin: 0 0 8px; font-size: 0.9rem; color: var(--dark-green);
+        border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;
+    }
+    .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .row label { flex: 0 0 100px; font-size: 0.8rem; color: #475569; }
+    .row input[type="range"] { flex: 1; accent-color: #059669; cursor: pointer; }
+    .row .val { flex: 0 0 50px; text-align: right; font-size: 0.8rem; color: #0369a1; font-weight: bold; }
+
+    .result-panel {
+        background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+        padding: 12px; font-size: 0.85rem; margin-bottom: 15px; transition: all 0.3s;
+    }
+    .result-panel.locked { background: #f0fdf4; border-color: #bbf7d0; box-shadow: 0 0 10px rgba(34,197,94,0.1); }
+    .result-panel h4 { margin: 0 0 8px; color: #15803d; font-size: 0.9rem; text-align: center; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; }
+    .result-card .title { font-weight: bold; font-size: 0.8rem; display: block; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px; }
+    .result-card.c1 .title { color: #ef4444; }
+    .result-card.c2 .title { color: #3b82f6; }
+    .result-card .kv { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 0.75rem; color: #475569; }
+    .result-card .kv span:last-child { color: #0f172a; font-weight: bold; }
+
+    .result-summary { text-align: center; font-size: 0.8rem; margin-bottom: 8px; color: #475569; }
+    .result-summary b { color: #15803d; }
+
+    .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+    .btn-start { background: #10b981; color: white; box-shadow: 0 2px 4px rgba(16,185,129,0.3); }
+    .btn-start:hover { background: #059669; }
+    .btn-reset { background: #f59e0b; color: white; box-shadow: 0 2px 4px rgba(245,158,11,0.3); }
+    .btn-reset:hover { background: #d97706; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .result-item { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
+    .result-item .label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
+    .result-item .value { font-size: 1rem; font-weight: bold; color: #0369a1; }
+    .result-item .value.red { color: #dc2626; }
+
+    @media (min-width: 600px) {
+        .form-grid { grid-template-columns: 1fr 1fr; }
+        .result-grid { grid-template-columns: repeat(3, 1fr); }
+        .options, .action-buttons { flex-direction: row; }
+        .btn { width: auto; }
+        .header { padding: 40px 20px; }
+        .header h1 { font-size: 2.5rem; }
+        .container { padding: 0 20px; }
+        .card { padding: 30px; }
+        .evidence-input-row { flex-direction: row; }
+    }
+
+    @media print {
+        .nav-tabs, .action-buttons, .options, .btn, .feedback-box, .evidence-box input[type="file"], .evidence-box input[type="url"], #teacher-login-section, .no-print, .guide-box, #challenge-start-box, #challenge-area, .calc-btn, #cheat-modal, #audit-modal, .controls, .scene, .result-panel, .table-btn-row, #teacher-panel { display: none !important; }
+        .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 20px; page-break-inside: avoid; }
+        body { background-color: white; }
+        input, select, textarea { border: none !important; background: transparent !important; resize: none; appearance: none; }
+        .preview-container { display: block !important; max-width: 250px; margin-top: 8px; }
+        .evidence-box { border: 1px solid #ccc; background: transparent; padding: 10px; }
+        .table-input { border: none !important; font-weight: bold; }
+    }
+</style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="gold-text">Wokib</span>
+                <span class="cyan-text">Deep Learning</span>
+            </div>
+            <div class="header-right">
+                <span class="gold-text">2026</span>
+                <span class="cyan-text">STEM</span>
+            </div>
+        </div>
+        <h1>Work & Energy, <span>Where Does the Energy Go?</span></h1>
+        <p>Worksheet - 4 · Mechanics: Work, Energy, and Conservation of Energy</p>
+        <p>Physics XI - Phase F</p>
+        <p class="tagline-gold">Let's master the concepts, understand the context, and prove the truth</p>
+    </header>
+    <nav class="nav-tabs">
+        <a href="#langkah1" class="tab-btn active">1. Problem</a>
+        <a href="#langkah2" class="tab-btn">2. Simulation</a>
+        <a href="#langkah3" class="tab-btn">3. Experiment</a>
+        <a href="#langkah4" class="tab-btn">4. Analysis</a>
+        <a href="#langkah5" class="tab-btn">5. Reflection</a>
+        <a href="#langkah6" class="tab-btn">6. Challenge</a>
+    </nav>
+
+    <div class="container" id="konten-lkpd">
+
+        <div class="card section-target" id="identitas">
+            <h2>Identity</h2>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Student Name</label>
+                    <input type="text" id="input-nama" placeholder="Type your full name here..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select id="select-kelas" onchange="updateIdentitas()">
+                        <option value="">-- Select Class --</option>
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" id="input-sekolah" value="" placeholder="Type school name..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <select id="select-kelompok" onchange="updateIdentitas()">
+                        <option value="">-- Select Group --</option>
+                        <option value="Kelompok 1">Group 1</option>
+                        <option value="Kelompok 2">Group 2</option>
+                        <option value="Kelompok 3">Group 3</option>
+                        <option value="Kelompok 4">Group 4</option>
+                        <option value="Kelompok 5">Group 5</option>
+                        <option value="Kelompok 6">Group 6</option>
+                        <option value="Kelompok 7">Group 7</option>
+                        <option value="Kelompok 8">Group 8</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="input-tanggal" onchange="updateIdentitas()">
+                </div>
+                <div class="form-group full-width">
+                    <div class="rekap-box">
+                        <h3 id="judul-rekap-kelompok">Group Members List ...</h3>
+                        <ol id="daftar-teman-kelompok">
+                            <li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please fill in Student Name, Class, and Group first)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah1" class="section-target">
+            <div class="card">
+                <span class="badge">Part 1 · Problem</span>
+                <h2>Bola Menuruni Bidang Miring</h2>
+                <p>Sebuah balok dilepaskan dari puncak bidang miring licin tanpa kecepatan awal. Balok meluncur ke bawah dan mencapai dasar bidang. Sepanjang perjalanan, ketinggian balok berkurang tetapi kecepatannya bertambah.</p>
+                <p><strong>Your Prediction:</strong> Pada bidang miring licin (tanpa gesekan), ketika balok meluncur turun, <strong>energi mekanik total</strong> (Ek + Ep) akan ...</p>
+
+                <div class="options">
+                    <button class="option-btn" id="opt-berkurang" onclick="cekPrediksi('berkurang')">Berkurang (hilang sebagian)</button>
+                    <button class="option-btn" id="opt-kekal" onclick="cekPrediksi('kekal')">Kekal (sama dengan posisi awal)</button>
+                    <button class="option-btn" id="opt-bertambah" onclick="cekPrediksi('bertambah')">Bertambah</button>
+                </div>
+
+                <div id="feedback-box" class="feedback-box"></div>
+                <div class="info-box">
+                    <strong>Tujuan:</strong> memahami konsep usaha (W = F·s·cos θ), energi kinetik, energi potensial, hubungan usaha–energi, serta Hukum Kekekalan Energi Mekanik.
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah2" class="section-target">
+            <div class="card">
+                <span class="badge">Part 2 · Simulation</span>
+                <h2>Ubah parameter, amati energi</h2>
+                <p>Atur massa balok, ketinggian awal, dan sudut bidang miring. Perhatikan bagaimana energi potensial berubah menjadi energi kinetik saat balok meluncur turun!</p>
+
+                <div class="simulation-area">
+                    <div class="scene" id="scene">
+                        <canvas id="simCanvas"></canvas>
+
+                        <div class="energy-bar-track">
+                            <div class="energy-bar-fill-ke" id="barKE"></div>
+                        </div>
+                        <div class="energy-bar-track" style="top:26px;">
+                            <div class="energy-bar-fill-pe" id="barPE"></div>
+                        </div>
+                        <div class="energy-legend"><span class="dot-ke">■ Ek</span> <span class="dot-pe">■ Ep</span></div>
+                    </div>
+
+                    <div class="btn-row" style="margin-top: 0; margin-bottom: 15px;">
+                        <button class="btn btn-start" id="startBtn" onclick="startSimulation()">▶ Mulai Meluncur</button>
+                        <button class="btn btn-reset" onclick="resetSimulation()">↺ Reset</button>
+                    </div>
+
+                    <div class="controls">
+                        <div class="panel">
+                            <h3>📦 Balok</h3>
+                            <div class="row">
+                                <label>Massa (kg)</label>
+                                <input type="range" id="m-slider" min="1" max="20" value="5" step="0.5">
+                                <span class="val" id="label-m">5</span>
+                            </div>
+                            <div class="row">
+                                <label>Tinggi awal (m)</label>
+                                <input type="range" id="h-slider" min="1" max="8" value="5" step="0.5">
+                                <span class="val" id="label-h">5</span>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <h3>📐 Bidang Miring</h3>
+                            <div class="row">
+                                <label>Sudut θ (°)</label>
+                                <input type="range" id="theta-slider" min="15" max="60" value="30" step="1">
+                                <span class="val" id="label-theta">30</span>
+                            </div>
+                            <div class="row">
+                                <label>Gravitasi (m/s²)</label>
+                                <input type="range" id="g-slider" min="8" max="12" value="10" step="0.1">
+                                <span class="val" id="label-g">10.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-panel" id="resultPanel">
+                        <div id="resultText" style="text-align:center;">Atur parameter lalu tekan <b style="color:#10b981;">Mulai Meluncur</b></div>
+                    </div>
+                </div>
+
+                <div class="info-box" id="info-sim">
+                    💡 Tips: Pada bidang miring licin, Ep di puncak berubah menjadi Ek di dasar. Energi mekanik total (Ek + Ep) selalu tetap. Usaha oleh gravitasi = m·g·h.
+                </div>
+
+                <div class="question-block">
+                    <p>Question 1. Mengapa energi mekanik total (Ek + Ep) selalu kekal pada bidang miring licin, tetapi berkurang jika ada gesekan?</p>
+                    <textarea class="ans-field" id="ans-q1" placeholder="Tulis jawabanmu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="langkah3" class="section-target">
+            <div class="card">
+                <span class="badge">Part 3 · Experiment</span>
+                <h2>Uji dengan data eksperimen (Integrasi Phyphox)</h2>
+                <p>Jatuhkan sebuah bola dari ketinggian tertentu dan ukur waktunya dengan Phyphox (acoustic stopwatch). Dari waktu jatuh, sistem menghitung kecepatan saat menyentuh tanah dan energi kinetiknya.</p>
+
+                <div class="guide-box">
+                    <h4>🛠️ Panduan Eksperimen: Jatuh Bebas</h4>
+                    <ol style="margin-left: 20px; font-size: 0.9rem; color: #334155; margin-bottom: 10px;">
+                        <li>Buka Phyphox > <strong>Acoustic Stopwatch</strong> > Mode <strong>Serial</strong>.</li>
+                        <li>Jatuhkan bola dari ketinggian h (misal 100 cm) dan catat waktu jatuh (t).</li>
+                        <li>Hitung kecepatan saat menyentuh tanah: v = g·t (g = 10 m/s²).</li>
+                        <li>Hitung energi kinetik: Ek = ½·m·v² dan energi potensial awal: Ep = m·g·h.</li>
+                        <li>Ulangi untuk ketinggian 80 cm, 60 cm, dan 40 cm.</li>
+                    </ol>
+                </div>
+
+                <div class="evidence-box" style="background-color: #e0f2fe; border-color: #7dd3fc; margin-bottom: 20px;">
+                    <label style="color: #0369a1; font-size: 0.95rem;">🔗 Opsi 1: Tarik Data via IP Address (Remote Access)</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <input type="text" id="phyphox-ip" placeholder="Contoh: 192.168.1.10:8080" style="flex: 1; padding: 8px; border: 1px solid #38bdf8; border-radius: 6px; min-width: 200px;">
+                        <button class="btn btn-primary" style="width: auto; padding: 8px 15px; background: #0284c7; color: white; border: none;" onclick="tarikDataPhyphox()">Tarik Data</button>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #0284c7; margin-top: 0;">*Aktifkan "Remote Access" di Phyphox. Pastikan HP & Laptop di Wi-Fi yang sama.</p>
+
+                    <hr style="border: 0; border-top: 1px dashed #7dd3fc; margin: 10px 0;">
+
+                    <label style="color: #0369a1; font-size: 0.95rem;">📁 Opsi 2: Unggah File CSV Phyphox (Jika IP Gagal)</label>
+                    <input type="file" id="upload-phyphox" accept=".csv, .txt" class="file-upload-input" style="border-color: #38bdf8; background: white;" onchange="prosesFilePhyphox(this)">
+                </div>
+
+                <div class="table-btn-row" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-primary" style="flex: 1; padding: 8px;" onclick="isiDataContoh()">Isi Contoh</button>
+                    <button class="btn btn-primary" style="flex: 1; padding: 8px;" onclick="kosongkanData()">Kosongkan</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="tabel-eksperimen" style="table-layout: fixed;">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">h (cm)<br>Jatuh</th>
+                                <th style="width: 20%;">t (s)<br>Phyphox</th>
+                                <th style="width: 22%;">v (m/s)<br>Hitung Otomatis</th>
+                                <th style="width: 21%;">Ek (J)<br>Hitung Otomatis</th>
+                                <th style="width: 22%;">Ep (J)<br>Manual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="number" class="table-input input-h1" value="100" step="1" min="1"></td>
+                                <td><input type="number" class="table-input input-dt" step="0.01" min="0.01"></td>
+                                <td class="h2-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="e-cell" style="font-weight:bold; color:#15803d;">–</td>
+                                <td><input type="number" class="table-input input-e" step="0.01" min="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="number" class="table-input input-h1" value="80" step="1" min="1"></td>
+                                <td><input type="number" class="table-input input-dt" step="0.01" min="0.01"></td>
+                                <td class="h2-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="e-cell" style="font-weight:bold; color:#15803d;">–</td>
+                                <td><input type="number" class="table-input input-e" step="0.01" min="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="number" class="table-input input-h1" value="60" step="1" min="1"></td>
+                                <td><input type="number" class="table-input input-dt" step="0.01" min="0.01"></td>
+                                <td class="h2-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="e-cell" style="font-weight:bold; color:#15803d;">–</td>
+                                <td><input type="number" class="table-input input-e" step="0.01" min="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="number" class="table-input input-h1" value="40" step="1" min="1"></td>
+                                <td><input type="number" class="table-input input-dt" step="0.01" min="0.01"></td>
+                                <td class="h2-cell" style="font-weight:bold; color:#0369a1;">–</td>
+                                <td class="e-cell" style="font-weight:bold; color:#15803d;">–</td>
+                                <td><input type="number" class="table-input input-e" step="0.01" min="0"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 2. Berdasarkan tabel, bagaimana hubungan antara ketinggian awal (h) dengan energi kinetik (Ek) saat menyentuh tanah? Jelaskan!</p>
+                    <textarea class="ans-field" id="ans-q2" placeholder="Tulis analisismu..."></textarea>
+
+                    <div class="evidence-box">
+                        <div class="evidence-input-row">
+                            <div style="flex: 1;">
+                                <label>Upload Screenshot Phyphox / Foto Bola: <span style="color: var(--red); font-weight: bold;">(Wajib / Dinilai)</span></label>
+                                <input type="file" id="upload-bukti" accept="image/*" class="file-upload-input" onchange="previewImage(this)">
+                            </div>
+                            <div style="flex: 1;">
+                                <label>Tautan Video Pendukung (Opsional):</label>
+                                <input type="url" placeholder="https://bit.ly/video-kamu" class="url-video-input">
+                            </div>
+                        </div>
+                        <div class="preview-container"><img src="" alt="Pratinjau Foto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ================= PART 4: ANALYSIS ================= -->
+        <div id="langkah4" class="section-target">
+            <div class="card">
+                <span class="badge">Part 4 · Analysis</span>
+                <h2>Usaha dan Perubahan Energi</h2>
+                <p>Usaha (W) adalah gaya yang bekerja sepanjang perpindahan: W = F·s·cos θ. Usaha sama dengan perubahan energi: W = ΔEk dan W = -ΔEp.</p>
+
+                <div class="form-grid" style="margin-bottom: 15px;">
+                    <div class="form-group full-width">
+                        <label>Gaya (F): <span id="label-gaya">50 N</span></label>
+                        <input type="range" id="slider-gaya" min="1" max="500" value="50" step="1" style="accent-color: #059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Perpindahan (s): <span id="label-waktu">2 m</span></label>
+                        <input type="range" id="slider-waktu" min="0.5" max="20" value="2" step="0.5" style="accent-color: #059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Sudut (θ): <span id="label-sudut">0 °</span></label>
+                        <input type="range" id="slider-sudut" min="0" max="180" value="0" step="5" style="accent-color: #059669;">
+                    </div>
+                </div>
+
+                <div class="result-grid four-cols" style="grid-template-columns: 1fr 1fr;">
+                    <div class="result-item"><div class="label">Usaha (W = F·s·cos θ)</div><div class="value" id="out-impuls">100 J</div></div>
+                    <div class="result-item"><div class="label">Perubahan Energi (ΔE)</div><div class="value red" id="out-dp">100 J</div></div>
+                    <div class="result-item"><div class="label">Ek (dari simulasi balok)</div><div class="value red" id="out-ek">0 J</div></div>
+                    <div class="result-item"><div class="label">Ep (dari simulasi balok)</div><div class="value red" id="out-e">0 J</div></div>
+                </div>
+                <p style="font-size:0.8rem;color:#6b7280;margin-top:-5px;">Catatan: Dua kolom terakhir dihitung dari parameter simulasi balok di Part 2, bukan dari slider Gaya/Perpindahan.</p>
+
+                <div class="question-block">
+                    <p>Question 3. Jelaskan hubungan antara usaha dan perubahan energi kinetik menggunakan persamaan W = ΔEk = ½m(v² - v₀²)!</p>
+                    <textarea class="ans-field" id="ans-q3" placeholder="Tulis analisismu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 5: REFLECTION ================= -->
+        <div id="langkah5" class="section-target">
+            <div class="card">
+                <span class="badge">Part 5 · Reflection</span>
+                <h2>Refleksi Konsep</h2>
+
+                <div class="question-block">
+                    <p>Question 4. Sebuah balok 2 kg didorong dengan gaya 10 N sejauh 5 m searah dengan perpindahan. Berapa usaha yang dilakukan gaya tersebut? (J)</p>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-direction: column;">
+                        <input type="number" id="input-jawaban-refleksi" placeholder="... J" style="width: 100%; padding: 10px; border: 1px solid #93c5fd; border-radius: 6px;">
+                        <button class="btn btn-primary" style="width: 100%; padding: 10px; border-radius: 8px;" onclick="cekRefleksi()">Cek jawaban</button>
+                    </div>
+                    <div id="feedback-refleksi" class="feedback-box"></div>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 5. Mengapa pada sistem dengan gesekan energi mekanik berkurang, tetapi energi total (termasuk energi panas) tetap kekal?</p>
+                    <textarea class="ans-field" id="ans-q5" placeholder="Tulis penjelasanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 6. Tulis kesimpulanmu dalam tiga kalimat.</p>
+                    <textarea class="ans-field" id="ans-q6" placeholder="Tulis kesimpulanmu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 6: CHALLENGE ================= -->
+        <div id="langkah6" class="section-target">
+            <div class="card">
+                <span class="badge" style="background-color: #fee2e2; color: #b91c1c;">Part 6 · Time Challenge</span>
+                <h2>🔥 Mode Tantangan (HOTS)</h2>
+                <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar usaha, energi, dan hukum kekekalan energi. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
+                <p style="font-size:0.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
+
+                <div id="challenge-start-box" style="text-align: center; padding: 20px;">
+                    <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size: 1.2rem; padding: 15px 30px; background: var(--dark-green); color: white;">▶ Mulai Tantangan</button>
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain. <strong>Tantangan hanya bisa dikerjakan sekali.</strong></div>
+                </div>
+
+                <div id="challenge-area" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                        <div><strong>Waktu:</strong> <span id="timer-display" style="font-family: monospace; font-size: 1.2rem; color: var(--red); font-weight: bold;">08:00</span></div>
+                        <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color: var(--red); font-weight: bold;">0</span></div>
+                    </div>
+
+                    <div id="soal-container" style="margin-bottom: 15px;"></div>
+
+                    <div style="background: #1e293b; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                        <input type="text" id="calc-display" readonly style="width: 100%; padding: 10px; font-size: 1.2rem; text-align: right; background: #f8fafc; border: none; border-radius: 4px; margin-bottom: 8px;">
+                        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                            <button class="calc-btn" onclick="calcInput('sin')" style="background: #8b5cf6;">sin</button>
+                            <button class="calc-btn" onclick="calcInput('cos')" style="background: #3b82f6;">cos</button>
+                            <button class="calc-btn" onclick="calcInput('tan')" style="background: #0ea5e9;">tan</button>
+                            <button class="calc-btn" onclick="calcInput('(')" style="background: #64748b;">(</button>
+                            <button class="calc-btn" onclick="calcInput(')')" style="background: #64748b;">)</button>
+
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn" onclick="calcInput('/')" style="background: #f59e0b;">÷</button>
+                            <button class="calc-btn" onclick="calcClear()" style="background: #ef4444;">C</button>
+
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn" onclick="calcInput('*')" style="background: #f59e0b;">×</button>
+                            <button class="calc-btn" onclick="calcInput('-')" style="background: #f59e0b;">-</button>
+
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn" onclick="calcInput('+')" style="background: #f59e0b;">+</button>
+                            <button class="calc-btn" onclick="calcSolve()" style="background: #10b981; grid-row: span 2; font-size: 1.2rem;">=</button>
+
+                            <button class="calc-btn" onclick="calcInput('0')" style="grid-column: span 2;">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="selesaiTantangan()" style="width: 100%;">Kumpulkan Jawaban Tantangan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PENILAIAN & CETAK ================= -->
+        <div class="section-target">
+            <div class="card">
+                <div class="grading-box">
+                    <h3>Automated System Evaluation</h3>
+                    <p>Total Score: <strong id="val-score">0</strong> / 100</p>
+                    <p>Predicate: <strong id="val-predicate" style="color: #b45309;">Needs Improvement</strong></p>
+                </div>
+                <div id="report-curang" style="display:none; padding: 10px; background: #fee2e2; border: 1px solid #ef4444; border-radius: 6px; margin-top: 10px; color: #b91c1c; font-weight: bold; margin-bottom: 15px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>Cetak hasil kerja</h2>
+                <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
+                    <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
+                    <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
+                </div>
+                <div id="pesan-validasi" class="feedback-box error" style="display: none;">
+                    Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.
+                </div>
+                <p class="no-print" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 20px; line-height: 1.5;">Konsep STEM: Science (Hukum Kekekalan Energi), Technology (Phyphox & Remote Access), Engineering (desain bidang miring), Mathematics (trigonometri, aljabar kuadrat).</p>
+            </div>
+
+            <div class="card" id="teacher-login-section">
+                <h2>Teacher Portal (Login)</h2>
+                <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
+                <div style="display: flex; gap: 10px; margin-top: 10px; flex-direction: column;">
+                    <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+                    <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
+                </div>
+            </div>
+
+            <div id="teacher-panel">
+                <h2>Dashboard Rekap Nilai Siswa</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="margin-right: 10px;">Pilih Kelas:</label>
+                    <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding: 6px 10px; border-radius: 6px;">
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                    <button class="btn btn-outline" style="margin-left: 10px; color: white; border-color: white;" onclick="tutupPanelGuru()">Tutup Panel</button>
+                    <button class="btn btn-primary" style="margin-left: 10px; background: #10b981; color: white; border: none;" onclick="cetakRekapGuru()">🖨️ Cetak Rekap Nilai</button>
+                </div>
+                <div class="table-responsive">
+                    <table style="color: white; border-color: #475569;">
+                        <thead>
+                            <tr style="background-color: #334155;">
+                                <th>No</th>
+                                <th>Student Name</th>
+                                <th>Group</th>
+                                <th>Score</th>
+                                <th>Predicate</th>
+                                <th>Pelanggaran</th>
+                                <th>Date</th>
+                                <th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /container -->
+
+    <!-- ================= MODAL CHEAT ================= -->
+    <div id="cheat-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; text-align: center; padding: 20px; backdrop-filter: blur(5px);">
+        <div style="background: #fee2e2; border: 4px dashed #dc2626; border-radius: 16px; padding: 30px; max-width: 500px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); animation: shake 0.5s;">
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚨</div>
+            <h2 style="color: #b91c1c; font-size: 1.8rem; margin-bottom: 10px; font-weight: 800;">PERINGATAN KECURANGAN!</h2>
+            <p style="font-size: 1.2rem; color: #1f2937; margin-bottom: 5px;">Halo, <strong id="modal-nama-siswa" style="color: #dc2626; font-size: 1.4rem;">Siswa</strong>!</p>
+            <p id="modal-alasan" style="font-size: 1rem; color: #4b5563; margin-bottom: 15px;">Sistem mendeteksi Anda melakukan aktivitas terlarang.</p>
+
+            <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                <p style="font-size: 0.9rem; color: #991b1b; font-weight: bold;">TOTAL PELANGGARAN ANDA:</p>
+                <p style="font-size: 3rem; color: #b91c1c; font-weight: 900; line-height: 1;" id="modal-total-curang">0</p>
+                <p style="font-size: 0.8rem; color: #991b1b; margin-top: 5px;">Nilai Anda dipotong otomatis 10 poin per pelanggaran.</p>
+            </div>
+
+            <button onclick="tutupModalDanGantiSoal()" style="background: #dc2626; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; transition: 0.2s;">Tutup & Kembali Ujian (Soal Diganti!)</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL AUDIT ================= -->
+    <div id="audit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);">
+        <div style="background: white; border: 4px solid #1e293b; border-radius: 12px; padding: 24px; max-width: 720px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="color:#1e293b;font-size:1.3rem;">📋 Audit Log Pelanggaran</h2>
+                <button onclick="document.getElementById('audit-modal').style.display='none'" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;">✕</button>
+            </div>
+            <p id="audit-header" style="font-size:0.9rem;color:#475569;margin-bottom:12px;"></p>
+            <div class="table-responsive">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#e2e8f0;">
+                            <th style="padding:8px;border:1px solid #cbd5e1;">No</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Waktu</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Jenis</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Detail</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Soal ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+    </style>
+    <script>
+    document.getElementById('input-tanggal').valueAsDate = new Date();
+
+    /* ============================================================
+       0. UTIL
+       ============================================================ */
+    function escHtml(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    /* ============================================================
+       1. SIMULASI BALOK DI BIDANG MIRING
+       ============================================================ */
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const resultPanel = document.getElementById('resultPanel');
+    const barKE = document.getElementById('barKE');
+    const barPE = document.getElementById('barPE');
+
+    function initCanvasSize() {
+        const box = document.getElementById('scene');
+        canvas.width = box.clientWidth;
+        canvas.height = box.clientHeight;
+        drawScene();
+    }
+
+    const state = {
+        m: 5, h: 5, theta: 30, g: 10,
+        running: false,
+        x: 0,
+        vx: 0,
+        currentH: 5,
+        animId: null,
+        lastTime: 0,
+        resultLocked: false,
+        finished: false
+    };
+
+    function updateLabels() {
+        document.getElementById('label-m').textContent = state.m;
+        document.getElementById('label-h').textContent = state.h;
+        document.getElementById('label-theta').textContent = state.theta;
+        document.getElementById('label-g').textContent = state.g.toFixed(1);
+        hitungUsaha();
+        hitungNilaiOtomatis();
+    }
+
+    function updateEnergyBars(Ep, Ek) {
+        const total = Math.max(Ep + Ek, 0.0001);
+        barKE.style.width = ((Ek / total) * 100) + '%';
+        barPE.style.width = ((Ep / total) * 100) + '%';
+    }
+
+    function resetPositions() {
+        state.x = 0;
+        state.vx = 0;
+        state.currentH = state.h;
+        state.finished = false;
+        updateEnergyBars(state.m * state.g * state.h, 0);
+    }
+
+    function startSimulation() {
+        if (state.running) return;
+        resetPositions();
+        state.resultLocked = false;
+        resultPanel.classList.remove('locked');
+        state.running = true;
+        state.finished = false;
+        state.vx = 0;
+        document.getElementById('startBtn').disabled = true;
+        updateResult('⏳ Balok sedang meluncur menuruni bidang miring...');
+        state.lastTime = performance.now();
+        state.animId = requestAnimationFrame(loop);
+    }
+
+    function loop(now) {
+        if (!state.running) return;
+        let dt = (now - state.lastTime) / 1000;
+        state.lastTime = now;
+        if (dt > 0.05) dt = 0.05;
+
+        const thetaRad = state.theta * Math.PI / 180;
+        const a = state.g * Math.sin(thetaRad);
+
+        state.vx += a * dt;
+        state.x += state.vx * dt;
+        state.currentH = state.h - state.x * Math.sin(thetaRad);
+
+        const Ek = 0.5 * state.m * state.vx * state.vx;
+        const Ep = state.m * state.g * Math.max(0, state.currentH);
+        updateEnergyBars(Ep, Ek);
+
+        const maxDist = state.h / Math.sin(thetaRad);
+
+        if (state.x >= maxDist || state.currentH <= 0.02) {
+            state.running = false;
+            state.finished = true;
+            document.getElementById('startBtn').disabled = false;
+            const vAkhir = Math.sqrt(2 * state.g * state.h);
+            showResults(state.m, state.g, state.h, vAkhir);
+            drawScene();
+            return;
+        }
+        drawScene();
+        state.animId = requestAnimationFrame(loop);
+    }
+
+    function drawScene() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let thetaRad = (state.theta * Math.PI) / 180;
+        let baseX = 50;
+        let baseY = canvas.height - 40;
+        let maxPixelH = canvas.height - 100;
+        let scale = Math.min(30, maxPixelH / state.h);
+        let rampPixelH = state.h * scale;
+        let rampPixelW = rampPixelH / Math.tan(thetaRad);
+        let maxW = canvas.width - baseX - 50;
+        if (rampPixelW > maxW) {
+            let ratio = maxW / rampPixelW;
+            rampPixelW *= ratio;
+            rampPixelH *= ratio;
+            scale *= ratio;
+        }
+        let topX = baseX + rampPixelW;
+        let topY = baseY - rampPixelH;
+
+        ctx.fillStyle = '#8b5a2b';
+        ctx.beginPath();
+        ctx.moveTo(baseX, baseY);
+        ctx.lineTo(topX, topY);
+        ctx.lineTo(topX, baseY);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(baseX, baseY);
+        ctx.lineTo(topX, topY);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#4b5563';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(0, baseY);
+        ctx.lineTo(canvas.width, baseY);
+        ctx.stroke();
+
+        let distPx = state.x * scale;
+        let boxX = topX - distPx * Math.cos(thetaRad);
+        let boxY = topY + distPx * Math.sin(thetaRad);
+
+        ctx.save();
+        ctx.translate(boxX, boxY);
+        ctx.rotate(-thetaRad);
+        let wW = 40;
+        let wH = 30;
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-wW / 2, -wH, wW, wH);
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.fillRect(-wW / 2 + 2, -wH + 2, wW - 4, 6);
+        ctx.strokeStyle = '#991b1b';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-wW / 2, -wH, wW, wH);
+        ctx.restore();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(`Tinggi: ${state.currentH.toFixed(2)} m`, 15, 25);
+        ctx.fillText(`Kecepatan: ${state.vx.toFixed(2)} m/s`, 15, 45);
+    }
+
+    function showResults(m, g, h, v) {
+        const Ep_awal = m * g * h;
+        const Ek_awal = 0;
+        const Ek_akhir = 0.5 * m * v * v;
+        const Ep_akhir = 0;
+        const W_grav = Ep_awal - Ep_akhir;
+
+        const html = `
+            <h4>🏁 Hasil Setelah Balok Mencapai Dasar</h4>
+            <div class="result-grid">
+                <div class="result-card c1">
+                    <span class="title">📦 Balok — m = ${m} kg</span>
+                    <div class="kv"><span>Ketinggian awal</span><span>${h.toFixed(1)} m</span></div>
+                    <div class="kv"><span>Ketinggian akhir</span><span>0 m</span></div>
+                    <div class="kv"><span>Kecepatan awal</span><span>0 m/s</span></div>
+                    <div class="kv"><span>Kecepatan akhir</span><span>${v.toFixed(2)} m/s</span></div>
+                </div>
+                <div class="result-card c2">
+                    <span class="title">⚡ Energi</span>
+                    <div class="kv"><span>Ep awal</span><span>${Ep_awal.toFixed(1)} J</span></div>
+                    <div class="kv"><span>Ek awal</span><span>${Ek_awal.toFixed(1)} J</span></div>
+                    <div class="kv"><span>Ep akhir</span><span>${Ep_akhir.toFixed(1)} J</span></div>
+                    <div class="kv"><span>Ek akhir</span><span>${Ek_akhir.toFixed(1)} J</span></div>
+                </div>
+            </div>
+            <div class="result-summary">
+                Energi mekanik awal: <b>${(Ep_awal + Ek_awal).toFixed(1)} J</b> &nbsp;|&nbsp;
+                Energi mekanik akhir: <b>${(Ep_akhir + Ek_akhir).toFixed(1)} J</b> &nbsp;|&nbsp;
+                Usaha gravitasi: <b>${W_grav.toFixed(1)} J</b>
+            </div>
+            <div class="result-note">🔒 Data terkunci — tekan <b>Reset</b> atau <b>Mulai Meluncur</b> untuk mengulang</div>
+        `;
+        document.getElementById('resultText').innerHTML = html;
+        state.resultLocked = true;
+        resultPanel.classList.add('locked');
+    }
+
+    function updateResult(html) {
+        if (state.resultLocked) return;
+        document.getElementById('resultText').innerHTML = html;
+    }
+
+    function resetSimulation() {
+        if (state.animId) cancelAnimationFrame(state.animId);
+        state.running = false;
+        state.finished = false;
+        state.resultLocked = false;
+        resultPanel.classList.remove('locked');
+        document.getElementById('startBtn').disabled = false;
+        state.vx = 0;
+        state.x = 0;
+        resetPositions();
+        drawScene();
+        updateResult('Atur parameter lalu tekan <b style="color:#10b981;">Mulai Meluncur</b>');
+    }
+
+    document.getElementById('m-slider').addEventListener('input', e => { state.m = +e.target.value; updateLabels(); if (!state.running) resetSimulation(); });
+    document.getElementById('h-slider').addEventListener('input', e => { state.h = +e.target.value; updateLabels(); if (!state.running) resetSimulation(); });
+    document.getElementById('theta-slider').addEventListener('input', e => { state.theta = +e.target.value; updateLabels(); if (!state.running) resetSimulation(); });
+    document.getElementById('g-slider').addEventListener('input', e => { state.g = +e.target.value; updateLabels(); });
+
+    window.addEventListener('resize', () => { initCanvasSize(); if (!state.running) resetSimulation(); });
+
+    /* ============================================================
+       2. TABEL EKSPERIMEN (PHYPHOX)
+       ============================================================ */
+    function hitungTabel(inputEl) {
+        const row = inputEl.closest('tr');
+        const h1 = Number(row.querySelector('.input-h1').value) || 0;
+        const dt = Number(row.querySelector('.input-dt').value);
+        const eInput = Number(row.querySelector('.input-e').value);
+        const tdH2 = row.querySelector('.h2-cell');
+        const tdE = row.querySelector('.e-cell');
+        const g = 10;
+
+        if (h1 > 0 && !isNaN(dt) && dt > 0) {
+            let v_m = g * dt;
+            tdH2.innerText = v_m.toFixed(2);
+            const m_bola = 2;
+            const Ek = 0.5 * m_bola * v_m * v_m;
+            tdE.innerText = Ek.toFixed(2);
+        } else {
+            tdH2.innerText = '–';
+            tdE.innerText = '–';
+        }
+        hitungNilaiOtomatis();
+    }
+
+    document.querySelectorAll('#tabel-eksperimen input').forEach(inp => {
+        inp.addEventListener('input', () => hitungTabel(inp));
+    });
+
+    async function tarikDataPhyphox() {
+        const ipInput = document.getElementById('phyphox-ip').value.trim();
+        if (!ipInput) {
+            alert("Masukkan IP Address Phyphox terlebih dahulu (lihat di layar HP).");
+            return;
+        }
+        const baseUrl = ipInput.startsWith('http') ? ipInput : `http://${ipInput}`;
+        const endpoint = `${baseUrl}/get?time=full`;
+        try {
+            const response = await fetch(endpoint);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            if (data.buffer && data.buffer.time && data.buffer.time.buffer) {
+                const waktuArray = data.buffer.time.buffer;
+                let waktuValid = waktuArray.filter(t => t > 0.05 && t < 3.0).slice(0, 4);
+                const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+                waktuValid.forEach((dt, index) => {
+                    if (rows[index]) {
+                        const dtInput = rows[index].querySelector('.input-dt');
+                        dtInput.value = dt.toFixed(3);
+                        hitungTabel(dtInput);
+                    }
+                });
+                alert(`Berhasil menarik ${waktuValid.length} data dari Phyphox!`);
+            } else {
+                alert("Data buffer tidak ditemukan. Pastikan eksperimen Phyphox sedang berjalan.");
+            }
+        } catch (error) {
+            console.error("Gagal mengambil data:", error);
+            alert("Gagal terhubung ke Phyphox.\nPastikan:\n1. HP dan Laptop di Wi-Fi yang sama.\n2. Remote Access di Phyphox sudah aktif.\n3. LKPD dibuka via file lokal (bukan https).");
+        }
+    }
+
+    function prosesFilePhyphox(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const content = e.target.result;
+            const lines = content.split(/\r?\n/);
+            let waktuList = [];
+            lines.forEach(line => {
+                const matches = line.match(/[0-9]+\.[0-9]+/g);
+                if (matches) {
+                    matches.forEach(num => {
+                        let val = parseFloat(num);
+                        if (val >= 0.05 && val <= 3.0) waktuList.push(val);
+                    });
+                }
+            });
+            waktuList = [...new Set(waktuList)].sort((a, b) => a - b);
+            let indexWaktu = 0;
+            const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+            rows.forEach((row) => {
+                if (indexWaktu < waktuList.length) {
+                    const dtInput = row.querySelector('.input-dt');
+                    dtInput.value = waktuList[indexWaktu].toFixed(3);
+                    hitungTabel(dtInput);
+                    indexWaktu++;
+                }
+            });
+            if (indexWaktu > 0) {
+                alert(`Berhasil mengambil ${indexWaktu} data waktu dari file Phyphox!`);
+            } else {
+                alert("Gagal menemukan data waktu di file. Pastikan file CSV diekspor dari 'Acoustic Stopwatch'.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function isiDataContoh() {
+        const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+        const g = 10;
+        rows.forEach(row => {
+            const h1Input = row.querySelector('.input-h1');
+            const h1_cm = Number(h1Input.value);
+            if (h1_cm > 0) {
+                let h_m = h1_cm / 100;
+                let t = Math.sqrt(2 * h_m / g);
+                let tAcak = t + (Math.random() * 0.01 - 0.005);
+                row.querySelector('.input-dt').value = tAcak.toFixed(2);
+                row.querySelector('.input-e').value = (2 * g * h_m).toFixed(2);
+            }
+        });
+        rows.forEach(row => {
+            const dtInput = row.querySelector('.input-dt');
+            if (dtInput.value) hitungTabel(dtInput);
+        });
+    }
+
+    function kosongkanData() {
+        document.querySelectorAll('.input-dt, .input-e').forEach(inp => inp.value = '');
+        document.querySelectorAll('.h2-cell, .e-cell').forEach(td => td.innerText = '–');
+        hitungNilaiOtomatis();
+    }
+
+    /* ============================================================
+       3. PART 4: ANALISIS USAHA
+       ============================================================ */
+    const sliderGaya = document.getElementById('slider-gaya');
+    const sliderWaktu = document.getElementById('slider-waktu');
+    const sliderSudut = document.getElementById('slider-sudut');
+    sliderGaya.addEventListener('input', hitungUsaha);
+    sliderWaktu.addEventListener('input', hitungUsaha);
+    sliderSudut.addEventListener('input', hitungUsaha);
+
+    function hitungUsaha() {
+        const F = parseFloat(sliderGaya.value);
+        const s = parseFloat(sliderWaktu.value);
+        const sudut = parseFloat(sliderSudut.value);
+        const rad = sudut * Math.PI / 180;
+        const W = F * s * Math.cos(rad);
+
+        document.getElementById('label-gaya').innerText = F + ' N';
+        document.getElementById('label-waktu').innerText = s.toFixed(1) + ' m';
+        document.getElementById('label-sudut').innerText = sudut + ' °';
+        document.getElementById('out-impuls').innerText = W.toFixed(1) + ' J';
+        document.getElementById('out-dp').innerText = W.toFixed(1) + ' J';
+
+        const Ep = state.m * state.g * state.h;
+        const Ek = 0.5 * state.m * (state.vx * state.vx);
+        document.getElementById('out-ek').innerText = Ek.toFixed(1) + ' J';
+        document.getElementById('out-e').innerText = Ep.toFixed(1) + ' J';
+    }
+
+    /* ============================================================
+       4. IDENTITAS
+       ============================================================ */
+    function updateIdentitas() {
+        const nama = document.getElementById('input-nama').value.trim();
+        const kelas = document.getElementById('select-kelas').value;
+        const kelompok = document.getElementById('select-kelompok').value;
+        const judulRekap = document.getElementById('judul-rekap-kelompok');
+
+        if (kelompok) { judulRekap.innerText = `Group Members List (${kelompok})`; }
+        else { judulRekap.innerText = `Group Members List ...`; }
+
+        if (!kelas || !kelompok) {
+            document.getElementById('daftar-teman-kelompok').innerHTML = '<li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please select Class and Group first)</li>';
+            return;
+        }
+
+        const storageKey = `lkpd_ue_kelompok_${kelas}_${kelompok}`;
+        let dataGrup = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+        if (nama !== '') {
+            let sessionId = localStorage.getItem('lkpd_ue_session_id');
+            if (!sessionId) {
+                sessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                localStorage.setItem('lkpd_ue_session_id', sessionId);
+            }
+            let indexSesi = dataGrup.findIndex(item => item.sessionId === sessionId);
+            if (indexSesi !== -1) { dataGrup[indexSesi].nama = nama; }
+            else { dataGrup.push({ sessionId: sessionId, nama: nama, waktu: Date.now() }); }
+            localStorage.setItem(storageKey, JSON.stringify(dataGrup));
+        }
+        renderDaftarAnggota(dataGrup);
+        hitungNilaiOtomatis();
+    }
+
+    function renderDaftarAnggota(dataGrup) {
+        const listEl = document.getElementById('daftar-teman-kelompok');
+        listEl.innerHTML = '';
+        if (!dataGrup || dataGrup.length === 0) {
+            listEl.innerHTML = '<li style="color: var(--text-muted); list-style: none; margin-left: -20px;">No members have joined this group yet.</li>';
+            return;
+        }
+        dataGrup.sort((a, b) => a.waktu - b.waktu);
+        dataGrup.forEach(item => {
+            let li = document.createElement('li');
+            li.textContent = item.nama;
+            listEl.appendChild(li);
+        });
+    }
+
+    function previewImage(input) {
+        const container = input.closest('.evidence-box').querySelector('.preview-container');
+        const img = container.querySelector('img');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) { img.src = e.target.result; container.style.display = 'block'; };
+            reader.readAsDataURL(input.files[0]);
+        } else { img.src = ''; container.style.display = 'none'; }
+        hitungNilaiOtomatis();
+    }
+
+    /* ============================================================
+       5. PENILAIAN OTOMATIS
+       ============================================================ */
+    function hitungNilaiOtomatis() {
+        let skorTotal = 0;
+
+        // 1. TABEL (25)
+        const rows = document.querySelectorAll('#tabel-eksperimen tbody tr');
+        let barisValid = 0;
+        rows.forEach(row => {
+            const h1 = parseFloat(row.querySelector('.input-h1')?.value) || 0;
+            const dt = parseFloat(row.querySelector('.input-dt')?.value);
+            const eManual = parseFloat(row.querySelector('.input-e')?.value);
+            if (h1 > 0 && !isNaN(dt) && !isNaN(eManual)) {
+                const g = 10;
+                const Ep = 2 * g * (h1 / 100);
+                if (Math.abs(eManual - Ep) / Math.max(Ep, 0.01) < 0.15) barisValid++;
+            }
+        });
+        if (barisValid >= 3) skorTotal += 25;
+        else if (barisValid > 0) skorTotal += 10;
+
+        // 2. ESAI (32 = 4 × 8)
+        const q1 = (document.getElementById('ans-q1')?.value || '').toLowerCase();
+        if (q1.length > 15 && (q1.includes('energi') || q1.includes('kekal')) && (q1.includes('mekanik') || q1.includes('gesek') || q1.includes('total'))) skorTotal += 8;
+        else if (q1.length > 15) skorTotal += 4;
+
+        const q2 = (document.getElementById('ans-q2')?.value || '').toLowerCase();
+        if (q2.length > 15 && (q2.includes('energi') || q2.includes('kinetik')) && (q2.includes('tinggi') || q2.includes('bertambah') || q2.includes('h'))) skorTotal += 8;
+        else if (q2.length > 15) skorTotal += 4;
+
+        const q3 = (document.getElementById('ans-q3')?.value || '').toLowerCase();
+        if (q3.length > 15 && (q3.includes('usaha') || q3.includes('energi')) && (q3.includes('kinetik') || q3.includes('perubahan'))) skorTotal += 8;
+        else if (q3.length > 15) skorTotal += 4;
+
+        const q5 = (document.getElementById('ans-q5')?.value || '').toLowerCase();
+        if (q5.length > 15 && (q5.includes('energi') || q5.includes('panas')) && (q5.includes('gesek') || q5.includes('kekal') || q5.includes('kalor'))) skorTotal += 8;
+        else if (q5.length > 15) skorTotal += 4;
+
+        // 3. REFLEKSI Q4: W = 10×5×cos0° = 50 J (Maks 10)
+        const refVal = parseFloat(document.getElementById('input-jawaban-refleksi')?.value);
+        if (!isNaN(refVal) && Math.abs(refVal - 50) <= 0.5) skorTotal += 10;
+
+        // 4. KESIMPULAN Q6 (Maks 8)
+        const q6 = (document.getElementById('ans-q6')?.value || '').toLowerCase();
+        if (q6.length > 20 && (q6.includes('energi') || q6.includes('kekal')) && (q6.includes('usaha') || q6.includes('kinetik') || q6.includes('potensial') || q6.includes('mekanik'))) skorTotal += 8;
+        else if (q6.length > 20) skorTotal += 4;
+
+        // 5. FOTO (12)
+        const fileInput = document.getElementById('upload-bukti');
+        let fotoUploaded = false;
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            fotoUploaded = true;
+            skorTotal += 12;
+        }
+
+        // 6. TANTANGAN (40)
+        skorTotal += Math.min(40, skorTantangan);
+
+        // 7. POTONGAN
+        skorTotal -= (peringatanCurang * 10);
+        skorTotal = Math.max(0, Math.min(100, Math.round(skorTotal)));
+
+        if (!fotoUploaded && skorTotal > 60) skorTotal = 60;
+        if (skorTantangan === 0 && skorTotal > 75) skorTotal = 75;
+
+        document.getElementById('val-score').innerText = skorTotal;
+
+        let predikat = "Needs Improvement"; let warna = "#b91c1c";
+        if (skorTotal >= 90) { predikat = "Excellent"; warna = "#15803d"; }
+        else if (skorTotal >= 75) { predikat = "Good"; warna = "#0369a1"; }
+        else if (skorTotal >= 60) { predikat = "Fair"; warna = "#b45309"; }
+
+        let labelPredikat = predikat;
+        if (!fotoUploaded) labelPredikat += " (Foto blm diunggah!)";
+        if (skorTantangan === 0) labelPredikat += " (Tantangan blm dikerjakan!)";
+        if (peringatanCurang > 0) labelPredikat += ` [Curang: -${peringatanCurang*10} poin]`;
+
+        document.getElementById('val-predicate').innerText = labelPredikat;
+        document.getElementById('val-predicate').style.color = warna;
+
+        let reportBox = document.getElementById('report-curang');
+        if (reportBox) {
+            if (peringatanCurang > 0) {
+                reportBox.style.display = 'block';
+                let ringkasan = `⚠️ LAPORAN SISTEM: Terdeteksi ${peringatanCurang} kali pelanggaran. Nilai telah dipotong otomatis.`;
+                if (auditLog.length > 0) {
+                    ringkasan += '<br><br><b>Detail kejadian:</b><ul style="margin-left:18px;font-weight:normal;">';
+                    auditLog.forEach(it => {
+                        ringkasan += `<li>[${escHtml(it.waktu)}] ${escHtml(it.detail)} (Soal ID: ${escHtml(it.soalId ?? '—')})</li>`;
+                    });
+                    ringkasan += '</ul>';
+                }
+                reportBox.innerHTML = ringkasan;
+            } else {
+                reportBox.style.display = 'none';
+            }
+        }
+        return { skor: skorTotal, predikat: predikat };
+    }
+
+    document.querySelectorAll('.ans-field').forEach(ta => ta.addEventListener('input', hitungNilaiOtomatis));
+    const elRefleksi = document.getElementById('input-jawaban-refleksi');
+    if (elRefleksi) elRefleksi.addEventListener('input', hitungNilaiOtomatis);
+
+    /* ============================================================
+       6. PREDIKSI & REFLEKSI
+       ============================================================ */
+    function cekPrediksi(pilihan) {
+        const btnK = document.getElementById('opt-berkurang');
+        const btnKe = document.getElementById('opt-kekal');
+        const btnT = document.getElementById('opt-bertambah');
+        const fb = document.getElementById('feedback-box');
+        btnK.className = 'option-btn'; btnKe.className = 'option-btn'; btnT.className = 'option-btn';
+
+        if (pilihan === 'kekal') {
+            btnKe.classList.add('selected-correct');
+            fb.className = 'feedback-box correct';
+            fb.style.display = 'block';
+            fb.innerHTML = '<strong>Tepat!</strong> Pada bidang miring licin, tidak ada gaya non-konservatif, sehingga energi mekanik total (Ek + Ep) kekal.';
+        } else {
+            if (pilihan === 'berkurang') btnK.classList.add('selected-wrong');
+            else btnT.classList.add('selected-wrong');
+            fb.className = 'feedback-box wrong';
+            fb.style.display = 'block';
+            fb.innerHTML = '<strong>Belum tepat.</strong> Coba jalankan simulasi dan perhatikan energi potensial yang berubah menjadi energi kinetik.';
+        }
+    }
+
+    function cekRefleksi() {
+        const input = document.getElementById('input-jawaban-refleksi').value;
+        const jawaban = parseFloat(input);
+        const fb = document.getElementById('feedback-refleksi');
+        if (isNaN(jawaban)) {
+            fb.className = 'feedback-box wrong'; fb.style.display = 'block';
+            fb.innerHTML = '<strong>Oops!</strong> Masukkan angka terlebih dahulu.'; return;
+        }
+        if (Math.abs(jawaban - 50) <= 0.5) {
+            fb.className = 'feedback-box correct'; fb.style.display = 'block';
+            fb.innerHTML = '<strong>Correct.</strong> W = F·s·cos θ = 10 × 5 × cos 0° = 50 J.';
+        } else {
+            fb.className = 'feedback-box wrong'; fb.style.display = 'block';
+            fb.innerHTML = '<strong>Belum tepat.</strong> Gunakan W = F·s·cos θ, dengan θ = 0° karena gaya searah perpindahan.';
+        }
+        hitungNilaiOtomatis();
+    }
+
+    /* ============================================================
+       7. VALIDASI & CETAK
+       ============================================================ */
+    function validasiIdentitas() {
+        const nama = document.getElementById('input-nama').value.trim();
+        const kelas = document.getElementById('select-kelas').value;
+        const kelompok = document.getElementById('select-kelompok').value;
+        const pesanBox = document.getElementById('pesan-validasi');
+        if (nama === '' || kelas === '' || kelompok === '') {
+            pesanBox.style.display = 'block';
+            document.getElementById('identitas').scrollIntoView({ behavior: 'smooth' });
+            return false;
+        }
+        pesanBox.style.display = 'none';
+        return true;
+    }
+
+    function prosesCetakPDF() { if (validasiIdentitas()) window.print(); }
+
+    function prosesUnduhWord() {
+        if (!validasiIdentitas()) return;
+        const cloneKonten = document.getElementById('konten-lkpd').cloneNode(true);
+        cloneKonten.querySelectorAll('.no-print, script, #teacher-panel, #teacher-login-section').forEach(el => el.remove());
+        cloneKonten.querySelectorAll('[onclick],[oninput],[onchange]').forEach(el => {
+            el.removeAttribute('onclick'); el.removeAttribute('oninput'); el.removeAttribute('onchange');
+        });
+        const konten = cloneKonten.innerHTML;
+        const blob = new Blob(['\ufeff<html><head><meta charset="utf-8"></head><body>' + konten + '</body></html>'], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url; link.download = 'Worksheet_4_Usaha_Energi.doc';
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+
+    function simpanTugasKeSistem(event) {
+        if (!validasiIdentitas()) return;
+        const ans = document.querySelectorAll('.ans-field');
+        let terisi = 0;
+        ans.forEach(a => { if (a.value.trim().length > 5) terisi++; });
+        if (terisi === 0) {
+            alert('Mohon isi minimal satu jawaban esai sebelum mengumpulkan tugas.');
+            return;
+        }
+        if (!confirm('Kumpulkan tugas sekarang? Pastikan semua jawaban sudah benar.')) return;
+
+        const nama = document.getElementById('input-nama').value.trim();
+        const kelas = document.getElementById('select-kelas').value;
+        const kelompok = document.getElementById('select-kelompok').value;
+        const sekolah = document.getElementById('input-sekolah').value.trim();
+        const tanggal = document.getElementById('input-tanggal').value;
+        const evaluasi = hitungNilaiOtomatis();
+
+        const dataUntukDikirim = {
+            nama: nama, kelas: kelas, sekolah: sekolah,
+            materi: "Worksheet 4 - Usaha dan Energi",
+            skor: evaluasi.skor, progres: "100%",
+            pelanggaran: peringatanCurang,
+            log: JSON.stringify(auditLog),
+            benar: 0, totalSoal: 0, tipeUjian: "Worksheet"
+        };
+
+        const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
+        const btnKirim = event.target;
+        const teksAsli = btnKirim.innerText;
+        btnKirim.innerText = "Mengirim data...";
+        btnKirim.disabled = true;
+
+        fetch(URL_GOOGLE_SCRIPT, {
+            method: "POST", mode: "no-cors",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ data: JSON.stringify(dataUntukDikirim) })
+        })
+        .then(() => {
+            let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_ue_rekap_nilai_guru')) || [];
+            let existingIdx = rekapGlobal.findIndex(item => item.nama === nama && item.kelas === kelas);
+            let dataSiswa = { nama, kelas, kelompok, skor: evaluasi.skor, predikat: evaluasi.predikat, tanggal, pelanggaran: peringatanCurang, auditLog: auditLog };
+            if (existingIdx !== -1) rekapGlobal[existingIdx] = dataSiswa;
+            else rekapGlobal.push(dataSiswa);
+            localStorage.setItem('lkpd_ue_rekap_nilai_guru', JSON.stringify(rekapGlobal));
+            alert("✅ Tugas berhasil dikirim ke Google Sheets! Guru bisa melihat nilaimu.");
+            btnKirim.innerText = teksAsli;
+            btnKirim.disabled = false;
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("❌ Gagal mengirim data. Pastikan internet lancar.");
+            btnKirim.innerText = teksAsli;
+            btnKirim.disabled = false;
+        });
+    }
+
+    function bukaPanelGuru() {
+        const pin = document.getElementById('input-pin-guru').value;
+        if (pin === '2026') {
+            document.getElementById('teacher-panel').style.display = 'block';
+            muatRekapGuru();
+            document.getElementById('teacher-panel').scrollIntoView({ behavior: 'smooth' });
+        } else alert('PIN Guru Salah! (Gunakan: 2026)');
+    }
+    function tutupPanelGuru() { document.getElementById('teacher-panel').style.display = 'none'; }
+
+    function muatRekapGuru() {
+        const kelasFilter = document.getElementById('filter-kelas-guru').value;
+        const tbody = document.getElementById('tabel-rekap-body');
+        tbody.innerHTML = '';
+        let rekapGlobal = JSON.parse(localStorage.getItem('lkpd_ue_rekap_nilai_guru')) || [];
+        let kelasData = rekapGlobal.filter(item => item.kelas === kelasFilter);
+        if (kelasData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8;">Belum ada data siswa untuk kelas ${escHtml(kelasFilter)}</td></tr>`;
+            return;
+        }
+        kelasData.forEach((siswa, index) => {
+            let tr = document.createElement('tr');
+            let pel = (typeof siswa.pelanggaran === 'number') ? siswa.pelanggaran : 0;
+            let warnaPel = pel > 0 ? '#dc2626' : '#22c55e';
+            let punyaLog = pel > 0 && Array.isArray(siswa.auditLog) && siswa.auditLog.length > 0;
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${escHtml(siswa.nama)}</td>
+                <td>${escHtml(siswa.kelompok)}</td>
+                <td><b>${siswa.skor}</b></td>
+                <td><span style="padding: 2px 8px; border-radius: 4px; background: ${getPillColor(siswa.predikat)}; color:white;">${escHtml(siswa.predikat)}</span></td>
+                <td style="color:${warnaPel}; font-weight: bold;">${pel}</td>
+                <td>${escHtml(siswa.tanggal)}</td>
+                <td>${punyaLog ? '<button class="btn btn-outline" style="padding:4px 8px;font-size:0.75rem;width:100%;color:white;border-color:white;" data-kelas="'+escHtml(siswa.kelas)+'" data-nama="'+escHtml(siswa.nama)+'">Lihat Log</button>' : '<span style="color:#64748b;">—</span>'}</td>`;
+            tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('button[data-kelas]').forEach(btn => {
+            btn.addEventListener('click', () => tampilkanAuditLog(btn.dataset.kelas, btn.dataset.nama));
+        });
+    }
+
+    function tampilkanAuditLog(kelas, nama) {
+        const key = `lkpd_ue_audit_${kelas}_${nama}`;
+        let log = JSON.parse(localStorage.getItem(key)) || [];
+        if (log.length === 0) {
+            const rekap = JSON.parse(localStorage.getItem('lkpd_ue_rekap_nilai_guru')) || [];
+            const siswa = rekap.find(x => x.nama === nama && x.kelas === kelas);
+            if (siswa && Array.isArray(siswa.auditLog)) log = siswa.auditLog;
+        }
+        document.getElementById('audit-header').innerText = `Siswa: ${nama} · Kelas: ${kelas} · Total kejadian: ${log.length}`;
+        const tbody = document.getElementById('audit-body');
+        tbody.innerHTML = '';
+        if (log.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:12px;color:#64748b;">Tidak ada pelanggaran tercatat.</td></tr>`;
+        } else {
+            log.forEach((item, i) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${i + 1}</td>
+                    <td style="padding:6px;border:1px solid #e2e8f0;">${escHtml(item.waktu)}</td>
+                    <td style="padding:6px;border:1px solid #e2e8f0;"><b>${escHtml(item.jenis)}</b></td>
+                    <td style="padding:6px;border:1px solid #e2e8f0;">${escHtml(item.detail)}</td>
+                    <td style="padding:6px;border:1px solid #e2e8f0;text-align:center;">${escHtml(item.soalId ?? '—')}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+        document.getElementById('audit-modal').style.display = 'flex';
+    }
+
+    function getPillColor(pred) {
+        if (pred === 'Excellent') return '#15803d';
+        if (pred === 'Good') return '#0369a1';
+        if (pred === 'Fair') return '#b45309';
+        return '#b91c1c';
+    }
+
+    function cetakRekapGuru() {
+        document.body.classList.add('print-mode-guru');
+        window.print();
+        setTimeout(() => document.body.classList.remove('print-mode-guru'), 1000);
+    }
+
+    /* ============================================================
+       8. CHALLENGE MODE — VERSI BARU
+       ============================================================ */
+    const WS_ID = 'ws4';
+    let timerInterval = null;
+    let waktuSisa = 480;
+    let peringatanCurang = 0;
+    let soalAktif = [];
+    let tantanganSelesai = false;
+    let skorTantangan = 0;
+    let challengeActive = false;
+    let blurGuardTimer = null;
+    let auditLog = [];
+    let soalAktifIndex = 0;
+    let jawabanSiswa = [];
+    let statusKunci = [];
+
+    // === BANK SOAL PG (20 soal) ===
+    const bankSoalPG = [
+        // --- KONSEP DASAR (6) ---
+        { id: 101, tipe: 'pg', teks: "Rumus usaha yang benar adalah...", pilihan: ["W = F·s", "W = F·s·cos θ", "W = m·g·h", "W = ½·m·v²"], jawaban: 1, pembahasan: "Usaha = F·s·cos θ, dengan θ sudut antara gaya dan perpindahan." },
+        { id: 102, tipe: 'pg', teks: "Satuan energi kinetik adalah...", pilihan: ["Newton", "Joule", "Watt", "Pascal"], jawaban: 1, pembahasan: "Ek = ½mv² bersatuan Joule (J)." },
+        { id: 103, tipe: 'pg', teks: "Energi potensial gravitasi dirumuskan...", pilihan: ["Ep = m·g·h", "Ep = ½·m·v²", "Ep = m·v", "Ep = F·s"], jawaban: 0, pembahasan: "Ep = m·g·h." },
+        { id: 104, tipe: 'pg', teks: "Hukum Kekekalan Energi Mekanik berlaku jika...", pilihan: ["Ada gaya gesek", "Tidak ada gaya gesek (non-konservatif)", "Benda diam", "Ada gaya luar"], jawaban: 1, pembahasan: "Em kekal jika hanya gaya konservatif yang bekerja." },
+        { id: 105, tipe: 'pg', teks: "Usaha bernilai nol jika sudut antara gaya dan perpindahan...", pilihan: ["0°", "45°", "90°", "180°"], jawaban: 2, pembahasan: "cos 90° = 0 → W = 0." },
+        { id: 106, tipe: 'pg', teks: "Energi kinetik berbanding lurus dengan...", pilihan: ["massa", "kecepatan", "kecepatan kuadrat", "ketinggian"], jawaban: 2, pembahasan: "Ek = ½mv² → berbanding lurus dengan v²." },
+
+        // --- HITUNGAN SEDERHANA (6) ---
+        { id: 201, tipe: 'pg', teks: "Gaya 20 N bekerja pada benda sejauh 5 m searah perpindahan. Usaha yang dilakukan...", pilihan: ["50 J", "80 J", "100 J", "200 J"], jawaban: 2, pembahasan: "W = 20 × 5 × cos 0° = 100 J." },
+        { id: 202, tipe: 'pg', teks: "Benda 4 kg bergerak dengan kecepatan 3 m/s. Energi kinetiknya...", pilihan: ["6 J", "12 J", "18 J", "36 J"], jawaban: 2, pembahasan: "Ek = ½ × 4 × 9 = 18 J." },
+        { id: 203, tipe: 'pg', teks: "Benda 2 kg pada ketinggian 5 m (g=10). Energi potensialnya...", pilihan: ["50 J", "100 J", "150 J", "200 J"], jawaban: 1, pembahasan: "Ep = 2 × 10 × 5 = 100 J." },
+        { id: 204, tipe: 'pg', teks: "Gaya 50 N bekerja sejauh 10 m dengan sudut 60° (cos 60°=0,5). Usaha...", pilihan: ["100 J", "250 J", "500 J", "1000 J"], jawaban: 1, pembahasan: "W = 50 × 10 × 0,5 = 250 J." },
+        { id: 205, tipe: 'pg', teks: "Benda 3 kg bergerak 4 m/s. Energi kinetiknya...", pilihan: ["6 J", "12 J", "24 J", "48 J"], jawaban: 2, pembahasan: "Ek = ½ × 3 × 16 = 24 J." },
+        { id: 206, tipe: 'pg', teks: "Bola 1 kg pada ketinggian 20 m (g=10). Energi potensialnya...", pilihan: ["20 J", "100 J", "200 J", "400 J"], jawaban: 2, pembahasan: "Ep = 1 × 10 × 20 = 200 J." },
+
+        // --- HITUNGAN SEDANG (5) ---
+        { id: 301, tipe: 'pg', teks: "Benda 2 kg jatuh bebas dari 20 m (g=10). Kecepatan saat menyentuh tanah...", pilihan: ["10 m/s", "15 m/s", "20 m/s", "40 m/s"], jawaban: 2, pembahasan: "v = √(2gh) = √(2×10×20) = √400 = 20 m/s." },
+        { id: 302, tipe: 'pg', teks: "Benda 2 kg jatuh dari 5 m. Energi kinetik saat menyentuh tanah (g=10)...", pilihan: ["50 J", "75 J", "100 J", "150 J"], jawaban: 2, pembahasan: "Ek = Ep = m·g·h = 2 × 10 × 5 = 100 J." },
+        { id: 303, tipe: 'pg', teks: "Gaya 100 N bekerja sejauh 5 m dengan sudut 60°. Usaha yang dilakukan...", pilihan: ["125 J", "250 J", "375 J", "500 J"], jawaban: 1, pembahasan: "W = 100 × 5 × 0,5 = 250 J." },
+        { id: 304, tipe: 'pg', teks: "Benda 4 kg dari ketinggian 10 m. Kecepatan saat menyentuh tanah (g=10)...", pilihan: ["10 m/s", "14,14 m/s", "20 m/s", "40 m/s"], jawaban: 1, pembahasan: "v = √(2×10×10) = √200 ≈ 14,14 m/s." },
+        { id: 305, tipe: 'pg', teks: "Usaha 100 J dilakukan pada benda 2 kg yang mula-mula diam. Kecepatan akhirnya...", pilihan: ["5 m/s", "10 m/s", "20 m/s", "50 m/s"], jawaban: 1, pembahasan: "W = ΔEk → 100 = ½×2×v² → v² = 100 → v = 10 m/s." },
+
+        // --- APLIKASI / HOTS (3) ---
+        { id: 401, tipe: 'pg', teks: "Bola 1 kg dilempar vertikal dengan v=20 m/s (g=10). Ketinggian maksimum...", pilihan: ["10 m", "20 m", "30 m", "40 m"], jawaban: 1, pembahasan: "½mv² = mgh → h = v²/(2g) = 400/20 = 20 m." },
+        { id: 402, tipe: 'pg', teks: "Balok 2 kg didorong 10 N pada bidang miring 30° sejauh 5 m. Usaha gaya dorong...", pilihan: ["25 J", "43,3 J", "50 J", "100 J"], jawaban: 1, pembahasan: "W = F·s·cos 30° = 10 × 5 × 0,866 ≈ 43,3 J." },
+        { id: 403, tipe: 'pg', teks: "Bola 0,5 kg jatuh dari 8 m. Energi kinetik saat di ketinggian 3 m (g=10)...", pilihan: ["5 J", "10 J", "15 J", "25 J"], jawaban: 3, pembahasan: "Ek = Ep_awal - Ep_akhir = mgh_awal - mgh_akhir = 0,5×10×8 - 0,5×10×3 = 40 - 15 = 25 J." }
+    ];
+
+    // === BANK SOAL ISIAN (15 soal) ===
+    const bankSoalIsian = [
+        // --- ANGKA BULAT (5) ---
+        { id: 501, tipe: 'isian', teks: "Gaya 30 N bekerja sejauh 4 m searah perpindahan. Berapa usaha? (J)", jawaban: 120, satuan: "J", toleransi: 0.5 },
+        { id: 502, tipe: 'isian', teks: "Benda 2 kg bergerak 5 m/s. Berapa energi kinetiknya? (J)", jawaban: 25, satuan: "J", toleransi: 0.5 },
+        { id: 503, tipe: 'isian', teks: "Benda 4 kg pada ketinggian 10 m (g=10). Berapa Ep? (J)", jawaban: 400, satuan: "J", toleransi: 1 },
+        { id: 504, tipe: 'isian', teks: "Bola 2 kg jatuh dari 45 m (g=10). Berapa kecepatan saat menyentuh tanah? (m/s)", jawaban: 30, satuan: "m/s", toleransi: 0.5 },
+        { id: 505, tipe: 'isian', teks: "Usaha 200 J pada benda 4 kg dari diam. Berapa kecepatan akhirnya? (m/s)", jawaban: 10, satuan: "m/s", toleransi: 0.2 },
+
+        // --- DESIMAL (5) ---
+        { id: 601, tipe: 'isian', teks: "Bola 1,5 kg jatuh dari 20 m. Berapa energi kinetik saat menyentuh tanah? (J, g=10)", jawaban: 300.0, satuan: "J", toleransi: 1 },
+        { id: 602, tipe: 'isian', teks: "Benda 3 kg bergerak 4 m/s. Berapa energi kinetiknya? (J, 1 desimal)", jawaban: 24.0, satuan: "J", toleransi: 0.5 },
+        { id: 603, tipe: 'isian', teks: "Gaya 80 N bekerja sejauh 5 m dengan sudut 60°. Berapa usaha? (J, 1 desimal)", jawaban: 200.0, satuan: "J", toleransi: 1 },
+        { id: 604, tipe: 'isian', teks: "Bola 0,5 kg jatuh dari 10 m. Berapa kecepatan saat menyentuh tanah? (m/s, 2 desimal, g=10)", jawaban: 14.14, satuan: "m/s", toleransi: 0.1 },
+        { id: 605, tipe: 'isian', teks: "Benda 2 kg bergerak 3 m/s. Berapa energi kinetiknya? (J, 1 desimal)", jawaban: 9.0, satuan: "J", toleransi: 0.2 },
+
+        // --- RASIO (3) ---
+        { id: 701, tipe: 'isian', teks: "Jika kecepatan benda digandakan, berapa kali lipat energi kinetiknya? (rasio, 1 desimal)", jawaban: 4.0, satuan: "kali", toleransi: 0.1 },
+        { id: 702, tipe: 'isian', teks: "Jika ketinggian benda digandakan, berapa kali lipat energi potensialnya? (rasio, 1 desimal)", jawaban: 2.0, satuan: "kali", toleransi: 0.1 },
+        { id: 703, tipe: 'isian', teks: "Jika gaya didorong pada sudut 90°, berapa besar usaha? (J)", jawaban: 0, satuan: "J", toleransi: 0.1 },
+
+        // --- SUDUT / KHUSUS (2) ---
+        { id: 801, tipe: 'isian', teks: "Benda 2 kg jatuh bebas dari ketinggian h dan menyentuh tanah dengan v=10 m/s. Berapa ketinggian h? (m, g=10)", jawaban: 5.0, satuan: "m", toleransi: 0.2 },
+        { id: 802, tipe: 'isian', teks: "Bola 1 kg dilempar vertikal dengan 30 m/s. Berapa ketinggian maksimum? (m, g=10)", jawaban: 45.0, satuan: "m", toleransi: 0.5 }
+    ];
+
+    /* ============================================================
+       9. KUNCI SEKALI PAKAI
+       ============================================================ */
+    function getKunciTantangan() {
+        const nama = (document.getElementById('input-nama').value || 'Siswa')
+            .trim().toLowerCase().replace(/\s+/g, '_');
+        const kelas = document.getElementById('select-kelas').value || '-';
+        return `lkpd_tantangan_${WS_ID}_${kelas}_${nama}`;
+    }
+    function sudahSelesaiTantangan() {
+        const kunci = getKunciTantangan();
+        const status = JSON.parse(localStorage.getItem(kunci));
+        return status && status.selesai === true ? status : null;
+    }
+    function cekStatusTantangan() {
+        const status = sudahSelesaiTantangan();
+        const startBox = document.getElementById('challenge-start-box');
+        if (!startBox) return;
+        if (status) {
+            startBox.innerHTML = `
+                <div style="padding:20px;background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;text-align:center;">
+                    <p style="font-weight:bold;color:#92400e;font-size:1.1rem;">🔒 Tantangan Sudah Dikerjakan</p>
+                    <p style="font-size:0.9rem;color:#92400e;margin-top:6px;">
+                        Skor Tantangan: <b>${status.skor} poin</b><br>
+                        Benar: <b>${status.benar} / ${status.total}</b><br>
+                        Waktu: ${new Date(status.waktu).toLocaleString('id-ID')}
+                    </p>
+                    <p style="font-size:0.8rem;color:#78350f;margin-top:10px;font-style:italic;">Tantangan hanya bisa dikerjakan satu kali.</p>
+                </div>`;
+        }
+    }
+
+    function pilihSoalBaru() {
+        const shuffledPG = [...bankSoalPG].sort(() => Math.random() - 0.5);
+        const shuffledIsian = [...bankSoalIsian].sort(() => Math.random() - 0.5);
+        const dipilih = [shuffledPG[0], shuffledPG[1], shuffledPG[2], shuffledIsian[0]];
+        return dipilih.sort(() => Math.random() - 0.5);
+    }
+
+    /* ============================================================
+       10. RENDER SOAL KE CANVAS
+       ============================================================ */
+    function getWatermarkText() {
+        const nama = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+        const kelas = document.getElementById('select-kelas').value || '-';
+        const kel = document.getElementById('select-kelompok').value || '-';
+        const tgl = new Date().toLocaleString('id-ID');
+        return `${nama} · ${kelas} · ${kel} · ${tgl}`;
+    }
+
+    function wrapText(ctx2, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '', curY = y;
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx2.measureText(testLine);
+            if (metrics.width > maxWidth && n > 0) {
+                ctx2.fillText(line.trim(), x, curY);
+                line = words[n] + ' '; curY += lineHeight;
+            } else line = testLine;
+        }
+        ctx2.fillText(line.trim(), x, curY);
+        return curY + lineHeight;
+    }
+
+    function renderSoalKeCanvas(soal, index, totalSoal) {
+        const canvasEl = document.createElement('canvas');
+        const dpr = window.devicePixelRatio || 1;
+        const cssW = 700, cssH = 160;
+        canvasEl.width = cssW * dpr;
+        canvasEl.height = cssH * dpr;
+        canvasEl.style.width = '100%';
+        canvasEl.style.height = 'auto';
+        canvasEl.style.display = 'block';
+        canvasEl.style.borderRadius = '8px';
+        canvasEl.style.border = '1px solid #e2e8f0';
+        const c = canvasEl.getContext('2d');
+        c.scale(dpr, dpr);
+        c.fillStyle = '#f8fafc';
+        c.fillRect(0, 0, cssW, cssH);
+        c.fillStyle = '#b91c1c';
+        c.font = 'bold 16px "Segoe UI", Tahoma, sans-serif';
+        const labelTipe = soal.tipe === 'pg' ? 'Pilihan Ganda' : 'Isian';
+        c.fillText(`Soal ${index + 1} dari ${totalSoal} (${labelTipe}):`, 20, 32);
+        c.fillStyle = '#1f2937';
+        c.font = '15px "Segoe UI", Tahoma, sans-serif';
+        wrapText(c, soal.teks, 20, 62, cssW - 40, 22);
+        c.save();
+        c.globalAlpha = 0.10;
+        c.fillStyle = '#dc2626';
+        c.font = 'bold 26px "Segoe UI", Tahoma, sans-serif';
+        c.translate(cssW / 2, cssH / 2);
+        c.rotate(-0.35);
+        c.textAlign = 'center';
+        c.fillText(getWatermarkText(), 0, 0);
+        c.restore();
+        c.strokeStyle = '#e2e8f0';
+        c.lineWidth = 1;
+        c.strokeRect(0.5, 0.5, cssW - 1, cssH - 1);
+        return canvasEl;
+    }
+
+    function renderPilihanPG(soal, index) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'pg-options';
+        const letters = ['A', 'B', 'C', 'D'];
+        soal.pilihan.forEach((p, i) => {
+            const label = document.createElement('label');
+            label.className = 'pg-option';
+            label.innerHTML = `
+                <input type="radio" name="pg-soal-${index}" value="${i}" onchange="pilihPG(${index}, ${i})">
+                <span class="pg-letter">${letters[i]}.</span>
+                <span>${p}</span>`;
+            wrapper.appendChild(label);
+        });
+        return wrapper;
+    }
+
+    function pilihPG(index, val) {
+        document.querySelectorAll(`input[name="pg-soal-${index}"]`).forEach(r => {
+            r.closest('.pg-option').classList.remove('selected');
+        });
+        const selected = document.querySelector(`input[name="pg-soal-${index}"][value="${val}"]`);
+        if (selected) {
+            selected.checked = true;
+            selected.closest('.pg-option').classList.add('selected');
+            jawabanSiswa[index] = val;
+            statusKunci[index] = true;
+            updateNavState();
+        }
+    }
+
+    function renderSoalAktif(notifText) {
+        const container = document.getElementById('soal-container');
+        container.innerHTML = '';
+        jawabanSiswa = new Array(soalAktif.length).fill(null);
+        statusKunci = new Array(soalAktif.length).fill(false);
+        soalAktifIndex = 0;
+
+        if (notifText) {
+            const notif = document.createElement('div');
+            notif.style.cssText = 'background:#fef3c7;color:#92400e;padding:10px;border-radius:6px;font-size:0.85rem;font-weight:bold;margin-bottom:10px;text-align:center;';
+            notif.innerText = notifText;
+            container.appendChild(notif);
+        }
+
+        const navWrap = document.createElement('div');
+        navWrap.className = 'nav-soal-wrap';
+        soalAktif.forEach((_, i) => {
+            const btn = document.createElement('button');
+            btn.innerText = i + 1;
+            btn.className = 'nav-soal-btn';
+            btn.id = `nav-soal-${i}`;
+            btn.onclick = () => tampilkanSoal(i);
+            navWrap.appendChild(btn);
+        });
+        const info = document.createElement('div');
+        info.className = 'soal-nav-info';
+        info.innerHTML = `Soal <span id="nav-current">1</span> / ${soalAktif.length}`;
+        navWrap.appendChild(info);
+        container.appendChild(navWrap);
+
+        const soalWrap = document.createElement('div');
+        soalWrap.className = 'soal-single-wrap';
+        soalWrap.id = 'soal-single-wrap';
+        container.appendChild(soalWrap);
+
+        let wm = document.getElementById('wm-soal');
+        if (!wm) {
+            wm = document.createElement('div');
+            wm.id = 'wm-soal';
+            container.appendChild(wm);
+        }
+        wm.innerText = getWatermarkText();
+
+        tampilkanSoal(0);
+        updateNavState();
+    }
+
+    function tampilkanSoal(index) {
+        soalAktifIndex = index;
+        const wrap = document.getElementById('soal-single-wrap');
+        if (!wrap) return;
+        wrap.innerHTML = '';
+        const soal = soalAktif[index];
+
+        wrap.appendChild(renderSoalKeCanvas(soal, index, soalAktif.length));
+
+        if (soal.tipe === 'pg') {
+            const pgWrap = renderPilihanPG(soal, index);
+            if (jawabanSiswa[index] !== null && jawabanSiswa[index] !== undefined) {
+                const input = pgWrap.querySelector(`input[value="${jawabanSiswa[index]}"]`);
+                if (input) { input.checked = true; input.closest('.pg-option').classList.add('selected'); }
+            }
+            wrap.appendChild(pgWrap);
+            wrap.querySelectorAll(`input[name="pg-soal-${index}"]`).forEach(r => {
+                r.addEventListener('change', () => {
+                    jawabanSiswa[index] = r.value;
+                    statusKunci[index] = true;
+                    updateNavState();
+                });
+            });
+        } else {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;gap:10px;margin-top:10px;';
+            row.innerHTML = `
+                <input type="number" id="jawab-soal-${index}" class="table-input" style="width:120px;padding:10px;" placeholder="Jawaban" autocomplete="off" value="${jawabanSiswa[index] ?? ''}">
+                <span style="font-weight:bold;">${soal.satuan || ''}</span>`;
+            wrap.appendChild(row);
+            row.querySelector('input').addEventListener('input', e => {
+                jawabanSiswa[index] = e.target.value;
+                statusKunci[index] = e.target.value.trim() !== '';
+                updateNavState();
+            });
+        }
+
+        const navCurrent = document.getElementById('nav-current');
+        if (navCurrent) navCurrent.innerText = index + 1;
+        updateNavState();
+    }
+
+    function updateNavState() {
+        soalAktif.forEach((_, i) => {
+            const btn = document.getElementById(`nav-soal-${i}`);
+            if (!btn) return;
+            btn.classList.remove('active', 'answered');
+            if (i === soalAktifIndex) btn.classList.add('active');
+            if (statusKunci[i]) btn.classList.add('answered');
+        });
+    }
+
+    /* ============================================================
+       11. ANTI-CURANG
+       ============================================================ */
+    function catatPelanggaran(reason) {
+        if (!challengeActive || tantanganSelesai) return;
+        peringatanCurang++;
+        const detailMap = {
+            'tab': 'Meninggalkan halaman ujian (pindah tab / minimize)',
+            'blur': 'Jendela browser kehilangan fokus',
+            'printscreen': 'Menekan tombol PrintScreen',
+            'shortcut': 'Menekan shortcut copy/select/print/save'
+        };
+        const soalSaatIni = (soalAktif && soalAktif[soalAktifIndex]) ? soalAktif[soalAktifIndex].id : null;
+        auditLog.push({
+            waktu: new Date().toLocaleString('id-ID'),
+            jenis: reason,
+            detail: detailMap[reason] || 'Aktivitas terlarang',
+            soalId: soalSaatIni,
+            totalKejadian: peringatanCurang
+        });
+        const cheatCountEl = document.getElementById('cheat-count');
+        if (cheatCountEl) cheatCountEl.innerText = peringatanCurang;
+        const namaSiswa = (document.getElementById('input-nama').value || 'Siswa').trim() || 'Siswa';
+        document.getElementById('modal-nama-siswa').innerText = namaSiswa;
+        document.getElementById('modal-total-curang').innerText = peringatanCurang;
+        const alasanMap = {
+            'tab': 'Sistem mendeteksi Anda meninggalkan halaman ujian.',
+            'blur': 'Sistem mendeteksi jendela browser kehilangan fokus.',
+            'printscreen': 'Sistem mendeteksi Anda menekan PrintScreen. Screenshot dilarang!',
+            'shortcut': 'Sistem mendeteksi Anda menekan shortcut copy/select/print/save.'
+        };
+        document.getElementById('modal-alasan').innerText = alasanMap[reason] || 'Aktivitas terlarang terdeteksi.';
+        document.getElementById('cheat-modal').style.display = 'flex';
+        hitungNilaiOtomatis();
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden && challengeActive && !tantanganSelesai) catatPelanggaran('tab');
+    });
+    window.addEventListener('blur', () => {
+        if (!challengeActive || tantanganSelesai) return;
+        clearTimeout(blurGuardTimer);
+        blurGuardTimer = setTimeout(() => {
+            if (!document.hasFocus() && challengeActive && !tantanganSelesai) catatPelanggaran('blur');
+        }, 300);
+    });
+    window.addEventListener('focus', () => clearTimeout(blurGuardTimer));
+
+    (function pasangProteksiSeleksi() {
+        const target = document.getElementById('challenge-area');
+        if (!target) return;
+        ['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(evt => {
+            target.addEventListener(evt, e => {
+                if (challengeActive && !tantanganSelesai) { e.preventDefault(); return false; }
+            });
+        });
+    })();
+
+    document.addEventListener('keydown', e => {
+        if (!challengeActive || tantanganSelesai) return;
+        const key = (e.key || '').toLowerCase();
+        if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+            e.preventDefault();
+            try { navigator.clipboard.writeText(''); } catch (err) {}
+            catatPelanggaran('printscreen');
+            return;
+        }
+        if ((e.ctrlKey || e.metaKey) && ['c', 'a', 'p', 's', 'u'].includes(key)) {
+            e.preventDefault();
+            catatPelanggaran('shortcut');
+            return;
+        }
+    });
+
+    function tutupModalDanGantiSoal() {
+        document.getElementById('cheat-modal').style.display = 'none';
+        if (challengeActive && !tantanganSelesai) {
+            soalAktif = pilihSoalBaru();
+            renderSoalAktif('⚠️ Karena terdeteksi pelanggaran, soal Anda telah DIGANTI dengan 4 soal baru!');
+        }
+    }
+
+    /* ============================================================
+       12. MULAI & SELESAI TANTANGAN
+       ============================================================ */
+    function mulaiTantangan() {
+        const statusLama = sudahSelesaiTantangan();
+        if (statusLama) {
+            alert(`⚠️ Anda sudah mengerjakan tantangan ini.\n\nSkor: ${statusLama.skor} poin\nWaktu: ${new Date(statusLama.waktu).toLocaleString('id-ID')}\n\nTantangan hanya bisa dikerjakan SATU KALI.`);
+            return;
+        }
+
+        const nama = document.getElementById('input-nama').value.trim();
+        const kelas = document.getElementById('select-kelas').value;
+        if (!nama || !kelas) {
+            alert('⚠️ Lengkapi Nama dan Kelas terlebih dahulu sebelum memulai tantangan.');
+            document.getElementById('identitas').scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        document.getElementById('challenge-start-box').style.display = 'none';
+        document.getElementById('challenge-area').style.display = 'block';
+        soalAktif = pilihSoalBaru();
+        renderSoalAktif(null);
+        waktuSisa = 480;
+        peringatanCurang = 0;
+        tantanganSelesai = false;
+        challengeActive = true;
+        skorTantangan = 0;
+        auditLog = [];
+        document.getElementById('cheat-count').innerText = "0";
+        updateTimerDisplay();
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            waktuSisa--;
+            updateTimerDisplay();
+            if (waktuSisa <= 0) {
+                clearInterval(timerInterval);
+                alert("Waktu habis! Jawaban Anda akan dikumpulkan secara otomatis.");
+                selesaiTantangan();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let menit = Math.floor(waktuSisa / 60);
+        let detik = waktuSisa % 60;
+        document.getElementById('timer-display').innerText =
+            `${String(menit).padStart(2, '0')}:${String(detik).padStart(2, '0')}`;
+    }
+
+    function selesaiTantangan() {
+        if (tantanganSelesai) return;
+        tantanganSelesai = true;
+        challengeActive = false;
+        clearInterval(timerInterval);
+
+        let benar = 0;
+        const detailJawaban = [];
+
+        soalAktif.forEach((soal, index) => {
+            if (soal.tipe === 'pg') {
+                const val = jawabanSiswa[index] !== null && jawabanSiswa[index] !== undefined ? parseInt(jawabanSiswa[index]) : -1;
+                const isBenar = (val === soal.jawaban);
+                if (isBenar) benar++;
+                detailJawaban.push({ no: index + 1, tipe: 'PG', jawaban: val >= 0 ? String.fromCharCode(65 + val) : '—', kunci: String.fromCharCode(65 + soal.jawaban), benar: isBenar });
+            } else {
+                const val = jawabanSiswa[index] !== null && jawabanSiswa[index] !== undefined ? parseFloat(jawabanSiswa[index]) : NaN;
+                const isBenar = (!isNaN(val) && Math.abs(val - soal.jawaban) <= soal.toleransi);
+                if (isBenar) benar++;
+                detailJawaban.push({ no: index + 1, tipe: 'Isian', jawaban: isNaN(val) ? '—' : val, kunci: soal.jawaban, benar: isBenar });
+            }
+        });
+
+        skorTantangan = benar * 10;
+
+        const kunci = getKunciTantangan();
+        localStorage.setItem(kunci, JSON.stringify({
+            selesai: true,
+            skor: skorTantangan,
+            benar: benar,
+            total: soalAktif.length,
+            waktu: new Date().toISOString()
+        }));
+
+        let pesan = `Anda menjawab benar ${benar} dari 4 soal.\nSkor Tantangan: +${skorTantangan} Poin.\n\nRincian:\n`;
+        detailJawaban.forEach(d => {
+            pesan += `${d.no}. [${d.tipe}] Jawaban Anda: ${d.jawaban} | Kunci: ${d.kunci} → ${d.benar ? '✔ Benar' : '✘ Salah'}\n`;
+        });
+        if (peringatanCurang > 0) {
+            pesan += `\n⚠️ ANDA TERDETEKSI MELAKUKAN ${peringatanCurang} PELANGGARAN. Nilai akhir akan dipotong.`;
+        }
+        pesan += `\n\n🔒 Tantangan ini sudah terkunci. Tidak bisa diulang.`;
+        alert(pesan);
+        hitungNilaiOtomatis();
+        cekStatusTantangan();
+    }
+
+    /* ============================================================
+       13. KALKULATOR AMAN
+       ============================================================ */
+    let calcExp = "";
+    function calcInput(val) {
+        if (val === 'sin' || val === 'cos' || val === 'tan') calcExp += val + "(";
+        else calcExp += val;
+        document.getElementById('calc-display').value = calcExp;
+    }
+    function calcClear() { calcExp = ""; document.getElementById('calc-display').value = ""; }
+    function calcSolve() {
+        try {
+            let openParen = (calcExp.match(/\(/g) || []).length;
+            let closeParen = (calcExp.match(/\)/g) || []).length;
+            for (let i = 0; i < openParen - closeParen; i++) calcExp += ")";
+            let toEval = calcExp.replace(/(sin|cos|tan)\(([^)]+)\)/g, function (m, func, innerNum) {
+                return `Math.${func}((${innerNum}) * Math.PI / 180)`;
+            });
+            let result = eval(toEval);
+            let finalResult = Math.round(result * 10000) / 10000;
+            document.getElementById('calc-display').value = finalResult;
+            calcExp = finalResult.toString();
+        } catch (e) {
+            document.getElementById('calc-display').value = "Format Salah";
+            calcExp = "";
+        }
+    }
+
+    /* ============================================================
+       14. INISIALISASI
+       ============================================================ */
+    window.addEventListener('load', () => {
+        updateLabels();
+        initCanvasSize();
+        setTimeout(() => { initCanvasSize(); resetPositions(); drawScene(); }, 300);
+        hitungUsaha();
+        cekStatusTantangan();
+    });
+
+    document.getElementById('input-nama').addEventListener('input', cekStatusTantangan);
+    document.getElementById('select-kelas').addEventListener('change', cekStatusTantangan);
+    </script>
+</body>
+</html>
