@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materi 3: Gaya Berat, Gaya Normal & Sistem Katrol</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f8fafc; --text-dark: #1e293b; --card-bg: #ffffff; --border: #e2e8f0;
+        --blue-link: #3b82f6; --red-alert: #ef4444;
+        --green-success: #10b981; --green-light: #d1fae5;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    
+    .header-materi {
+        background: linear-gradient(135deg, #1a3c34, #0f2520); color: white; padding: 25px 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.25rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-tutup:hover { opacity: 0.9; transform: scale(1.02); }
+
+    .container { max-width: 850px; margin: 25px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 16px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border-top: 5px solid var(--teal); }
+    
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.4rem; }
+    h3 { color: var(--blue-link); margin: 20px 0 10px 0; font-size: 1.1rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-green); font-family: 'Courier New', Courier, monospace;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .simulasi-container { background: #0f172a; border-radius: 14px; padding: 22px; color: white; margin-top: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+    .sim-grid { display: grid; grid-template-columns: 1.45fr 0.55fr; gap: 20px; align-items: stretch; }
+    @media (max-width: 768px) { .sim-grid { grid-template-columns: 1fr; } }
+
+    .sim-info {
+        background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 15px;
+        display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .sim-info h3 { color: #38bdf8; font-size: 1.05rem; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px; }
+    .sim-info p { color: #cbd5e1; font-size: 0.85rem; margin-bottom: 10px; }
+    
+    .toggle-baris { display: flex; gap: 10px; margin-bottom: 12px; }
+    .toggle-baris button {
+        flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; background: #1e293b;
+        color: #cbd5e1; cursor: pointer; font-size: 0.85rem; transition: 0.2s;
+    }
+    .toggle-baris button.aktif { background: var(--teal); color: #042f2e; border-color: var(--teal); font-weight: bold; }
+
+    .kontrol-baris { margin-bottom: 12px; }
+    .kontrol-baris label { display: flex; justify-content: space-between; font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px; }
+    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--teal); }
+
+    .hasil-hitung {
+        margin-top: 10px; padding: 12px; background: rgba(45, 212, 191, 0.1);
+        border: 1px solid var(--teal); border-radius: 8px; font-family: monospace;
+        text-align: center; color: var(--teal); font-size: 0.95rem; line-height: 1.6;
+    }
+    .hasil-hitung span { display: block; font-size: 0.8rem; color: #cbd5e1; font-family: 'Segoe UI', sans-serif; margin-top: 4px; }
+    
+    .badge-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 6px; }
+    .badge-lebih { background: #fee2e2; color: #991b1b; }
+    .badge-kurang { background: #dbeafe; color: #1e40af; }
+    .badge-sama { background: #d1fae5; color: #065f46; }
+
+    .canvas-container {
+        position: relative; width: 100%; height: 380px; background: #090d16;
+        border-radius: 12px; overflow: hidden; border: 2px solid #334155;
+    }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .anim-control-bar { display: flex; gap: 10px; margin-top: 10px; }
+    .anim-btn {
+        flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #334155;
+        background: #1e293b; color: white; font-weight: bold; cursor: pointer; font-size: 0.85rem;
+        display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;
+    }
+    .anim-btn:hover { background: #334155; border-color: var(--teal); }
+    .anim-btn.playing { background: var(--teal); color: #042f2e; border-color: var(--teal); }
+
+    .info-panel-dual { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-size: 0.85rem; border: 1px solid #334155; }
+    .info-panel-dual div { text-align: center; }
+    .info-panel-dual div:not(:last-child) { border-right: 1px solid #334155; }
+    .info-panel-dual strong { display: block; font-size: 1.1rem; color: var(--accent-yellow); margin-top: 4px; }
+
+    .kuis-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-top: 15px; }
+    .soal { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed #cbd5e1; }
+    .soal:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .soal-teks { font-weight: 600; margin-bottom: 12px; color: var(--dark-green); font-size: 0.95rem;}
+    .opsi-btn {
+        display: block; width: 100%; text-align: left; padding: 12px 15px;
+        background: white; border: 2px solid #e2e8f0; border-radius: 8px;
+        margin-bottom: 10px; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+    }
+    .opsi-btn:hover { border-color: var(--teal); background: #f0fdfa; }
+    .opsi-btn.benar { background: var(--green-light); border-color: var(--green-success); font-weight: bold; color: #065f46; }
+    .opsi-btn.salah { background: #fee2e2; border-color: var(--red-alert); color: #991b1b; text-decoration: line-through; }
+    .pembahasan { display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid var(--green-success); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #065f46; }
+</style>
+</head>
+<body>
+
+<header class="header-materi">
+    <h1>Materi 3: <span>Gaya Berat, Gaya Normal & Sistem Katrol</span></h1>
+    <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>A. Gaya Berat dan Gaya Normal</h2>
+        <p>Dalam dinamika, dua gaya utama yang bekerja pada permukaan adalah <strong>gaya berat (w)</strong> dan <strong>gaya normal (N)</strong>.</p>
+        <h3>1. Gaya Berat (w)</h3>
+        <p>Gaya tarik gravitasi bumi terhadap benda. Berarah tegak lurus ke bawah.</p>
+        <div class="rumus-box">w = m × g</div>
+        <ul><li><strong>m</strong> = massa benda (kg)</li><li><strong>g</strong> = percepatan gravitasi (10 m/s²)</li></ul>
+        <h3>2. Gaya Normal (N)</h3>
+        <p>Gaya reaksi bidang terhadap benda yang menekannya, selalu berarah <strong>tegak lurus bidang sentuh</strong>.</p>
+        <div class="rumus-box">N = w = m × g &nbsp; (pada bidang datar tanpa gaya luar)</div>
+    </div>
+
+    <div class="card">
+        <h2>B. Simulasi Gaya Normal pada Lift & Bidang Miring</h2>
+        <p>Pilih mode <strong>Lift</strong> atau <strong>Bidang Miring</strong> untuk mengamati komponen vektor secara presisi.</p>
+        <div class="simulasi-container">
+            <div class="sim-grid">
+                <div class="sim-info">
+                    <div>
+                        <h3 id="judulSim">Weighing in the Elevator</h3>
+                        <p id="deskSim">Geser percepatan lift dan amati perubahan nilai N pada timbangan.</p>
+                        <div class="toggle-baris">
+                            <button id="btn-lift" class="aktif" onclick="setMode('lift')">🛗 Mode Lift</button>
+                            <button id="btn-miring" onclick="setMode('miring')">📐 Bidang Miring</button>
+                        </div>
+                        <div id="kontrol-lift">
+                            <div class="kontrol-baris">
+                                <label>Percepatan Lift (a) <span id="label-a">0 m/s²</span></label>
+                                <input type="range" id="slider-a" min="-10" max="10" value="0" step="0.1" oninput="updateSim1()">
+                            </div>
+                        </div>
+                        <div id="kontrol-miring" style="display:none;">
+                            <div class="kontrol-baris">
+                                <label>Sudut Kemiringan (θ) <span id="label-theta">0°</span></label>
+                                <input type="range" id="slider-theta" min="0" max="60" value="0" step="1" oninput="updateSim1()">
+                            </div>
+                        </div>
+                        <div class="kontrol-baris">
+                            <label>Massa Benda (m) <span id="label-m">50 kg</span></label>
+                            <input type="range" id="slider-m" min="10" max="100" value="50" step="1" oninput="updateSim1()">
+                        </div>
+                    </div>
+                    <div class="hasil-hitung" id="hasil-sim1">
+                        w = 500.0 N · N = 500.0 N
+                        <span>Mode Lift (diam): N = w</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="canvas-container" id="canvasBox">
+                        <canvas id="simCanvas"></canvas>
+                    </div>
+                    <!-- TOMBOL ANIMASI LIFT KHUSUS -->
+                    <div class="anim-control-bar">
+                        <button class="anim-btn" id="btnPlayLift" onclick="toggleAnimasiLift()">▶ Mulai Gerak Lift</button>
+                        <button class="anim-btn" onclick="resetAnimasiLift()">↺ Reset Posisi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>C. Simulasi Resultan Gaya: Tarik-Tambang Mobil (F1 & F2)</h2>
+        <p>Mobil ditarik oleh dua gaya berlawanan arah (<strong>F1</strong> ke kanan dengan sudut θ1, dan <strong>F2</strong> ke kiri dengan sudut θ2).</p>
+        <div class="simulasi-container">
+            <div class="info-panel-dual">
+                <div>Massa Mobil<strong id="info-m2">10 kg</strong></div>
+                <div>Berat (w)<strong id="info-w2">100.0 N</strong></div>
+                <div>Gaya Normal (N)<strong id="info-N2" style="color:#2dd4bf;">100.0 N</strong></div>
+            </div>
+            <div class="canvas-container" id="canvasBox2" style="height: 240px; margin-bottom: 15px;">
+                <canvas id="simCanvas2"></canvas>
+            </div>
+            <div class="anim-control-bar" style="margin-bottom: 18px;">
+                <button class="anim-btn" id="btnPlayAnim2" onclick="toggleAnimasi2()">▶ Mulai Gerak Resultan</button>
+                <button class="anim-btn" onclick="resetAnimasi2()">↺ Reset Posisi</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155;">
+                <div>
+                    <h4 style="color: var(--accent-yellow); font-size: 0.9rem; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 4px;">➡️ Gaya Pertama (F1 Kanan)</h4>
+                    <div class="kontrol-baris">
+                        <label>Besar F1 <span id="label-F1">40 N</span></label>
+                        <input type="range" id="slider-F1" min="0" max="150" value="40" step="5" oninput="updateSim2()">
+                    </div>
+                    <div class="kontrol-baris" style="margin-bottom:0;">
+                        <label>Sudut θ1 <span id="label-t1">30°</span></label>
+                        <input type="range" id="slider-t1" min="0" max="75" value="30" step="1" oninput="updateSim2()">
+                    </div>
+                </div>
+                <div>
+                    <h4 style="color: #38bdf8; font-size: 0.9rem; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 4px;">⬅️ Gaya Kedua (F2 Kiri)</h4>
+                    <div class="kontrol-baris">
+                        <label>Besar F2 <span id="label-F2">20 N</span></label>
+                        <input type="range" id="slider-F2" min="0" max="150" value="20" step="5" oninput="updateSim2()">
+                    </div>
+                    <div class="kontrol-baris" style="margin-bottom:0;">
+                        <label>Sudut θ2 <span id="label-t2">20°</span></label>
+                        <input type="range" id="slider-t2" min="0" max="75" value="20" step="1" oninput="updateSim2()">
+                    </div>
+                </div>
+            </div>
+            <div class="kontrol-baris" style="margin-top: 15px;">
+                <label>Massa Mobil (m) <span id="label-mass-dual">10 kg</span></label>
+                <input type="range" id="slider-mass-dual" min="5" max="40" value="10" step="1" oninput="updateSim2()">
+            </div>
+            <div class="hasil-hitung" id="hasil-sim2" style="color: var(--accent-yellow);">
+                ΣFx = 25.7 N · a = 2.57 m/s² · N = 73.1 N
+                <span id="ket-sim2">N = w − (F1·sin θ1 + F2·sin θ2)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>D. Simulasi Sistem Katrol (Dua Mode Interaktif)</h2>
+        <p>Pilih mode katrol: <strong>1. Dua Beban Tergantung</strong> atau <strong>2. Katrol di Ujung Meja</strong>.</p>
+        <div class="simulasi-container">
+            <div class="sim-grid">
+                <div class="sim-info">
+                    <div>
+                        <h3 id="judulKatrol">Mode 1: Dua Beban Tergantung</h3>
+                        <p id="deskKatrol">Dua massa m1 dan m2 dihubungkan tali melewati katrol tetap.</p>
+                        <div class="toggle-baris">
+                            <button id="btn-katrol1" class="aktif" onclick="setModeKatrol(1)">⚖️ Dua Beban</button>
+                            <button id="btn-katrol2" onclick="setModeKatrol(2)">🪵 Di Ujung Meja</button>
+                        </div>
+                        <div class="kontrol-baris">
+                            <label>Massa M1 <span id="label-mKat1">4 kg</span></label>
+                            <input type="range" id="slider-mKat1" min="1" max="20" value="4" step="1" oninput="updateSimKatrol()">
+                        </div>
+                        <div class="kontrol-baris">
+                            <label>Massa M2 <span id="label-mKat2">6 kg</span></label>
+                            <input type="range" id="slider-mKat2" min="1" max="20" value="6" step="1" oninput="updateSimKatrol()">
+                        </div>
+                    </div>
+                    <div class="hasil-hitung" id="hasil-katrol">
+                        a = 2.00 m/s² · T = 48.0 N
+                        <span>M2 lebih berat, sistem bergerak ke bawah</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="canvas-container" id="canvasBoxKatrol">
+                        <canvas id="simCanvasKatrol"></canvas>
+                    </div>
+                    <div class="anim-control-bar">
+                        <button class="anim-btn" id="btnPlayKatrol" onclick="toggleAnimasiKatrol()">▶ Mulai Katrol</button>
+                        <button class="anim-btn" onclick="resetAnimasiKatrol()">↺ Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>E. Uji Pemahaman Interaktif (HOTS)</h2>
+        <p>Uji kemampuan analisis konsep dinamika Anda dengan g = 10 m/s²!</p>
+        <div class="kuis-box">
+            <div class="soal" id="soal1">
+                <div class="soal-teks">1. Sebuah kotak bermassa 20 kg berada di atas lantai licin mendatar. Kotak ditarik oleh dua orang dengan gaya F1 = 60 N ke kanan membentuk sudut 37° terhadap horizontal (cos 37° = 0,8; sin 37° = 0,6) dan F2 = 20 N ke kiri secara mendatar. Berapakah percepatan gerak kotak?</div>
+                <button class="opsi-btn" onclick="cekKuis('soal1', 'A', 'A')">A. 1,4 m/s²</button>
+                <button class="opsi-btn" onclick="cekKuis('soal1', 'B', 'A')">B. 2,0 m/s²</button>
+                <button class="opsi-btn" onclick="cekKuis('soal1', 'C', 'A')">C. 2,8 m/s²</button>
+                <button class="opsi-btn" onclick="cekKuis('soal1', 'D', 'A')">D. 3,5 m/s²</button>
+                <div class="pembahasan" id="pembahasan-soal1">
+                    <strong>Benar! Jawaban: A.</strong><br>
+                    ΣFx = F1·cos(37°) - F2 = 60(0,8) - 20 = 48 - 20 = 28 N.<br>
+                    a = ΣFx / m = 28 / 20 = <strong>1,4 m/s²</strong>.
+                </div>
+            </div>
+            <div class="soal" id="soal2">
+                <div class="soal-teks">2. Seorang murid bermassa 50 kg berdiri di dalam lift. Ketika lift bergerak, timbangan di dalam lift mencatat angka 600 N. Keadaan gerak lift saat itu adalah...</div>
+                <button class="opsi-btn" onclick="cekKuis('soal2', 'A', 'B')">A. Bergerak ke bawah dengan kecepatan tetap</button>
+                <button class="opsi-btn" onclick="cekKuis('soal2', 'B', 'B')">B. Bergerak naik dipercepat dengan a = 2 m/s²</button>
+                <button class="opsi-btn" onclick="cekKuis('soal2', 'C', 'B')">C. Bergerak turun dipercepat dengan a = 2 m/s²</button>
+                <button class="opsi-btn" onclick="cekKuis('soal2', 'D', 'B')">D. Diam di lantai dasar</button>
+                <div class="pembahasan" id="pembahasan-soal2">
+                    <strong>Benar! Jawaban: B.</strong><br>
+                    w = 50×10 = 500 N. Karena N = 600 N (&gt; w), maka lift bergerak naik dipercepat: a = (600 - 500) / 50 = <strong>2 m/s²</strong>.
+                </div>
+            </div>
+            <div class="soal" id="soal3">
+                <div class="soal-teks">3. Sebuah balok bermassa 15 kg diletakkan di lantai mendatar, lalu ditarik dengan gaya F = 50 N yang membentuk sudut θ ke atas (sin θ = 0,6; cos θ = 0,8). Besar gaya normal yang dialami balok adalah...</div>
+                <button class="opsi-btn" onclick="cekKuis('soal3', 'A', 'A')">A. 120 N</button>
+                <button class="opsi-btn" onclick="cekKuis('soal3', 'B', 'A')">B. 150 N</button>
+                <button class="opsi-btn" onclick="cekKuis('soal3', 'C', 'A')">C. 180 N</button>
+                <button class="opsi-btn" onclick="cekKuis('soal3', 'D', 'A')">D. 200 N</button>
+                <div class="pembahasan" id="pembahasan-soal3">
+                    <strong>Benar! Jawaban: A.</strong><br>
+                    w = 150 N. N = w - F·sin(θ) = 150 - (50 × 0,6) = 150 - 30 = <strong>120 N</strong>.
+                </div>
+            </div>
+            <div class="soal" id="soal4">
+                <div class="soal-teks">4. Manakah kondisi di bawah ini yang menyebabkan gaya normal (N) pada suatu benda bernilai tepat nol (0)?</div>
+                <button class="opsi-btn" onclick="cekKuis('soal4', 'A', 'B')">A. Benda meluncur pada bidang miring licin</button>
+                <button class="opsi-btn" onclick="cekKuis('soal4', 'B', 'B')">B. Benda berada di dalam lift yang mengalami jatuh bebas (a = g)</button>
+                <button class="opsi-btn" onclick="cekKuis('soal4', 'C', 'B')">C. Benda ditarik ke kanan dengan kecepatan konstan</button>
+                <button class="opsi-btn" onclick="cekKuis('soal4', 'D', 'B')">D. Benda ditarik gaya horizontal pada lantai kasar</button>
+                <div class="pembahasan" id="pembahasan-soal4">
+                    <strong>Benar! Jawaban: B.</strong><br>
+                    Saat jatuh bebas, a = g, sehingga N = m(g - g) = <strong>0</strong> (kondisi tanpa bobot / weightless).
+                </div>
+            </div>
+            <div class="soal" id="soal5">
+                <div class="soal-teks">5. Peti kemas bermassa 100 kg berada di atas lantai, lalu didorong menyerong ke bawah dengan gaya F = 200 N membentuk sudut 30° terhadap horizontal (sin 30° = 0,5). Besar gaya normal pada peti kemas adalah...</div>
+                <button class="opsi-btn" onclick="cekKuis('soal5', 'A', 'D')">A. 800 N</button>
+                <button class="opsi-btn" onclick="cekKuis('soal5', 'B', 'D')">B. 900 N</button>
+                <button class="opsi-btn" onclick="cekKuis('soal5', 'C', 'D')">C. 1000 N</button>
+                <button class="opsi-btn" onclick="cekKuis('soal5', 'D', 'D')">D. 1100 N</button>
+                <div class="pembahasan" id="pembahasan-soal5">
+                    <strong>Benar! Jawaban: D.</strong><br>
+                    w = 1000 N. Karena didorong ke bawah, N = w + F·sin(30°) = 1000 + (200 × 0,5) = 1000 + 100 = <strong>1100 N</strong>.
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function cekKuis(idSoal, pilihan, kunci) {
+        const box = document.getElementById(idSoal);
+        box.querySelectorAll('.opsi-btn').forEach(btn => {
+            if (btn.innerText.startsWith(pilihan)) {
+                btn.classList.add(pilihan === kunci ? 'benar' : 'salah');
+            }
+            if (btn.innerText.startsWith(kunci)) btn.classList.add('benar');
+            btn.disabled = true;
+        });
+        document.getElementById('pembahasan-' + idSoal).style.display = 'block';
+    }
+
+    const G = 10;
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    let modeSim1 = 'lift';
+
+    function initCanvasSize() {
+        const b = document.getElementById('canvasBox');
+        if (b) { canvas.width = b.clientWidth; canvas.height = b.clientHeight; }
+        const b2 = document.getElementById('canvasBox2');
+        const c2 = document.getElementById('simCanvas2');
+        if (b2 && c2) { c2.width = b2.clientWidth; c2.height = b2.clientHeight; }
+        const bKatrol = document.getElementById('canvasBoxKatrol');
+        const cKatrol = document.getElementById('simCanvasKatrol');
+        if (bKatrol && cKatrol) { cKatrol.width = bKatrol.clientWidth; cKatrol.height = bKatrol.clientHeight; }
+    }
+    initCanvasSize();
+    window.addEventListener('resize', () => { initCanvasSize(); updateSim1(); updateSim2(); updateSimKatrol(); });
+
+    function setMode(m) {
+        modeSim1 = m;
+        document.getElementById('btn-lift').classList.toggle('aktif', m === 'lift');
+        document.getElementById('btn-miring').classList.toggle('aktif', m === 'miring');
+        document.getElementById('kontrol-lift').style.display = m === 'lift' ? 'block' : 'none';
+        document.getElementById('kontrol-miring').style.display = m === 'miring' ? 'block' : 'none';
+        updateSim1();
+    }
+
+    // ==========================================
+    // STATE & VARIABEL ANIMASI LIFT
+    // ==========================================
+    let isPlayingLift = false;
+    let liftAnimOffset = 0;
+    let arahLift = 1;
+    let animIdLift = null;
+
+    function toggleAnimasiLift() {
+        isPlayingLift = !isPlayingLift;
+        const btn = document.getElementById('btnPlayLift');
+        if (!btn) return;
+        btn.innerHTML = isPlayingLift ? '⏸ Jeda Gerak Lift' : '▶ Lanjutkan Gerak Lift';
+        btn.classList.toggle('playing', isPlayingLift);
+        if (isPlayingLift) {
+            loopAnimLift();
+        } else {
+            cancelAnimationFrame(animIdLift);
+        }
+    }
+
+    function resetAnimasiLift() {
+        isPlayingLift = false;
+        liftAnimOffset = 0;
+        arahLift = 1;
+        const btn = document.getElementById('btnPlayLift');
+        if (btn) {
+            btn.innerHTML = '▶ Mulai Gerak Lift';
+            btn.classList.remove('playing');
+        }
+        cancelAnimationFrame(animIdLift);
+        updateSim1();
+    }
+
+    function loopAnimLift() {
+        if (!isPlayingLift) return;
+        const kecepatanDasar = 0.3; 
+        liftAnimOffset += kecepatanDasar * arahLift;
+        if (liftAnimOffset >= 30) { liftAnimOffset = 30; arahLift = -1; }
+        if (liftAnimOffset <= -30) { liftAnimOffset = -30; arahLift = 1; }
+        updateSim1();
+        animIdLift = requestAnimationFrame(loopAnimLift);
+    }
+
+    function updateSim1() {
+        const m = parseFloat(document.getElementById('slider-m').value);
+        document.getElementById('label-m').innerText = m + ' kg';
+        const w = m * G;
+        let N, ket, badge = 'badge-sama', bText = 'N = w';
+
+        if (modeSim1 === 'lift') {
+            const a = parseFloat(document.getElementById('slider-a').value);
+            document.getElementById('label-a').innerText = a.toFixed(1) + ' m/s²';
+            N = m * (G + a);
+            if (N < 0) N = 0;
+            if (a > 0.05) { ket = 'Lift naik dipercepat: N &gt; w'; badge = 'badge-lebih'; bText = 'N &gt; w'; }
+            else if (a < -0.05) { ket = 'Lift turun dipercepat: N &lt; w'; badge = 'badge-kurang'; bText = 'N &lt; w'; }
+            else ket = 'Lift diam / GLB: N = w';
+        } else {
+            if (isPlayingLift) toggleAnimasiLift();
+            liftAnimOffset = 0;
+            const th = parseFloat(document.getElementById('slider-theta').value);
+            document.getElementById('label-theta').innerText = th + '°';
+            N = w * Math.cos(th * Math.PI / 180);
+            ket = 'Bidang miring statis: N = w·cos(θ)';
+            badge = 'badge-kurang'; bText = 'N &lt; w';
+        }
+
+        document.getElementById('hasil-sim1').innerHTML = `
+            w = ${w.toFixed(1)} N · N = ${N.toFixed(1)} N
+            <span>${ket}</span>
+            <span class="badge-status ${badge}">${bText}</span>
+        `;
+        drawScene1(m, w, N);
+    }
+
+    function drawScene1(m, w, N) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+
+        if (modeSim1 === 'lift') {
+            const a = parseFloat(document.getElementById('slider-a').value);
+            const liftY = cy - 65 - (a / 10) * 20 + liftAnimOffset;
+
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 4;
+            ctx.strokeRect(cx - 55, liftY, 110, 130);
+            ctx.fillStyle = '#0b1329'; ctx.fillRect(cx - 55, liftY, 110, 130);
+
+            ctx.fillStyle = '#64748b'; ctx.fillRect(cx - 40, liftY + 105, 80, 18);
+            ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('N = ' + N.toFixed(0) + ' N', cx, liftY + 118);
+
+            const personY = liftY + 52;
+
+            ctx.fillStyle = '#fbcfe8';
+            ctx.beginPath(); ctx.arc(cx, personY - 18, 10, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath(); ctx.arc(cx, personY - 20, 10, Math.PI, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(cx - 9, personY - 8, 18, 26);
+
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(cx - 7, personY + 18, 5, 14);
+            ctx.fillRect(cx + 2, personY + 18, 5, 14);
+
+            const bodyCenterX = cx;
+            const bodyCenterY = personY + 5;
+
+            const pN = Math.min(55, Math.max(20, N * 0.10));
+            const pW = Math.min(55, Math.max(20, w * 0.10));
+
+            drawArrowGlobal(ctx, bodyCenterX, bodyCenterY, 0, -pN, '#2dd4bf', 'N', 16);
+            drawArrowGlobal(ctx, bodyCenterX, bodyCenterY, 0,  pW, '#ef4444', 'w', -16);
+
+        } else {
+            const th = parseFloat(document.getElementById('slider-theta').value);
+            const r = th * Math.PI / 180;
+
+            const pivotX = cx - 100;
+            const pivotY = cy + 60;
+
+            ctx.save();
+            ctx.translate(pivotX, pivotY);
+            ctx.rotate(-r);
+
+            const alas = 240;
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(alas, 0);
+            ctx.stroke();
+
+            const balokW = 50, balokH = 34;
+            const balokX = alas * 0.5;
+            const balokY = -balokH;
+
+            ctx.fillStyle = '#f2c94c'; 
+            ctx.strokeStyle = '#b45309'; 
+            ctx.lineWidth = 2; 
+            ctx.fillRect(balokX - balokW / 2, balokY, balokW, balokH);
+            ctx.strokeRect(balokX - balokW / 2, balokY, balokW, balokH);
+
+            const pusatX = balokX;
+            const pusatY = balokY + balokH / 2;
+
+            const scale = 0.12;
+            const pW = Math.min(75, Math.max(35, w * scale));
+            const pN = Math.min(75, Math.max(35, N * scale));
+            const pWcos = Math.min(75, Math.max(35, (w * Math.cos(r)) * scale));
+            const pWsin = Math.min(75, Math.max(35, (w * Math.sin(r))) * scale);
+
+            drawArrowAtTip(ctx, pusatX, pusatY, 0, -pN, '#2dd4bf', 'N', 12);
+            drawArrowAtTip(ctx, pusatX, pusatY, 0, pWcos, '#fbbf24', 'mg cos α', 14);
+            drawArrowAtTip(ctx, pusatX, pusatY, -pWsin, 0, '#f472b6', 'mg sin α', 14);
+
+            ctx.restore(); 
+
+            const cosR = Math.cos(-r), sinR = Math.sin(-r);
+            const globalBalokX = pivotX + (pusatX * cosR - pusatY * sinR);
+            const globalBalokY = pivotY + (pusatX * sinR + pusatY * cosR);
+
+            drawArrowGlobalAtTip(ctx, globalBalokX, globalBalokY, 0, pW, '#ef4444', 'w = mg', 16);
+        }
+    }
+
+    function drawArrowGlobal(ctx, px, py, vx, vy, color, label, tipOffset = 14) {
+        const L = Math.sqrt(vx * vx + vy * vy);
+        if (L === 0) return;
+        const ux = vx / L, uy = vy / L;
+        const ex = px + vx, ey = py + vy;
+
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ex, ey); ctx.stroke();
+
+        const headLen = 8;
+        const angle = Math.atan2(uy, ux);
+        ctx.beginPath(); ctx.moveTo(ex, ey);
+        ctx.lineTo(ex - headLen * Math.cos(angle - 0.4), ey - headLen * Math.sin(angle - 0.4));
+        ctx.lineTo(ex - headLen * Math.cos(angle + 0.4), ey - headLen * Math.sin(angle + 0.4));
+        ctx.closePath(); ctx.fill();
+
+        const tipX = ex + ux * tipOffset;
+        const tipY = ey + uy * tipOffset;
+
+        ctx.font = 'bold 10px sans-serif';
+        const textWidth = ctx.measureText(label).width;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(tipX - textWidth / 2 - 4, tipY - 8, textWidth + 8, 16);
+
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(label, tipX, tipY);
+    }
+
+    function drawArrowAtTip(ctx, px, py, vx, vy, color, label, tipOffset = 14) {
+        const L = Math.sqrt(vx * vx + vy * vy);
+        if (L === 0) return;
+        const ux = vx / L, uy = vy / L;
+        const ex = px + vx, ey = py + vy;
+
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ex, ey); ctx.stroke();
+
+        const headLen = 8;
+        const angle = Math.atan2(uy, ux);
+        ctx.beginPath(); ctx.moveTo(ex, ey);
+        ctx.lineTo(ex - headLen * Math.cos(angle - 0.4), ey - headLen * Math.sin(angle - 0.4));
+        ctx.lineTo(ex - headLen * Math.cos(angle + 0.4), ey - headLen * Math.sin(angle + 0.4));
+        ctx.closePath(); ctx.fill();
+
+        const tipX = ex + ux * tipOffset;
+        const tipY = ey + uy * tipOffset;
+
+        const currentTransform = ctx.getTransform();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        const globalPos = currentTransform.transformPoint(new DOMPoint(tipX, tipY));
+
+        ctx.font = 'bold 10px sans-serif';
+        const textWidth = ctx.measureText(label).width;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(globalPos.x - textWidth / 2 - 4, globalPos.y - 8, textWidth + 8, 16);
+
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, globalPos.x, globalPos.y);
+
+        ctx.setTransform(currentTransform);
+    }
+
+    function drawArrowGlobalAtTip(ctx, px, py, vx, vy, color, label, tipOffset = 14) {
+        const L = Math.sqrt(vx * vx + vy * vy);
+        if (L === 0) return;
+        const ux = vx / L, uy = vy / L;
+        const ex = px + vx, ey = py + vy;
+
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(ex, ey); ctx.stroke();
+
+        const headLen = 7;
+        const angle = Math.atan2(uy, ux);
+        ctx.beginPath(); ctx.moveTo(ex, ey);
+        ctx.lineTo(ex - headLen * Math.cos(angle - 0.4), ey - headLen * Math.sin(angle - 0.4));
+        ctx.lineTo(ex - headLen * Math.cos(angle + 0.4), ey - headLen * Math.sin(angle + 0.4));
+        ctx.closePath(); ctx.fill();
+
+        const tipX = ex + ux * tipOffset;
+        const tipY = ey + uy * tipOffset;
+
+        ctx.font = 'bold 10px sans-serif';
+        const textWidth = ctx.measureText(label).width;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+        ctx.fillRect(tipX - textWidth / 2 - 4, tipY - 8, textWidth + 8, 16);
+
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(label, tipX, tipY);
+    }
+
+    const canvas2 = document.getElementById('simCanvas2');
+    const ctx2 = canvas2 ? canvas2.getContext('2d') : null;
+    let isPlaying2 = false;
+    let carXPos2 = 90;
+    let animId2 = null;
+
+    function toggleAnimasi2() { isPlaying2 = !isPlaying2; const btn = document.getElementById('btnPlayAnim2'); if(!btn) return; btn.innerHTML = isPlaying2 ? '⏸ Jeda Gerak Resultan' : '▶ Mulai Gerak Resultan'; btn.classList.toggle('playing', isPlaying2); if (isPlaying2) loopAnim2(); else cancelAnimationFrame(animId2); }
+    function resetAnimasi2() { isPlaying2 = false; carXPos2 = 90; const btn = document.getElementById('btnPlayAnim2'); if(btn) { btn.innerHTML = '▶ Mulai Gerak Resultan'; btn.classList.remove('playing'); } cancelAnimationFrame(animId2); updateSim2(); }
+    function loopAnim2() { if (!isPlaying2) return; const m = parseFloat(document.getElementById('slider-mass-dual').value); const F1 = parseFloat(document.getElementById('slider-F1').value); const t1 = parseFloat(document.getElementById('slider-t1').value) * Math.PI / 180; const F2 = parseFloat(document.getElementById('slider-F2').value); const t2 = parseFloat(document.getElementById('slider-t2').value) * Math.PI / 180; const sumFx = (F1 * Math.cos(t1)) - (F2 * Math.cos(t2)); const a = sumFx / m; carXPos2 += a * 0.12; if (carXPos2 > canvas2.width - 120) carXPos2 = 80; if (carXPos2 < 40) carXPos2 = 40; updateSim2(); animId2 = requestAnimationFrame(loopAnim2); }
+
+    function drawArrowVector(ctx, x1, y1, x2, y2, color, label) {
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        const angle = Math.atan2(y2 - y1, x2 - x1); const h = 8;
+        ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - h * Math.cos(angle - Math.PI/6), y2 - h * Math.sin(angle - Math.PI/6)); ctx.lineTo(x2 - h * Math.cos(angle + Math.PI/6), y2 - h * Math.sin(angle + Math.PI/6)); ctx.closePath(); ctx.fill();
+        ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(label, x2 + 6 * Math.cos(angle), y2 + 6 * Math.sin(angle));
+    }
+
+    function updateSim2() {
+        if (!canvas2) return;
+        const m = parseFloat(document.getElementById('slider-mass-dual').value); const F1 = parseFloat(document.getElementById('slider-F1').value); const t1Deg = parseFloat(document.getElementById('slider-t1').value); const t1 = t1Deg * Math.PI / 180; const F2 = parseFloat(document.getElementById('slider-F2').value); const t2Deg = parseFloat(document.getElementById('slider-t2').value); const t2 = t2Deg * Math.PI / 180;
+        document.getElementById('label-mass-dual').innerText = m + ' kg'; document.getElementById('label-F1').innerText = F1 + ' N'; document.getElementById('label-t1').innerText = t1Deg + '°'; document.getElementById('label-F2').innerText = F2 + ' N'; document.getElementById('label-t2').innerText = t2Deg + '°';
+        const w = m * G; const sumFyUp = (F1 * Math.sin(t1)) + (F2 * Math.sin(t2)); let N = w - sumFyUp; if (N < 0) N = 0; const sumFx = (F1 * Math.cos(t1)) - (F2 * Math.cos(t2)); const a = sumFx / m;
+        document.getElementById('info-m2').innerText = m + ' kg'; document.getElementById('info-w2').innerText = w.toFixed(1) + ' N'; document.getElementById('info-N2').innerText = N.toFixed(1) + ' N';
+        ctx2.clearRect(0, 0, canvas2.width, canvas2.height); ctx2.fillStyle = '#090d16'; ctx2.fillRect(0, 0, canvas2.width, canvas2.height); ctx2.fillStyle = '#64748b'; ctx2.fillRect(0, canvas2.height - 20, canvas2.width, 20); ctx2.strokeStyle = '#94a3b8'; ctx2.lineWidth = 2; ctx2.beginPath(); ctx2.moveTo(0, canvas2.height - 20); ctx2.lineTo(canvas2.width, canvas2.height - 20); ctx2.stroke();
+        const cw = 110, ch = 45; const cy = canvas2.height - 20 - ch; const cx = carXPos2;
+        ctx2.fillStyle = '#0284c7'; ctx2.strokeStyle = '#0369a1'; ctx2.lineWidth = 2; ctx2.beginPath(); ctx2.roundRect(cx, cy + 15, cw, 30, [8, 12, 4, 4]); ctx2.fill(); ctx2.stroke(); ctx2.beginPath(); ctx2.roundRect(cx + 30, cy, 50, 18, [10, 10, 0, 0]); ctx2.fillStyle = '#38bdf8'; ctx2.fill(); ctx2.stroke();
+        [cx + 25, cx + cw - 25].forEach(rx => { ctx2.fillStyle = '#1e293b'; ctx2.strokeStyle = '#cbd5e1'; ctx2.lineWidth = 3; ctx2.beginPath(); ctx2.arc(rx, canvas2.height - 20, 11, 0, Math.PI * 2); ctx2.fill(); ctx2.stroke(); });
+        ctx2.fillStyle = '#fff'; ctx2.font = 'bold 11px sans-serif'; ctx2.textAlign = 'center'; ctx2.fillText(m + ' kg', cx + cw / 2, cy + 32);
+        const pmX = cx + cw / 2; const pmY = cy + ch / 2;
+        drawArrowVector(ctx2, pmX, pmY, pmX, pmY - Math.min(70, Math.max(15, N * 0.35)), '#2dd4bf', 'N'); drawArrowVector(ctx2, pmX, pmY, pmX, pmY + Math.min(70, Math.max(15, w * 0.35)), '#ef4444', 'w');
+        const startF1X = cx + cw - 10; const startF1Y = cy + 25; const lenF1 = Math.max(25, Math.min(110, F1 * 0.6)); drawArrowVector(ctx2, startF1X, startF1Y, startF1X + lenF1 * Math.cos(t1), startF1Y - lenF1 * Math.sin(t1), '#f2c94c', 'F1');
+        const startF2X = cx + 10; const startF2Y = cy + 25; const lenF2 = Math.max(25, Math.min(110, F2 * 0.6)); drawArrowVector(ctx2, startF1X, startF1Y, startF2X - lenF2 * Math.cos(t2), startF2Y - lenF2 * Math.sin(t2), '#38bdf8', 'F2');
+        document.getElementById('hasil-sim2').innerHTML = `ΣFx = ${sumFx.toFixed(1)} N &nbsp;·&nbsp; a = ${a.toFixed(2)} m/s² &nbsp;·&nbsp; N = ${N.toFixed(1)} N<span id="ket-sim2">N = w − (F1·sin θ1 + F2·sin θ2)</span>`;
+    }
+
+    const canvasKatrol = document.getElementById('simCanvasKatrol');
+    const ctxKatrol = canvasKatrol ? canvasKatrol.getContext('2d') : null;
+    let modeKatrol = 1; let isPlayingKatrol = false; let katrolAnimOffset = 0; let animIdKatrol = null;
+    
+    function setModeKatrol(mode) { modeKatrol = mode; resetAnimasiKatrol(); document.getElementById('btn-katrol1').classList.toggle('aktif', mode === 1); document.getElementById('btn-katrol2').classList.toggle('aktif', mode === 2); document.getElementById('judulKatrol').innerText = mode === 1 ? 'Mode 1: Dua Beban Tergantung' : 'Mode 2: Katrol di Ujung Meja'; document.getElementById('deskKatrol').innerText = mode === 1 ? 'M1 dan M2 digantung vertikal melalui katrol tetap.' : 'M1 di atas meja licin, M2 tergantung di ujung meja.'; updateSimKatrol(); }
+    function toggleAnimasiKatrol() { isPlayingKatrol = !isPlayingKatrol; const btn = document.getElementById('btnPlayKatrol'); if(!btn) return; btn.innerHTML = isPlayingKatrol ? '⏸ Jeda Katrol' : '▶ Mulai Katrol'; btn.classList.toggle('playing', isPlayingKatrol); if (isPlayingKatrol) loopAnimKatrol(); else cancelAnimationFrame(animIdKatrol); }
+    function resetAnimasiKatrol() { isPlayingKatrol = false; katrolAnimOffset = 0; const btn = document.getElementById('btnPlayKatrol'); if(btn) { btn.innerHTML = '▶ Mulai Katrol'; btn.classList.remove('playing'); } cancelAnimationFrame(animIdKatrol); updateSimKatrol(); }
+
+    function loopAnimKatrol() { 
+        if (!isPlayingKatrol) return; 
+        const m1 = parseFloat(document.getElementById('slider-mKat1').value); 
+        const m2 = parseFloat(document.getElementById('slider-mKat2').value); 
+        let a = 0; 
+        
+        if (modeKatrol === 1) { 
+            if (m1 > m2) {
+                a = ((m1 - m2) / (m1 + m2)) * G; 
+            } else if (m2 > m1) {
+                a = -((m2 - m1) / (m1 + m2)) * G; 
+            }
+        } else { 
+            a = (m2 / (m1 + m2)) * G; 
+        } 
+        
+        katrolAnimOffset += a * 0.15; 
+        
+        if (modeKatrol === 1) {
+            if (katrolAnimOffset > 50) katrolAnimOffset = 50;
+            if (katrolAnimOffset < -50) katrolAnimOffset = -50;
+        } else {
+            if (katrolAnimOffset > 50) katrolAnimOffset = 50;
+            if (katrolAnimOffset < -40) katrolAnimOffset = -40;
+        }
+
+        updateSimKatrol(); 
+        animIdKatrol = requestAnimationFrame(loopAnimKatrol); 
+    }
+
+    function updateSimKatrol() {
+        if (!canvasKatrol) return; 
+        const m1 = parseFloat(document.getElementById('slider-mKat1').value); 
+        const m2 = parseFloat(document.getElementById('slider-mKat2').value);
+        
+        document.getElementById('label-mKat1').innerText = m1 + ' kg'; 
+        document.getElementById('label-mKat2').innerText = m2 + ' kg';
+        
+        let a = 0, T = 0, ket = '';
+        if (modeKatrol === 1) { 
+            a = ((m2 - m1) / (m1 + m2)) * G; 
+            T = (2 * m1 * m2 * G) / (m1 + m2); 
+            ket = m2 > m1 ? 'M2 lebih berat, sistem bergerak ke bawah' : (m1 > m2 ? 'M1 lebih berat, sistem bergerak ke bawah' : 'Massa seimbang, sistem diam'); 
+        } else { 
+            a = (m2 / (m1 + m2)) * G; 
+            T = (m1 * m2 * G) / (m1 + m2); 
+            ket = 'M1 ditarik oleh tegangan tali T pada meja licin'; 
+        }
+        
+        document.getElementById('hasil-katrol').innerHTML = `a = ${Math.abs(a).toFixed(2)} m/s² · T = ${T.toFixed(1)} N<span>${ket}</span>`;
+        
+        ctxKatrol.clearRect(0, 0, canvasKatrol.width, canvasKatrol.height); 
+        ctxKatrol.fillStyle = '#090d16'; 
+        ctxKatrol.fillRect(0, 0, canvasKatrol.width, canvasKatrol.height);
+        
+        const cx = canvasKatrol.width / 2; 
+        const cy = canvasKatrol.height / 2;
+
+        if (modeKatrol === 1) {
+            // MODE 1: DUA BEBAN TERGANTUNG
+            const katrolX = cx;
+            const katrolY = cy - 60; 
+            const rKatrol = 22; 
+            const disp = katrolAnimOffset; 
+            
+            const y1 = katrolY + 100 + disp; 
+            const y2 = katrolY + 100 - disp;
+            
+            ctxKatrol.strokeStyle = '#cbd5e1'; 
+            ctxKatrol.lineWidth = 2.5; 
+            ctxKatrol.beginPath(); 
+            ctxKatrol.moveTo(katrolX - rKatrol, katrolY); 
+            ctxKatrol.lineTo(katrolX - rKatrol, y1); 
+            ctxKatrol.stroke(); 
+            
+            ctxKatrol.beginPath(); 
+            ctxKatrol.moveTo(katrolX + rKatrol, katrolY); 
+            ctxKatrol.lineTo(katrolX + rKatrol, y2); 
+            ctxKatrol.stroke();
+            
+            ctxKatrol.fillStyle = '#64748b'; 
+            ctxKatrol.strokeStyle = '#94a3b8'; 
+            ctxKatrol.lineWidth = 3; 
+            ctxKatrol.beginPath(); 
+            ctxKatrol.arc(katrolX, katrolY, rKatrol, 0, Math.PI * 2); 
+            ctxKatrol.fill(); 
+            ctxKatrol.stroke();
+
+            if (katrolAnimOffset !== 0) {
+                ctxKatrol.fillStyle = '#f2c94c';
+                ctxKatrol.font = 'bold 14px sans-serif';
+                ctxKatrol.fillText(disp > 0 ? '⬇' : '⬆', katrolX - rKatrol - 30, y1);
+                ctxKatrol.fillText(disp > 0 ? '⬆' : '⬇', katrolX + rKatrol + 30, y2);
+            }
+            
+            ctxKatrol.fillStyle = '#38bdf8'; 
+            ctxKatrol.fillRect(katrolX - rKatrol - 18, y1, 36, 36); 
+            ctxKatrol.fillStyle = '#0f172a'; 
+            ctxKatrol.font = 'bold 11px sans-serif'; 
+            ctxKatrol.textAlign = 'center'; 
+            ctxKatrol.fillText('M1', katrolX - rKatrol, y1 + 15);
+            ctxKatrol.font = 'bold 9px sans-serif';
+            ctxKatrol.fillText(m1 + 'kg', katrolX - rKatrol, y1 + 27);
+            
+            ctxKatrol.fillStyle = '#f2c94c'; 
+            ctxKatrol.fillRect(katrolX + rKatrol - 18, y2, 36, 36); 
+            ctxKatrol.fillStyle = '#0f172a'; 
+            ctxKatrol.font = 'bold 11px sans-serif'; 
+            ctxKatrol.fillText('M2', katrolX + rKatrol, y2 + 15);
+            ctxKatrol.font = 'bold 9px sans-serif';
+            ctxKatrol.fillText(m2 + 'kg', katrolX + rKatrol, y2 + 27);
+            
+        } else {
+            // MODE 2: KATROL DI UJUNG MEJA (TALI LURUS HORIZONTAL DINAMIS)
+            const mejaY = cy - 20; 
+            const mejaX1 = cx - 90;
+            const mejaX2 = cx + 30; 
+            
+            const rKatrol = 18; 
+            const kX = mejaX2 + rKatrol; 
+            const kY = mejaY - rKatrol; 
+            
+            // 1. Tentukan titik puncak katrol (tempat tali horizontal menempel)
+            const puncakKatrolY = kY - rKatrol; 
+            
+            // Gambar Meja
+            ctxKatrol.fillStyle = '#475569'; 
+            ctxKatrol.fillRect(mejaX1, mejaY, mejaX2 - mejaX1, 16); 
+            ctxKatrol.strokeStyle = '#94a3b8'; 
+            ctxKatrol.lineWidth = 2; 
+            ctxKatrol.strokeRect(mejaX1, mejaY, mejaX2 - mejaX1, 16);
+            
+            const disp = katrolAnimOffset; 
+            
+            // 2. Tentukan tinggi M1 secara dinamis agar tengahnya sejajar dengan puncak katrol
+            const m1W = 48;
+            const m1H = (mejaY - puncakKatrolY) * 2; // Tinggi M1 otomatis menyesuaikan
+            const x1 = mejaX1 + 30 + disp; 
+            const m1Y = mejaY - m1H; 
+            
+            // 3. Gambar Tali Horizontal (lurus dari tengah kanan M1 ke puncak katrol)
+            ctxKatrol.strokeStyle = '#cbd5e1'; 
+            ctxKatrol.lineWidth = 2.5; 
+            ctxKatrol.beginPath(); 
+            ctxKatrol.moveTo(x1 + m1W, m1Y + m1H / 2); 
+            ctxKatrol.lineTo(kX, puncakKatrolY); 
+            ctxKatrol.stroke();
+            
+            // 4. Gambar Tali Vertikal (dari kanan katrol ke M2)
+            const m2Y = kY + 100 + disp; 
+            ctxKatrol.beginPath(); 
+            ctxKatrol.moveTo(kX + rKatrol, kY); 
+            ctxKatrol.lineTo(kX + rKatrol, m2Y); 
+            ctxKatrol.stroke();
+            
+            // 5. Gambar Katrol
+            ctxKatrol.fillStyle = '#64748b'; 
+            ctxKatrol.strokeStyle = '#94a3b8'; 
+            ctxKatrol.lineWidth = 3; 
+            ctxKatrol.beginPath(); 
+            ctxKatrol.arc(kX, kY, rKatrol, 0, Math.PI * 2); 
+            ctxKatrol.fill(); 
+            ctxKatrol.stroke();
+            
+            // 6. Gambar Beban M1 (Kotak Tinggi)
+            ctxKatrol.fillStyle = '#38bdf8'; 
+            ctxKatrol.fillRect(x1, m1Y, m1W, m1H); 
+            ctxKatrol.fillStyle = '#0f172a'; 
+            ctxKatrol.font = 'bold 11px sans-serif'; 
+            ctxKatrol.textAlign = 'center'; 
+            ctxKatrol.fillText('M1', x1 + m1W / 2, m1Y + m1H / 2 - 5);
+            ctxKatrol.font = 'bold 9px sans-serif';
+            ctxKatrol.fillText(m1 + 'kg', x1 + m1W / 2, m1Y + m1H / 2 + 8);
+            
+            // 7. Gambar Beban M2
+            const m2W = 36;
+            const m2H = 36;
+            ctxKatrol.fillStyle = '#f2c94c'; 
+            ctxKatrol.fillRect(kX + rKatrol - m2W / 2, m2Y, m2W, m2H); 
+            ctxKatrol.fillStyle = '#0f172a'; 
+            ctxKatrol.font = 'bold 11px sans-serif'; 
+            ctxKatrol.fillText('M2', kX + rKatrol, m2Y + 15);
+            ctxKatrol.font = 'bold 9px sans-serif';
+            ctxKatrol.fillText(m2 + 'kg', kX + rKatrol, m2Y + 27);
+        }
+    }
+
+    window.onload = function() { initCanvasSize(); updateSim1(); updateSim2(); updateSimKatrol(); };
+</script>
+</body>
+</html>

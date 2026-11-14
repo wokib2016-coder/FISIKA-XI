@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Aplikasi Asas Bernoulli</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444; --blue: #3b82f6; --orange: #f97316;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-green);
+    }
+    
+    .sim-area { background: #f0fdf4; border: 2px dashed #10b981; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .sim-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+    .sim-tab-btn { flex: 1; min-width: 120px; background: white; border: 2px solid #cbd5e1; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #475569; transition: all 0.2s; }
+    .sim-tab-btn.active { background: var(--dark-green); color: white; border-color: var(--dark-green); }
+    
+    .sub-mode-container { display: flex; gap: 10px; margin-bottom: 15px; background: #e2e8f0; padding: 6px; border-radius: 10px; }
+    .sub-mode-btn { flex: 1; background: transparent; border: none; padding: 8px; font-weight: bold; border-radius: 6px; cursor: pointer; color: #475569; transition: all 0.2s; }
+    .sub-mode-btn.active { background: white; color: var(--dark-green); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+    .sim-canvas-container { position: relative; width: 100%; height: 500px; background: #0b0f19; border-radius: 10px; overflow: hidden; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+    .sim-canvas-container canvas { display: block; width: 100%; height: 100%; }
+    
+    .sim-controls { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+    @media(min-width: 600px) { .sim-controls { grid-template-columns: 1fr 1fr; } }
+    .sim-control { background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .sim-control label { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 5px; color: #1e293b; }
+    .sim-control input[type="range"] { width: 100%; accent-color: #10b981; cursor: pointer; }
+    .sim-control .val { font-size: 0.85rem; color: var(--blue); font-weight: bold; text-align: right; display: block; margin-top: 5px; }
+    
+    .sim-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+    .sim-result-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .sim-result-item .title { font-size: 0.75rem; color: #64748b; font-weight: bold; }
+    .sim-result-item .val { font-size: 1.1rem; color: #059669; font-weight: bold; }
+
+    .soal-container { margin-bottom: 30px; }
+    .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+    .opsi-card { background-color: #f8fafc; border: 2px solid transparent; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+    .opsi-card:hover { background-color: #f1f5f9; }
+    .opsi-card.benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .opsi-card.salah { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+    .opsi-card.reveal-benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .pembahasan-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin-top: 15px; display: none; color: #064e3b; }
+    .pembahasan-box.salah { background-color: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+    .pembahasan-title { font-weight: bold; margin-bottom: 8px; display: block; }
+    .pembahasan-text { font-size: 0.95rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Modul Fisika: <span>Aplikasi Asas Bernoulli</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <div class="card">
+            <h2>A. Konsep Dasar Asas Bernoulli</h2>
+            <p>Asas Bernoulli menyatakan bahwa pada fluida yang bergerak, <strong>semakin besar kecepatan fluida, maka semakin kecil tekanannya</strong>.</p>
+            <div class="rumus-box">
+                \[ P_1 + \frac{1}{2}\rho v_1^2 + \rho g h_1 = P_2 + \frac{1}{2}\rho v_2^2 + \rho g h_2 \]
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>B. Simulasi 3 Aplikasi Bernoulli</h2>
+            <div class="sim-area">
+                <div class="sim-tabs">
+                    <button class="sim-tab-btn active" id="tab-torricelli" onclick="switchSim('torricelli')">🚰 Tabung Bocor</button>
+                    <button class="sim-tab-btn" id="tab-sayap" onclick="switchSim('sayap')">✈️ Gaya Angkat Sayap</button>
+                    <button class="sim-tab-btn" id="tab-parfum" onclick="switchSim('parfum')">🧴 Semprotan Parfum</button>
+                </div>
+
+                <div id="torricelli-sub-modes" class="sub-mode-container">
+                    <button class="sub-mode-btn active" id="mode-1bocor" onclick="switchTorricelliMode(1)">1 Lubang Bocor</button>
+                    <button class="sub-mode-btn" id="mode-2bocor" onclick="switchTorricelliMode(2)">2 Lubang Bocor</button>
+                </div>
+
+                <div class="sim-canvas-container">
+                    <canvas id="simCanvas"></canvas>
+                </div>
+
+                <div class="sim-controls" id="panel-kontrol"></div>
+                <div class="sim-results" id="panel-hasil"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>C. Uji Pemahaman Interaktif (HOTS)</h2>
+
+            <!-- Soal 1 -->
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Pada simulasi tabung bocor (Asas Torricelli), jika lubang kebocoran digeser lebih ke bawah (nilai \(h\) diperbesar), apa yang terjadi pada kecepatan pancaran air?</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'C')">A. Kecepatan pancaran air mengecil karena tekanan udara di luar lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'C')">B. Kecepatan pancaran air tetap, hanya jarak pancarannya yang bertambah.</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'C')">C. Kecepatan pancaran air membesar karena tekanan hidrostatis dari kedalaman \(h\) bertambah.</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'C')">D. Kecepatan pancaran air membesar karena massa jenis air berkurang.</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+
+            <!-- Soal 2 -->
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Pada simulasi gaya angkat sayap pesawat, sayap dirancang agar kecepatan udara di bagian atas (\(v_1\)) lebih besar daripada di bagian bawah (\(v_2\)). Bagaimana arah gaya angkat yang dihasilkan?</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'B')">A. Ke bawah, karena tekanan di atas lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'B')">B. Ke atas, karena tekanan di bawah (\(P_2\)) lebih besar daripada di atas (\(P_1\)).</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'B')">C. Ke atas, karena tekanan di atas lebih besar.</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'B')">D. Tidak ada gaya angkat karena udara mengalir horizontal.</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+
+            <!-- Soal 3 -->
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Pada semprotan botol parfum, udara dipompa melalui bagian yang menyempit (leher botol) sehingga kecepatannya bertambah. Berdasarkan Asas Bernoulli, apa yang terjadi pada tekanan udara di bagian tersebut?</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'B')">A. Tekanan membesar, sehingga cairan parfum tersembur keluar.</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'B')">B. Tekanan mengecil, sehingga cairan parfum terisap naik dan bercampur dengan udara.</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'B')">C. Tekanan tetap, cairan parfum keluar karena gravitasi.</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'B')">D. Tekanan udara berubah menjadi nol (vakum sempurna).</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+
+            <!-- Soal 4 -->
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Dua buah lubang kebocoran dibuat pada sebuah tangki air vertikal setinggi \(H = 100\text{ cm}\). Lubang pertama berada pada kedalaman \(h_1 = 20\text{ cm}\) dan lubang kedua pada kedalaman \(h_2 = 80\text{ cm}\) dari permukaan air. Bagaimanakah perbandingan jarak pancaran horizontal (\(x\)) kedua lubang tersebut di lantai?</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'A')">A. Jarak pancaran kedua lubang bernilai sama persis karena simetris terhadap titik tengah tangki.</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'A')">B. Jarak pancaran lubang pertama lebih jauh daripada lubang kedua.</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'A')">C. Jarak pancaran lubang kedua bernilai nol karena air langsung jatuh ke bawah.</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'A')">D. Jarak pancaran tidak dapat ditentukan tanpa mengetahui massa jenis cairan.</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+
+            <!-- Soal 5 -->
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Mengapa bagian atas wadah atau tangki air pada hukum Torricelli harus dibuat terbuka atau memiliki lubang udara yang berhubungan langsung dengan atmosfer?</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'D')">A. Agar air di dalam tangki dapat menguap dengan cepat ke udara luar.</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'D')">B. Agar massa jenis air di dalam tangki bertambah secara konstan.</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'D')">C. Agar percepatan gravitasi bumi hanya bekerja pada bagian dasar tangki.</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'D')">D. Agar permukaan air di dalam tangki mendapat tekanan udara luar (\(P_0\)) yang sama dengan tekanan di lubang kebocoran.</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const pembahasanBox = document.getElementById('pembahasan' + nomorSoal);
+            
+            opsiCards.forEach(card => { card.classList.remove('benar', 'salah', 'reveal-benar'); });
+            pembahasanBox.style.display = 'none';
+
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) card.classList.add('benar');
+                });
+                pembahasanBox.className = 'pembahasan-box';
+                pembahasanBox.innerHTML = `<span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+                pembahasanBox.style.display = 'block';
+            } else {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) card.classList.add('salah');
+                    if (card.innerText.trim().startsWith(opsiBenar + '.')) card.classList.add('reveal-benar');
+                });
+                pembahasanBox.className = 'pembahasan-box salah';
+                pembahasanBox.innerHTML = `<span class="pembahasan-title">Kurang Tepat. Jawaban yang benar adalah: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+                pembahasanBox.style.display = 'block';
+            }
+            if (window.MathJax) MathJax.typesetPromise([pembahasanBox]);
+        }
+
+        function getPembahasan(soal) {
+            if(soal === 1) return "Sesuai Asas Torricelli (\(v = \sqrt{2gh}\)), kecepatan pancaran air berbanding lurus dengan akar kedalaman \(h\). Semakin dalam lubang (h besar), semakin besar tekanan hidrostatis, sehingga air menyembur lebih cepat.";
+            if(soal === 2) return "Karena \(v_1\) (atas) > \(v_2\) (bawah), maka menurut Bernoulli \(P_1\) (atas) < \(P_2\) (bawah). Perbedaan tekanan ini menghasilkan gaya angkat ke atas.";
+            if(soal === 3) return "Kecepatan udara yang tinggi di leher botol menyebabkan tekanan udara di sana mengecil. Tekanan atmosfer di dalam botol (yang lebih besar) mendorong cairan parfum naik dan tersemprot keluar.";
+            if(soal === 4) return "Rumus jarak pancar horizontal adalah \(x = 2\sqrt{h(H-h)}\). Untuk \(h_1 = 20\text{ cm}\) dan \(h_2 = 100 - 80 = 20\text{ cm}\) dari permukaan (atau \(h_2 = 80\text{ cm}\) dengan sisa \(20\text{ cm}\)), hasil perkalian \(h(H-h)\) bernilai sama (\(20 \times 80 = 1600\)), sehingga jarak pancar kedua lubang persis sama.";
+            if(soal === 5) return "Agar persamaan Bernoulli dan rumus Torricelli berlaku valid, permukaan air di dalam wadah harus terbuka ke atmosfer sehingga mendapatkan tekanan luar (\(P_0\)) yang menyetarakan tekanan di titik kebocoran.";
+        }
+
+        const simCanvas = document.getElementById('simCanvas');
+        const simCtx = simCanvas.getContext('2d');
+        
+        let activeSim = 'torricelli';
+        let torricelliMode = 1; // 1 atau 2 lubang
+        let animFrameId;
+        
+        let hBocor1 = 30; 
+        let hBocor2 = 70; 
+        let gValue = 10.0;
+        let vSayapAtas = 300;
+        let vSayapBawah = 200;
+        let pParfum = 60;
+
+        let waterParticles1 = [];
+        let waterParticles2 = [];
+        let airStreamLines = [];
+        let perfumeParticles = [];
+        let planeYOffset = 0; 
+        
+        function resizeSimCanvas() {
+            const container = simCanvas.parentElement;
+            simCanvas.width = container.clientWidth;
+            simCanvas.height = container.clientHeight;
+            initParticles();
+        }
+
+        function initParticles() {
+            waterParticles1 = [];
+            waterParticles2 = [];
+            airStreamLines = [];
+            for(let i=0; i < 60; i++) {
+                airStreamLines.push({
+                    x: Math.random() * simCanvas.width,
+                    y: Math.random() * simCanvas.height,
+                    isTop: Math.random() > 0.5
+                });
+            }
+            perfumeParticles = [];
+        }
+
+        function switchSim(simName) {
+            activeSim = simName;
+            cancelAnimationFrame(animFrameId);
+            document.getElementById('tab-torricelli').classList.toggle('active', simName === 'torricelli');
+            document.getElementById('tab-sayap').classList.toggle('active', simName === 'sayap');
+            document.getElementById('tab-parfum').classList.toggle('active', simName === 'parfum');
+            
+            const subModes = document.getElementById('torricelli-sub-modes');
+            subModes.style.display = (simName === 'torricelli') ? 'flex' : 'none';
+
+            renderControls();
+            initParticles();
+            drawSimulation();
+        }
+
+        function switchTorricelliMode(mode) {
+            torricelliMode = mode;
+            document.getElementById('mode-1bocor').classList.toggle('active', mode === 1);
+            document.getElementById('mode-2bocor').classList.toggle('active', mode === 2);
+            renderControls();
+            initParticles();
+        }
+
+        function renderControls() {
+            const panel = document.getElementById('panel-kontrol');
+            const hasil = document.getElementById('panel-hasil');
+            
+            if (activeSim === 'torricelli') {
+                if (torricelliMode === 1) {
+                    panel.innerHTML = `
+                        <div class="sim-control">
+                            <label>Kedalaman Lubang (h)</label>
+                            <input type="range" id="sliderH1" min="10" max="90" value="${hBocor1}" step="2">
+                            <span class="val" id="valH1">${hBocor1} cm</span>
+                        </div>
+                        <div class="sim-control">
+                            <label>Percepatan Gravitasi (g)</label>
+                            <input type="range" id="sliderG" min="5" max="15" value="${gValue}" step="0.5">
+                            <span class="val" id="valG">${gValue} m/s²</span>
+                        </div>
+                    `;
+                    hasil.innerHTML = `
+                        <div class="sim-result-item"><div class="title">Kecepatan Pancaran (v)</div><div class="val" id="valV1">...</div></div>
+                        <div class="sim-result-item"><div class="title">Jarak Pancaran (x)</div><div class="val" id="valX1">...</div></div>
+                    `;
+                } else {
+                    panel.innerHTML = `
+                        <div class="sim-control">
+                            <label style="color:var(--teal)">Kedalaman Lubang 1 (h₁)</label>
+                            <input type="range" id="sliderH1" min="10" max="45" value="${hBocor1}" step="2">
+                            <span class="val" id="valH1">${hBocor1} cm</span>
+                        </div>
+                        <div class="sim-control">
+                            <label style="color:var(--orange)">Kedalaman Lubang 2 (h₂)</label>
+                            <input type="range" id="sliderH2" min="50" max="90" value="${hBocor2}" step="2">
+                            <span class="val" id="valH2">${hBocor2} cm</span>
+                        </div>
+                    `;
+                    hasil.innerHTML = `
+                        <div class="sim-result-item"><div class="title" style="color:var(--teal)">Jarak Pancaran (x₁)</div><div class="val" id="valX1">...</div></div>
+                        <div class="sim-result-item"><div class="title" style="color:var(--orange)">Jarak Pancaran (x₂)</div><div class="val" id="valX2">...</div></div>
+                    `;
+                }
+            } else if (activeSim === 'sayap') {
+                panel.innerHTML = `
+                    <div class="sim-control">
+                        <label>Kecepatan Udara Atas (v₁)</label>
+                        <input type="range" id="sliderV1" min="100" max="400" value="${vSayapAtas}" step="10">
+                        <span class="val" id="valV1">${vSayapAtas} km/jam</span>
+                    </div>
+                    <div class="sim-control">
+                        <label>Kecepatan Udara Bawah (v₂)</label>
+                        <input type="range" id="sliderV2" min="100" max="400" value="${vSayapBawah}" step="10">
+                        <span class="val" id="valV2">${vSayapBawah} km/jam</span>
+                    </div>
+                `;
+                hasil.innerHTML = `
+                    <div class="sim-result-item"><div class="title">Tekanan Atas (P₁)</div><div class="val" id="valP1">...</div></div>
+                    <div class="sim-result-item"><div class="title">Tekanan Bawah (P₂)</div><div class="val" id="valP2">...</div></div>
+                    <div class="sim-result-item" style="grid-column: span 2; background:#eff6ff; border-color:#bfdbfe;"><div class="title" style="color:#1d4ed8;">Gaya Angkat (ΔP)</div><div class="val" id="valGaya" style="color:#1e40af;">...</div></div>
+                `;
+            } else if (activeSim === 'parfum') {
+                panel.innerHTML = `
+                    <div class="sim-control">
+                        <label>Kecepatan Semburan Udara</label>
+                        <input type="range" id="sliderP" min="20" max="120" value="${pParfum}" step="5">
+                        <span class="val" id="valP">${pParfum} m/s</span>
+                    </div>
+                    <div class="sim-control" style="display:flex; align-items:center; justify-content:center;">
+                        <button id="btnSemprot" style="padding:12px; border-radius:8px; border:none; background:#3b82f6; color:white; font-weight:bold; cursor:pointer; width:100%;">Tekan Pompa!</button>
+                    </div>
+                `;
+                hasil.innerHTML = `
+                    <div class="sim-result-item"><div class="title">Tekanan di Leher Botol</div><div class="val" id="valPleher">...</div></div>
+                    <div class="sim-result-item"><div class="title">Tinggi Cairan Terisap</div><div class="val" id="valHparfum">...</div></div>
+                `;
+            }
+            bindSliderEvents();
+            updateSimParams();
+        }
+
+        function bindSliderEvents() {
+            if (activeSim === 'torricelli') {
+                document.getElementById('sliderH1').addEventListener('input', (e) => { 
+                    hBocor1 = parseFloat(e.target.value); 
+                    document.getElementById('valH1').innerText = hBocor1 + ' cm'; 
+                    updateSimParams(); 
+                });
+                if (torricelliMode === 2) {
+                    document.getElementById('sliderH2').addEventListener('input', (e) => { 
+                        hBocor2 = parseFloat(e.target.value); 
+                        document.getElementById('valH2').innerText = hBocor2 + ' cm'; 
+                        updateSimParams(); 
+                    });
+                } else {
+                    document.getElementById('sliderG').addEventListener('input', (e) => { 
+                        gValue = parseFloat(e.target.value); 
+                        document.getElementById('valG').innerText = gValue.toFixed(1) + ' m/s²'; 
+                        updateSimParams(); 
+                    });
+                }
+            } else if (activeSim === 'sayap') {
+                document.getElementById('sliderV1').addEventListener('input', (e) => { vSayapAtas = parseFloat(e.target.value); document.getElementById('valV1').innerText = vSayapAtas + ' km/jam'; updateSimParams(); });
+                document.getElementById('sliderV2').addEventListener('input', (e) => { vSayapBawah = parseFloat(e.target.value); document.getElementById('valV2').innerText = vSayapBawah + ' km/jam'; updateSimParams(); });
+            } else if (activeSim === 'parfum') {
+                document.getElementById('sliderP').addEventListener('input', (e) => { pParfum = parseFloat(e.target.value); document.getElementById('valP').innerText = pParfum + ' m/s'; updateSimParams(); });
+                document.getElementById('btnSemprot').addEventListener('click', () => {
+                    for(let i=0; i<45; i++) {
+                        perfumeParticles.push({
+                            x: simCanvas.width/2 - 5,
+                            y: simCanvas.height/2 - 35,
+                            vx: -((Math.random() * pParfum * 0.15) + 3),
+                            vy: (Math.random() - 0.5) * 2,
+                            life: 1.0,
+                            size: Math.random() * 2.5 + 1
+                        });
+                    }
+                });
+            }
+        }
+
+        let calcV1 = 0, calcX1 = 0, calcV2 = 0, calcX2 = 0, calcP1 = 0, calcP2 = 0, calcDP = 0, calcPleher = 0, calcHparfum = 0;
+
+        function updateSimParams() {
+            if (activeSim === 'torricelli') {
+                let totalH_cm = 100;
+                
+                let hMeter1 = hBocor1 / 100;
+                calcV1 = Math.sqrt(2 * gValue * hMeter1);
+                let sisaH_cm1 = Math.max(totalH_cm - hBocor1, 2);
+                calcX1 = 2 * Math.sqrt((hBocor1 / 100) * (sisaH_cm1 / 100));
+
+                if (torricelliMode === 1) {
+                    document.getElementById('valV1').innerText = calcV1.toFixed(2) + ' m/s';
+                    document.getElementById('valX1').innerText = (calcX1 * 100).toFixed(1) + ' cm';
+                } else {
+                    let hMeter2 = hBocor2 / 100;
+                    calcV2 = Math.sqrt(2 * gValue * hMeter2);
+                    let sisaH_cm2 = Math.max(totalH_cm - hBocor2, 2);
+                    calcX2 = 2 * Math.sqrt((hBocor2 / 100) * (sisaH_cm2 / 100));
+
+                    document.getElementById('valX1').innerText = (calcX1 * 100).toFixed(1) + ' cm';
+                    document.getElementById('valX2').innerText = (calcX2 * 100).toFixed(1) + ' cm';
+                }
+            } else if (activeSim === 'sayap') {
+                let v1 = vSayapAtas / 3.6;
+                let v2 = vSayapBawah / 3.6;
+                let rho = 1.225;
+                calcP1 = 101325 - 0.5 * rho * v1 * v1;
+                calcP2 = 101325 - 0.5 * rho * v2 * v2;
+                calcDP = calcP2 - calcP1;
+                document.getElementById('valP1').innerText = (calcP1 / 1000).toFixed(2) + ' kPa';
+                document.getElementById('valP2').innerText = (calcP2 / 1000).toFixed(2) + ' kPa';
+                document.getElementById('valGaya').innerText = calcDP.toFixed(1) + ' Pa';
+            } else if (activeSim === 'parfum') {
+                let rhoUdara = 1.225;
+                calcPleher = 101325 - 0.5 * rhoUdara * pParfum * pParfum;
+                let dP = 101325 - calcPleher;
+                calcHparfum = dP / (1000 * 9.8) * 100;
+                document.getElementById('valPleher').innerText = (calcPleher / 1000).toFixed(2) + ' kPa';
+                document.getElementById('valHparfum').innerText = calcHparfum.toFixed(2) + ' cm';
+            }
+        }
+
+        function drawSimulation() {
+            simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+            const w = simCanvas.width;
+            const h = simCanvas.height;
+
+            if (activeSim === 'torricelli') {
+                let tubeW = 100, tubeHMax = 260;
+                let tubeX = 110; 
+                let tubeY = 35;
+                let totalH_cm = 100; 
+
+                let lantaiY = tubeY + tubeHMax;
+                let waterTopY = tubeY + 20; 
+                let availableHeightPx = tubeHMax - 30;
+
+                let holeY1 = waterTopY + (hBocor1 / totalH_cm) * availableHeightPx;
+                let holeY2 = waterTopY + (hBocor2 / totalH_cm) * availableHeightPx;
+
+                // Tabung Kaca TERBUKA
+                simCtx.fillStyle = 'rgba(30, 41, 59, 0.7)';
+                simCtx.fillRect(tubeX, tubeY, tubeW, tubeHMax);
+                
+                simCtx.strokeStyle = '#38bdf8'; simCtx.lineWidth = 3;
+                simCtx.beginPath();
+                simCtx.moveTo(tubeX, tubeY);
+                simCtx.lineTo(tubeX, lantaiY);
+                simCtx.lineTo(tubeX + tubeW, lantaiY);
+                simCtx.lineTo(tubeX + tubeW, tubeY);
+                simCtx.stroke();
+                
+                let waterHeightPx = lantaiY - waterTopY;
+                simCtx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+                simCtx.fillRect(tubeX + 2, waterTopY, tubeW - 4, waterHeightPx);
+
+                simCtx.strokeStyle = '#7dd3fc'; simCtx.lineWidth = 2;
+                simCtx.beginPath(); simCtx.moveTo(tubeX, waterTopY); simCtx.lineTo(tubeX + tubeW, waterTopY); simCtx.stroke();
+
+                // Tinggi Total H
+                simCtx.strokeStyle = '#38bdf8'; simCtx.lineWidth = 1.5; simCtx.setLineDash([3,3]);
+                simCtx.beginPath(); simCtx.moveTo(tubeX - 5, waterTopY); simCtx.lineTo(tubeX - 45, waterTopY); simCtx.stroke();
+                simCtx.beginPath(); simCtx.moveTo(tubeX - 5, lantaiY); simCtx.lineTo(tubeX - 45, lantaiY); simCtx.stroke();
+                simCtx.beginPath(); simCtx.moveTo(tubeX - 35, waterTopY); simCtx.lineTo(tubeX - 35, lantaiY); simCtx.stroke();
+                simCtx.setLineDash([]);
+
+                simCtx.fillStyle = '#38bdf8'; simCtx.font = 'bold 12px sans-serif';
+                simCtx.textAlign = 'right';
+                simCtx.fillText(`H = 100 cm`, tubeX - 42, (waterTopY + lantaiY)/2 + 4);
+                simCtx.textAlign = 'left';
+
+                if (torricelliMode === 1) {
+                    // Lubang 1
+                    simCtx.fillStyle = '#0f172a'; 
+                    simCtx.beginPath(); simCtx.arc(tubeX + tubeW, holeY1, 5, 0, Math.PI*2); simCtx.fill();
+                    
+                    // Garis h1
+                    simCtx.strokeStyle = '#2dd4bf'; simCtx.lineWidth = 1.5; simCtx.setLineDash([3,3]);
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW + 5, waterTopY); simCtx.lineTo(tubeX + tubeW + 45, waterTopY); simCtx.stroke();
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW + 5, holeY1); simCtx.lineTo(tubeX + tubeW + 45, holeY1); simCtx.stroke();
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW + 35, waterTopY); simCtx.lineTo(tubeX + tubeW + 35, holeY1); simCtx.stroke();
+                    simCtx.setLineDash([]);
+
+                    simCtx.fillStyle = '#2dd4bf'; simCtx.font = 'bold 12px sans-serif';
+                    simCtx.fillText(`h = ${hBocor1} cm`, tubeX + tubeW + 50, (waterTopY + holeY1)/2 + 4);
+
+                    simCtx.strokeStyle = 'rgba(255,255,255,0.2)'; simCtx.setLineDash([2,2]);
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, holeY1); simCtx.lineTo(w - 30, holeY1); simCtx.stroke();
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, lantaiY); simCtx.lineTo(w - 30, lantaiY); simCtx.stroke();
+                    simCtx.setLineDash([]);
+
+                    if (Math.random() < 0.6) {
+                        waterParticles1.push({ x: tubeX + tubeW, y: holeY1, vx: calcV1 * 22, vy: 0, life: 1.0 });
+                    }
+
+                    for (let i = waterParticles1.length - 1; i >= 0; i--) {
+                        let p = waterParticles1[i];
+                        p.x += p.vx * 0.016;
+                        p.vy += gValue * 8.5 * 0.016;
+                        p.y += p.vy * 0.016;
+                        p.life -= 0.012;
+                        
+                        if (p.y > lantaiY || p.life <= 0) {
+                            waterParticles1.splice(i, 1);
+                        } else {
+                            simCtx.fillStyle = `rgba(45, 212, 191, ${p.life})`;
+                            simCtx.beginPath(); simCtx.arc(p.x, p.y, 3, 0, Math.PI*2); simCtx.fill();
+                        }
+                    }
+
+                    let hitungX_px = (calcX1 * 100) * 1.5; 
+                    let titikJatuhX = tubeX + tubeW + hitungX_px;
+
+                    simCtx.fillStyle = '#2dd4bf';
+                    simCtx.beginPath(); simCtx.arc(titikJatuhX, lantaiY, 6, 0, Math.PI*2); simCtx.fill();
+                    simCtx.strokeStyle = '#ffffff'; simCtx.lineWidth = 2; simCtx.stroke();
+
+                    simCtx.strokeStyle = '#2dd4bf'; simCtx.lineWidth = 2; simCtx.setLineDash([4,4]);
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, lantaiY); simCtx.lineTo(tubeX + tubeW, lantaiY + 75); simCtx.stroke();
+                    simCtx.beginPath(); simCtx.moveTo(titikJatuhX, lantaiY); simCtx.lineTo(titikJatuhX, lantaiY + 75); simCtx.stroke();
+                    
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, lantaiY + 58); simCtx.lineTo(titikJatuhX, lantaiY + 58); simCtx.stroke();
+                    simCtx.setLineDash([]);
+
+                    simCtx.fillStyle = '#2dd4bf';
+                    simCtx.beginPath();
+                    simCtx.moveTo(tubeX + tubeW, lantaiY + 58); simCtx.lineTo(tubeX + tubeW + 8, lantaiY + 53); simCtx.lineTo(tubeX + tubeW + 8, lantaiY + 63);
+                    simCtx.fill();
+                    simCtx.beginPath();
+                    simCtx.moveTo(titikJatuhX, lantaiY + 58); simCtx.lineTo(titikJatuhX - 8, lantaiY + 53); simCtx.lineTo(titikJatuhX - 8, lantaiY + 63);
+                    simCtx.fill();
+
+                    simCtx.fillStyle = '#2dd4bf'; simCtx.font = 'bold 15px sans-serif';
+                    simCtx.textAlign = 'center';
+                    simCtx.fillText(`Jarak Pancar x = ${(calcX1 * 100).toFixed(1)} cm`, (tubeX + tubeW + titikJatuhX) / 2, lantaiY + 45);
+                    simCtx.textAlign = 'left';
+
+                } else {
+                    // MODE 2 LUBANG
+                    simCtx.fillStyle = '#0f172a'; 
+                    simCtx.beginPath(); simCtx.arc(tubeX + tubeW, holeY1, 5, 0, Math.PI*2); simCtx.fill();
+                    simCtx.beginPath(); simCtx.arc(tubeX + tubeW, holeY2, 5, 0, Math.PI*2); simCtx.fill();
+
+                    // Label h1 dan h2 di samping kanan tabung
+                    simCtx.fillStyle = '#2dd4bf'; simCtx.font = 'bold 11px sans-serif';
+                    simCtx.fillText(`h₁=${hBocor1}cm`, tubeX + tubeW + 40, holeY1 + 4);
+                    simCtx.fillStyle = '#f97316'; 
+                    simCtx.fillText(`h₂=${hBocor2}cm`, tubeX + tubeW + 40, holeY2 + 4);
+
+                    simCtx.strokeStyle = 'rgba(255,255,255,0.15)'; simCtx.setLineDash([2,2]);
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, lantaiY); simCtx.lineTo(w - 30, lantaiY); simCtx.stroke();
+                    simCtx.setLineDash([]);
+
+                    // Partikel Lubang 1
+                    if (Math.random() < 0.6) {
+                        waterParticles1.push({ x: tubeX + tubeW, y: holeY1, vx: calcV1 * 22, vy: 0, life: 1.0 });
+                    }
+                    for (let i = waterParticles1.length - 1; i >= 0; i--) {
+                        let p = waterParticles1[i];
+                        p.x += p.vx * 0.016;
+                        p.vy += gValue * 8.5 * 0.016;
+                        p.y += p.vy * 0.016;
+                        p.life -= 0.012;
+                        if (p.y > lantaiY || p.life <= 0) {
+                            waterParticles1.splice(i, 1);
+                        } else {
+                            simCtx.fillStyle = `rgba(45, 212, 191, ${p.life})`;
+                            simCtx.beginPath(); simCtx.arc(p.x, p.y, 3, 0, Math.PI*2); simCtx.fill();
+                        }
+                    }
+
+                    // Partikel Lubang 2
+                    if (Math.random() < 0.6) {
+                        waterParticles2.push({ x: tubeX + tubeW, y: holeY2, vx: calcV2 * 22, vy: 0, life: 1.0 });
+                    }
+                    for (let i = waterParticles2.length - 1; i >= 0; i--) {
+                        let p = waterParticles2[i];
+                        p.x += p.vx * 0.016;
+                        p.vy += gValue * 8.5 * 0.016;
+                        p.y += p.vy * 0.016;
+                        p.life -= 0.012;
+                        if (p.y > lantaiY || p.life <= 0) {
+                            waterParticles2.splice(i, 1);
+                        } else {
+                            simCtx.fillStyle = `rgba(249, 115, 22, ${p.life})`;
+                            simCtx.beginPath(); simCtx.arc(p.x, p.y, 3, 0, Math.PI*2); simCtx.fill();
+                        }
+                    }
+
+                    let hitungX1_px = (calcX1 * 100) * 1.5;
+                    let titikJatuhX1 = tubeX + tubeW + hitungX1_px;
+
+                    let hitungX2_px = (calcX2 * 100) * 1.5;
+                    let titikJatuhX2 = tubeX + tubeW + hitungX2_px;
+
+                    // Titik Jatuh 1 (Teal)
+                    simCtx.fillStyle = '#2dd4bf';
+                    simCtx.beginPath(); simCtx.arc(titikJatuhX1, lantaiY, 5, 0, Math.PI*2); simCtx.fill();
+                    // Titik Jatuh 2 (Orange)
+                    simCtx.fillStyle = '#f97316';
+                    simCtx.beginPath(); simCtx.arc(titikJatuhX2, lantaiY, 5, 0, Math.PI*2); simCtx.fill();
+
+                    // Garis Ukur x1 (Di atas lantai)
+                    simCtx.strokeStyle = '#2dd4bf'; simCtx.lineWidth = 1.5;
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, lantaiY + 30); simCtx.lineTo(titikJatuhX1, lantaiY + 30); simCtx.stroke();
+                    simCtx.fillStyle = '#2dd4bf'; simCtx.font = 'bold 12px sans-serif';
+                    simCtx.textAlign = 'center';
+                    simCtx.fillText(`x₁ = ${(calcX1 * 100).toFixed(1)} cm`, (tubeX + tubeW + titikJatuhX1)/2, lantaiY + 22);
+
+                    // Garis Ukur x2 (Lebih bawah)
+                    simCtx.strokeStyle = '#f97316'; simCtx.lineWidth = 1.5;
+                    simCtx.beginPath(); simCtx.moveTo(tubeX + tubeW, lantaiY + 65); simCtx.lineTo(titikJatuhX2, lantaiY + 65); simCtx.stroke();
+                    simCtx.fillStyle = '#f97316'; 
+                    simCtx.fillText(`x₂ = ${(calcX2 * 100).toFixed(1)} cm`, (tubeX + tubeW + titikJatuhX2)/2, lantaiY + 57);
+                    simCtx.textAlign = 'left';
+                }
+
+                // Lantai Dasar
+                simCtx.fillStyle = '#334155';
+                simCtx.fillRect(0, lantaiY, w, h - lantaiY);
+            } 
+            else if (activeSim === 'sayap') {
+                let targetOffset = - (calcDP - 2000) * 0.025; 
+                targetOffset = Math.max(Math.min(targetOffset, 75), -75);
+                planeYOffset += (targetOffset - planeYOffset) * 0.1;
+
+                let planeX = w / 2;
+                let planeY = (h / 2) + planeYOffset;
+
+                airStreamLines.forEach(p => {
+                    let speed = p.isTop ? (vSayapAtas * 0.0075) : (vSayapBawah * 0.0045);
+                    p.x -= speed;
+                    if (p.x < 0) { 
+                        p.x = w; 
+                        p.y = Math.random() * h; 
+                        p.isTop = p.y < planeY;
+                    }
+
+                    let relX = p.x - planeX;
+                    if (relX > -110 && relX < 110) {
+                        if (p.y < planeY) {
+                            p.isTop = true;
+                            p.y += (planeY - 55 - p.y) * 0.12;
+                        } else {
+                            p.isTop = false;
+                            p.y += (planeY + 30 - p.y) * 0.1;
+                        }
+                    }
+
+                    simCtx.fillStyle = p.isTop ? 'rgba(56, 189, 248, 0.95)' : 'rgba(148, 163, 184, 0.65)';
+                    simCtx.beginPath(); simCtx.arc(p.x, p.y, p.isTop ? 2.5 : 2, 0, Math.PI*2); simCtx.fill();
+                });
+
+                simCtx.save();
+                simCtx.translate(planeX, planeY);
+                let tilt = (targetOffset - planeYOffset) * 0.04;
+                simCtx.rotate(tilt);
+
+                simCtx.shadowColor = 'rgba(56, 189, 248, 0.3)';
+                simCtx.shadowBlur = 12;
+
+                simCtx.fillStyle = '#f1f5f9';
+                simCtx.beginPath();
+                simCtx.ellipse(0, 0, 95, 20, 0, 0, Math.PI * 2);
+                simCtx.fill();
+                simCtx.strokeStyle = '#94a3b8'; simCtx.lineWidth = 1.5; simCtx.stroke();
+
+                simCtx.strokeStyle = '#0284c7'; simCtx.lineWidth = 3;
+                simCtx.beginPath(); simCtx.moveTo(-70, 4); simCtx.lineTo(75, 4); simCtx.stroke();
+                simCtx.strokeStyle = '#f59e0b'; simCtx.lineWidth = 1.5;
+                simCtx.beginPath(); simCtx.moveTo(-70, 7); simCtx.lineTo(75, 7); simCtx.stroke();
+
+                simCtx.fillStyle = '#0f172a';
+                for (let wx = -45; wx <= 45; wx += 12) {
+                    simCtx.beginPath(); simCtx.ellipse(wx, -2, 2.5, 4, 0, 0, Math.PI*2); simCtx.fill();
+                }
+
+                simCtx.fillStyle = '#e2e8f0';
+                simCtx.beginPath(); simCtx.arc(80, 0, 20, -Math.PI/2, Math.PI/2); simCtx.fill(); simCtx.stroke();
+
+                simCtx.fillStyle = '#38bdf8';
+                simCtx.beginPath();
+                simCtx.moveTo(75, -8); simCtx.lineTo(92, -4); simCtx.lineTo(92, 4); simCtx.lineTo(75, 2);
+                simCtx.closePath(); simCtx.fill();
+
+                simCtx.fillStyle = '#cbd5e1';
+                simCtx.beginPath();
+                simCtx.moveTo(-10, 2); simCtx.lineTo(25, -75); simCtx.lineTo(50, -68); simCtx.lineTo(30, 2);
+                simCtx.closePath(); simCtx.fill(); simCtx.stroke();
+
+                simCtx.strokeStyle = '#0284c7'; simCtx.lineWidth = 3;
+                simCtx.beginPath(); simCtx.moveTo(48, -65); simCtx.lineTo(53, -78); simCtx.stroke();
+
+                simCtx.fillStyle = '#64748b';
+                simCtx.beginPath(); simCtx.roundRect(5, 12, 28, 14, 5); simCtx.fill();
+                simCtx.fillStyle = '#0f172a';
+                simCtx.beginPath(); simCtx.ellipse(5, 19, 4, 7, 0, 0, Math.PI*2); simCtx.fill();
+
+                simCtx.fillStyle = '#cbd5e1';
+                simCtx.beginPath();
+                simCtx.moveTo(-75, 0); simCtx.lineTo(-95, -35); simCtx.lineTo(-68, -22);
+                simCtx.closePath(); simCtx.fill(); simCtx.stroke();
+
+                simCtx.restore();
+                simCtx.shadowBlur = 0;
+
+                let force = Math.min(Math.max(calcDP * 0.2, 10), 85);
+                simCtx.strokeStyle = '#10b981'; simCtx.lineWidth = 4;
+                simCtx.beginPath(); simCtx.moveTo(planeX, planeY - 40); simCtx.lineTo(planeX, planeY - 40 - force); simCtx.stroke();
+                
+                simCtx.beginPath();
+                simCtx.moveTo(planeX - 6, planeY - 40 - force + 10); simCtx.lineTo(planeX, planeY - 40 - force); simCtx.lineTo(planeX + 6, planeY - 40 - force + 10);
+                simCtx.fillStyle = '#10b981'; simCtx.fill();
+                
+                simCtx.font = 'bold 13px sans-serif'; simCtx.textAlign = 'center';
+                simCtx.fillStyle = '#38bdf8';
+                simCtx.fillText(calcDP > 0 ? "✈️ Pesawat Naik (Lift > Berat)" : "✈️ Pesawat Melandai / Turun", planeX, h - 15);
+            }
+            else if (activeSim === 'parfum') {
+                let botolX = w/2 - 45;
+                let botolY = h/2 + 10;
+                let botolW = 90;
+                let botolH = 130;
+                let leherW = 20;
+                let leherH = 35;
+                let leherX = w/2 - leherW/2;
+                let leherY = botolY - leherH;
+
+                simCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+                simCtx.beginPath(); simCtx.roundRect(botolX, botolY, botolW, botolH, 10); simCtx.fill();
+                simCtx.strokeStyle = '#94a3b8'; simCtx.lineWidth = 2; simCtx.stroke();
+
+                simCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                simCtx.fillRect(leherX, leherY, leherW, leherH);
+                simCtx.strokeStyle = '#94a3b8'; simCtx.lineWidth = 2;
+                simCtx.beginPath();
+                simCtx.moveTo(leherX, leherY); simCtx.lineTo(leherX, botolY);
+                simCtx.moveTo(leherX + leherW, leherY); simCtx.lineTo(leherX + leherW, botolY);
+                simCtx.stroke();
+
+                let dasarCairanY = botolY + botolH - 5;
+                let permukaanCairanBotolY = botolY + botolH - 90;
+
+                simCtx.fillStyle = 'rgba(168, 85, 247, 0.55)';
+                simCtx.fillRect(botolX + 2, permukaanCairanBotolY, botolW - 4, dasarCairanY - permukaanCairanBotolY);
+
+                simCtx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; simCtx.lineWidth = 5;
+                simCtx.beginPath(); simCtx.moveTo(w/2, dasarCairanY); simCtx.lineTo(w/2, leherY + 5); simCtx.stroke();
+
+                let hTerisapPx = Math.min((calcHparfum / 100) * 120, 110);
+                let puncakCairanY = dasarCairanY - hTerisapPx;
+
+                if (hTerisapPx > 0) {
+                    simCtx.strokeStyle = '#d8b4fe'; simCtx.lineWidth = 5;
+                    simCtx.beginPath(); simCtx.moveTo(w/2, dasarCairanY); simCtx.lineTo(w/2, puncakCairanY); simCtx.stroke();
+                }
+
+                let garisX = w/2 + 22;
+                simCtx.strokeStyle = '#2dd4bf';
+                simCtx.lineWidth = 1.5;
+                simCtx.setLineDash([3,3]);
+                simCtx.beginPath();
+                simCtx.moveTo(w/2 + 2, dasarCairanY); simCtx.lineTo(garisX + 15, dasarCairanY);
+                simCtx.moveTo(w/2 + 2, puncakCairanY); simCtx.lineTo(garisX + 15, puncakCairanY);
+                simCtx.stroke();
+
+                simCtx.beginPath();
+                simCtx.moveTo(garisX + 8, dasarCairanY);
+                simCtx.lineTo(garisX + 8, puncakCairanY);
+                simCtx.stroke();
+                simCtx.setLineDash([]);
+
+                simCtx.fillStyle = '#2dd4bf';
+                simCtx.font = 'bold 12px sans-serif';
+                simCtx.textAlign = 'left';
+                simCtx.fillText(`h = ${calcHparfum.toFixed(1)} cm`, garisX + 20, (dasarCairanY + puncakCairanY)/2 + 4);
+
+                simCtx.fillStyle = '#cbd5e1';
+                simCtx.fillRect(w/2 - 22, leherY - 10, 44, 12);
+
+                for (let i = perfumeParticles.length - 1; i >= 0; i--) {
+                    let p = perfumeParticles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.05;
+                    p.life -= 0.02;
+                    
+                    if (p.life <= 0 || p.x < 0) {
+                        perfumeParticles.splice(i, 1);
+                    } else {
+                        simCtx.fillStyle = p.size > 2 ? `rgba(216, 180, 254, ${p.life})` : `rgba(125, 211, 252, ${p.life})`;
+                        simCtx.beginPath(); simCtx.arc(p.x, p.y, p.size, 0, Math.PI*2); simCtx.fill();
+                    }
+                }
+            }
+
+            animFrameId = requestAnimationFrame(drawSimulation);
+        }
+
+        window.addEventListener('load', () => {
+            resizeSimCanvas();
+            switchSim('torricelli');
+        });
+
+        window.addEventListener('resize', resizeSimCanvas);
+    </script>
+
+</body>
+</html>

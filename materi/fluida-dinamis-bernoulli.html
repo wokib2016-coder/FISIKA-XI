@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modul Fisika: Asas Bernoulli</title>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    :root {
+        --dark-green: #1a3c34; --accent-yellow: #f2c94c; --teal: #2dd4bf;
+        --bg-light: #f4f6fb; --text-dark: #1f2937; --card-bg: #ffffff; --border: #e2e8f0;
+        --red-alert: #ef4444;
+    }
+    body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; }
+    
+    .header-materi {
+        background-color: var(--dark-green); color: white; padding: 20px;
+        position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .header-materi h1 { font-size: 1.1rem; line-height: 1.3; }
+    .header-materi h1 span { color: var(--accent-yellow); }
+    .btn-tutup { background: var(--red-alert); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    
+    .container { max-width: 840px; margin: 20px auto; padding: 0 15px; }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 22px; margin-bottom: 22px; box-shadow: 0 3px 14px rgba(0,0,0,0.06); border-top: 4px solid var(--teal); }
+    h2 { color: var(--dark-green); margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 8px; font-size: 1.3rem; }
+    h3 { color: #3b82f6; margin: 20px 0 10px; font-size: 1.08rem; }
+    p { margin-bottom: 12px; color: #334155; }
+    ul, ol { margin-left: 20px; margin-bottom: 15px; color: #334155; }
+    li { margin-bottom: 6px; }
+    
+    .rumus-box {
+        background: #f8fafc; border: 1px solid var(--border); border-left: 4px solid var(--accent-yellow);
+        padding: 14px; border-radius: 8px; margin: 15px 0; text-align: center;
+        font-size: 1.15rem; font-weight: bold; color: var(--dark-green);
+    }
+    
+    /* CSS Simulasi Interaktif */
+    .sim-area { background: #f0fdf4; border: 2px dashed #10b981; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .sim-canvas-container { position: relative; width: 100%; height: 360px; background: #0f172a; border-radius: 8px; overflow: hidden; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+    .sim-canvas-container canvas { display: block; width: 100%; height: 100%; }
+    .sim-controls { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
+    @media(min-width: 600px) { .sim-controls { grid-template-columns: 1fr 1fr; } }
+    .sim-control { background: white; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .sim-control label { font-weight: bold; font-size: 0.9rem; display: block; margin-bottom: 5px; color: #1e293b; }
+    .sim-control input[type="range"] { width: 100%; accent-color: #10b981; cursor: pointer; }
+    .sim-control .val { font-size: 0.85rem; color: #3b82f6; font-weight: bold; text-align: right; display: block; margin-top: 5px; }
+    
+    .sim-results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+    .sim-result-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; }
+    .sim-result-item .title { font-size: 0.75rem; color: #64748b; font-weight: bold; }
+    .sim-result-item .val { font-size: 1.1rem; color: #059669; font-weight: bold; }
+
+    /* CSS Kuis Model Baru */
+    .soal-container { margin-bottom: 30px; }
+    .soal-title { font-weight: 500; margin-bottom: 15px; font-size: 1rem; color: #1f2937; }
+    .opsi-card { background-color: #f8fafc; border: 2px solid transparent; border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+    .opsi-card:hover { background-color: #f1f5f9; }
+    .opsi-card.benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .opsi-card.salah { background-color: #fef2f2; border-color: #ef4444; color: #991b1b; }
+    .opsi-card.reveal-benar { background-color: #ecfdf5; border-color: #10b981; color: #065f46; font-weight: bold; }
+    .pembahasan-box { background-color: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin-top: 15px; display: none; color: #064e3b; }
+    .pembahasan-box.salah { background-color: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+    .pembahasan-title { font-weight: bold; margin-bottom: 8px; display: block; }
+    .pembahasan-text { font-size: 0.95rem; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+    <header class="header-materi">
+        <h1>Modul Pembelajaran: <span>Asas Bernoulli & Aplikasinya</span></h1>
+        <button class="btn-tutup" onclick="window.close()">✖ Tutup</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- A. PENGANTAR ASAS BERNOULLI -->
+        <div class="card">
+            <h2>A. Konsep Asas Bernoulli</h2>
+            <p>Asas Bernoulli menyatakan bahwa pada fluida yang bergerak (dinamis), <strong>semakin besar kecepatan fluida, maka semakin kecil tekanannya</strong>. Sebaliknya, semakin kecil kecepatan fluida, semakin besar tekanannya.</p>
+            <p>Prinsip ini merupakan bentuk lain dari Hukum Kekekalan Energi pada fluida. Total energi pada suatu titik aliran fluida terdiri dari tiga komponen: energi tekanan, energi kinetik, dan energi potensial.</p>
+            
+            <div class="rumus-box">
+                \[ P + \frac{1}{2}\rho v^2 + \rho g h = \text{konstan} \]
+            </div>
+
+            <p>Jika fluida mengalir melalui dua titik (titik 1 dan titik 2), maka persamaan lengkapnya adalah:</p>
+            
+            <div class="rumus-box">
+                \[ P_1 + \frac{1}{2}\rho v_1^2 + \rho g h_1 = P_2 + \frac{1}{2}\rho v_2^2 + \rho g h_2 \]
+            </div>
+
+            <p>Keterangan:</p>
+            <ul>
+                <li><strong>\(P\)</strong> = Tekanan fluida (Pa)</li>
+                <li><strong>\(\rho\)</strong> = Massa jenis fluida (kg/m³)</li>
+                <li><strong>\(v\)</strong> = Kecepatan aliran fluida (m/s)</li>
+                <li><strong>\(g\)</strong> = Percepatan gravitasi (m/s²)</li>
+                <li><strong>\(h\)</strong> = Ketinggian titik dari acuan (m)</li>
+            </ul>
+        </div>
+
+        <!-- B. APLIKASI & SIMULASI -->
+        <div class="card">
+            <h2>B. Aplikasi Asas Bernoulli (Pipa Venturi)</h2>
+            <p>Salah satu aplikasi paling umum dari Asas Bernoulli adalah <strong>Pipa Venturi</strong>. Pipa ini memiliki bagian yang menyempit di tengahnya. Sesuai Persamaan Kontinuitas, fluida akan bergerak lebih cepat di bagian yang sempit. Sesuai Asas Bernoulli, kecepatan yang tinggi ini menyebabkan tekanan di bagian sempit menjadi lebih rendah.</p>
+            
+            <p>Perhatikan pada simulasi di bawah: saat kamu mempercepat aliran di pipa kanan (\(v_2\)), maka <strong>diameter pipa kanan akan otomatis mengecil</strong>. Akibatnya, tekanan (\(P_2\)) menurun dan cairan pada pipa U (manometer) menjadi lebih rendah. Ujung pipa vertikal ini <strong>terbuka ke udara</strong> (manometer tabung terbuka).</p>
+
+            <!-- SIMULASI INTERAKTIF -->
+            <div class="sim-area">
+                <h3 style="margin-top:0; color:#065f46; text-align:center;">💧 Simulasi Interaktif Pipa Venturi Dinamis</h3>
+                <p style="text-align:center; font-size:0.9rem; color:#047857; margin-bottom:15px;">Geser slider untuk mengubah kecepatan. Perhatikan diameter pipa dan tinggi cairan manometer (Δh) yang ikut berubah secara dinamis!</p>
+                
+                <div class="sim-canvas-container">
+                    <canvas id="simCanvas" width="800" height="360"></canvas>
+                </div>
+
+                <div class="sim-controls">
+                    <div class="sim-control">
+                        <label>Kecepatan Aliran di Pipa Kiri \(v_1\)</label>
+                        <input type="range" id="sliderV1" min="1" max="8" value="3" step="0.5">
+                        <span class="val" id="valV1">3.0 m/s</span>
+                    </div>
+                    <div class="sim-control">
+                        <label>Kecepatan Aliran di Pipa Kanan \(v_2\)</label>
+                        <input type="range" id="sliderV2" min="1" max="15" value="6" step="0.5">
+                        <span class="val" id="valV2">6.0 m/s</span>
+                    </div>
+                </div>
+
+                <div class="sim-results" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="sim-result-item"><div class="title">Tekanan Kiri (P₁)</div><div class="val" id="valP1">...</div></div>
+                    <div class="sim-result-item"><div class="title">Tekanan Kanan (P₂)</div><div class="val" id="valP2">...</div></div>
+                    
+                    <div class="sim-result-item" style="background:#eff6ff; border-color:#bfdbfe;">
+                        <div class="title" style="color:#1d4ed8;">Luas Penampang (A₁)</div>
+                        <div class="val" id="valA1" style="color:#1e40af;">... m²</div>
+                    </div>
+                    <div class="sim-result-item" style="background:#eff6ff; border-color:#bfdbfe;">
+                        <div class="title" style="color:#1d4ed8;">Luas Penampang (A₂)</div>
+                        <div class="val" id="valA2" style="color:#1e40af;">... m²</div>
+                    </div>
+
+                    <div class="sim-result-item" style="grid-column: span 2; background:#fffbeb; border-color:#fde68a;">
+                        <div class="title" style="color:#b45309;">Selisih Tinggi Manometer (Δh)</div>
+                        <div class="val" id="valDeltaH" style="color:#d97706;">... cm</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- C. UJI PEMAHAMAN INTERAKTIF (HOTS) -->
+        <div class="card">
+            <h2>C. Uji Pemahaman Interaktif (HOTS)</h2>
+            <p>Pilih satu jawaban yang paling tepat pada setiap soal. Sistem akan langsung memberikan umpan balik dan pembahasan.</p>
+
+            <!-- SOAL 1 -->
+            <div class="soal-container" id="soal1">
+                <div class="soal-title">1. Sebuah sayap pesawat terbang dirancang agar udara mengalir lebih cepat di bagian atas sayap daripada di bagian bawah sayap. Berdasarkan Asas Bernoulli, hal ini menyebabkan...</div>
+                <div class="opsi-card" onclick="jawab(1, 'A', 'C')">A. Tekanan di atas sayap lebih besar, sehingga pesawat terangkat.</div>
+                <div class="opsi-card" onclick="jawab(1, 'B', 'C')">B. Tekanan di atas sayap sama dengan di bawah sayap.</div>
+                <div class="opsi-card" onclick="jawab(1, 'C', 'C')">C. Tekanan di atas sayap lebih kecil, sehingga pesawat terangkat.</div>
+                <div class="opsi-card" onclick="jawab(1, 'D', 'C')">D. Kecepatan udara tidak mempengaruhi tekanan pada sayap.</div>
+                <div class="pembahasan-box" id="pembahasan1"></div>
+            </div>
+
+            <!-- SOAL 2 -->
+            <div class="soal-container" id="soal2">
+                <div class="soal-title">2. Air mengalir melalui pipa horizontal. Di titik A, kecepatan air adalah \(2 \text{ m/s}\) dan tekanannya \(10^5 \text{ Pa}\). Di titik B yang berada di ketinggian yang sama, kecepatan airnya \(4 \text{ m/s}\). Jika massa jenis air \(1000 \text{ kg/m}^3\), berapakah tekanan air di titik B?</div>
+                <div class="opsi-card" onclick="jawab(2, 'A', 'B')">A. \(9,4 \times 10^4 \text{ Pa}\)</div>
+                <div class="opsi-card" onclick="jawab(2, 'B', 'B')">B. \(9,8 \times 10^4 \text{ Pa}\)</div>
+                <div class="opsi-card" onclick="jawab(2, 'C', 'B')">C. \(1,02 \times 10^5 \text{ Pa}\)</div>
+                <div class="opsi-card" onclick="jawab(2, 'D', 'B')">D. \(1,06 \times 10^5 \text{ Pa}\)</div>
+                <div class="pembahasan-box" id="pembahasan2"></div>
+            </div>
+
+            <!-- SOAL 3 -->
+            <div class="soal-container" id="soal3">
+                <div class="soal-title">3. Berdasarkan simulasi Pipa Venturi yang telah kamu coba, mengapa permukaan cairan pada pipa vertikal di bagian yang sempit (P₂) lebih rendah daripada di bagian yang lebar (P₁)?</div>
+                <div class="opsi-card" onclick="jawab(3, 'A', 'B')">A. Karena gaya gravitasi di bagian sempit lebih kecil.</div>
+                <div class="opsi-card" onclick="jawab(3, 'B', 'B')">B. Karena kecepatan fluida di bagian sempit lebih tinggi, sehingga tekanannya menjadi lebih rendah.</div>
+                <div class="opsi-card" onclick="jawab(3, 'C', 'B')">C. Karena massa jenis fluida berkurang saat melewati pipa sempit.</div>
+                <div class="opsi-card" onclick="jawab(3, 'D', 'B')">D. Karena udara masuk ke dalam pipa sempit.</div>
+                <div class="pembahasan-box" id="pembahasan3"></div>
+            </div>
+
+            <!-- SOAL 4 -->
+            <div class="soal-container" id="soal4">
+                <div class="soal-title">4. Sebuah tangki air memiliki lubang kebocoran di dinding sampingnya pada kedalaman \(h\) dari permukaan air. Jika percepatan gravitasi \(g\), berapakah kecepatan pancaran air yang keluar dari lubang tersebut? (Asas Torricelli yang diturunkan dari Bernoulli)</div>
+                <div class="opsi-card" onclick="jawab(4, 'A', 'C')">A. \(v = \sqrt{2gh}\)</div>
+                <div class="opsi-card" onclick="jawab(4, 'B', 'C')">B. \(v = \sqrt{gh}\)</div>
+                <div class="opsi-card" onclick="jawab(4, 'C', 'C')">C. \(v = 2\sqrt{gh}\)</div>
+                <div class="opsi-card" onclick="jawab(4, 'D', 'C')">D. \(v = \rho g h\)</div>
+                <div class="pembahasan-box" id="pembahasan4"></div>
+            </div>
+
+            <!-- SOAL 5 -->
+            <div class="soal-container" id="soal5">
+                <div class="soal-title">5. Sebuah karburator (pengatur bahan bakar kendaraan) memanfaatkan prinsip Bernoulli. Udara dialirkan melalui bagian yang menyempit sehingga kecepatannya bertambah. Apa dampak dari penyempitan ini terhadap bahan bakar?</div>
+                <div class="opsi-card" onclick="jawab(5, 'A', 'D')">A. Tekanan udara membesar, sehingga bahan bakar terdorong keluar.</div>
+                <div class="opsi-card" onclick="jawab(5, 'B', 'D')">B. Tekanan udara tetap, bahan bakar mengalir karena gravitasi.</div>
+                <div class="opsi-card" onclick="jawab(5, 'C', 'D')">C. Tekanan udara mengecil, sehingga bahan bakar terisap keluar dan bercampur dengan udara.</div>
+                <div class="opsi-card" onclick="jawab(5, 'D', 'D')">D. Kecepatan udara menurun, membuat bahan bakar menguap.</div>
+                <div class="pembahasan-box" id="pembahasan5"></div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- JAVASCRIPT UNTUK INTERAKSI KUIS & ANIMASI -->
+    <script>
+        /* =====================================================
+           BAGIAN 1: LOGIKA KUIS INTERAKTIF
+           ===================================================== */
+        function jawab(nomorSoal, opsiDipilih, opsiBenar) {
+            const container = document.getElementById('soal' + nomorSoal);
+            const opsiCards = container.querySelectorAll('.opsi-card');
+            const pembahasanBox = document.getElementById('pembahasan' + nomorSoal);
+            
+            opsiCards.forEach(card => { card.classList.remove('benar', 'salah', 'reveal-benar'); });
+            pembahasanBox.style.display = 'none';
+
+            if (opsiDipilih === opsiBenar) {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) card.classList.add('benar');
+                });
+                pembahasanBox.className = 'pembahasan-box';
+                pembahasanBox.innerHTML = `<span class="pembahasan-title">Benar! Jawaban: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+                pembahasanBox.style.display = 'block';
+            } else {
+                opsiCards.forEach(card => {
+                    if (card.innerText.trim().startsWith(opsiDipilih + '.')) card.classList.add('salah');
+                    if (card.innerText.trim().startsWith(opsiBenar + '.')) card.classList.add('reveal-benar');
+                });
+                pembahasanBox.className = 'pembahasan-box salah';
+                pembahasanBox.innerHTML = `<span class="pembahasan-title">Kurang Tepat. Jawaban yang benar adalah: ${opsiBenar}.</span><div class="pembahasan-text">${getPembahasan(nomorSoal)}</div>`;
+                pembahasanBox.style.display = 'block';
+            }
+
+            if (window.MathJax) MathJax.typesetPromise([pembahasanBox]);
+        }
+
+        function getPembahasan(soal) {
+            if(soal === 1) return "Asas Bernoulli menyatakan bahwa semakin cepat aliran fluida (udara di atas sayap), maka semakin kecil tekanannya. Karena tekanan di bawah sayap lebih besar daripada di atas, timbul gaya angkat ke atas.";
+            if(soal === 2) return "Gunakan persamaan Bernoulli untuk ketinggian yang sama (\(h_1 = h_2\)):<br>\[ P_1 + \frac{1}{2}\rho v_1^2 = P_2 + \frac{1}{2}\rho v_2^2 \]<br>\[ 100.000 + \frac{1}{2}(1000)(2^2) = P_2 + \frac{1}{2}(1000)(4^2) \]<br>\[ 100.000 + 2.000 = P_2 + 8.000 \]<br>\[ 102.000 = P_2 + 8.000 \Rightarrow P_2 = 94.000 \text{ Pa} \]";
+            if(soal === 3) return "Berdasarkan Asas Bernoulli, pada aliran horizontal, kecepatan yang tinggi (di pipa sempit) menyebabkan tekanan statis menurun. Tekanan yang lebih rendah ini tidak mampu menahan cairan di pipa vertikal setinggi di bagian pipa lebar.";
+            if(soal === 4) return "Ini adalah penurunan Asas Torricelli dari Persamaan Bernoulli dengan \(P_1 = P_2 = P_{atm}\) (tekanan udara luar) dan \(v_1 \approx 0\) (permukaan tangki sangat luas). Hasilnya adalah \(v = \sqrt{2gh}\).";
+            if(soal === 5) return "Di bagian venturi karburator, udara bergerak sangat cepat sehingga tekanannya mengecil (vakum). Tekanan atmosfer di dalam ruang bahan bakar (yang lebih besar) mendorong bahan bakar keluar melalui nosel kecil untuk bercampur dengan udara.";
+        }
+
+        /* =====================================================
+           BAGIAN 2: SIMULASI ANIMASI PIPA VENTURI DINAMIS
+           ===================================================== */
+        const simCanvas = document.getElementById('simCanvas');
+        const simCtx = simCanvas.getContext('2d');
+        
+        let v1_val = 3.0; 
+        let v2_val = 6.0; 
+        let P1_val = 0;
+        let P2_val = 0;
+        
+        let particles = [];
+        const numParticles = 150;
+        
+        function resizeSimCanvas() {
+            const container = simCanvas.parentElement;
+            simCanvas.width = container.clientWidth;
+            simCanvas.height = container.clientHeight;
+            initParticles();
+        }
+
+        function initParticles() {
+            particles = [];
+            for(let i=0; i<numParticles; i++) {
+                particles.push({
+                    x: Math.random() * simCanvas.width,
+                    y: Math.random() * simCanvas.height, 
+                    size: 1.5 + Math.random() * 2.5,
+                    alpha: 0.4 + Math.random() * 0.6
+                });
+            }
+        }
+
+        function updateSimParams() {
+            v1_val = parseFloat(document.getElementById('sliderV1').value);
+            v2_val = parseFloat(document.getElementById('sliderV2').value);
+            
+            document.getElementById('valV1').innerText = v1_val.toFixed(1) + " m/s";
+            document.getElementById('valV2').innerText = v2_val.toFixed(1) + " m/s";
+
+            const P_total = 100000; 
+            const rho = 1000;
+            
+            const dynP1 = 0.5 * rho * v1_val * v1_val;
+            const dynP2 = 0.5 * rho * v2_val * v2_val;
+            
+            P1_val = P_total - dynP1;
+            P2_val = P_total - dynP2;
+
+            // --- Menghitung Luas Penampang (A) ---
+            const K = 160; 
+            let h1_display = K / v1_val; 
+            let h2_display = K / v2_val;
+            
+            if(h1_display < 25) h1_display = 25; if(h1_display > 110) h1_display = 110;
+            if(h2_display < 25) h2_display = 25; if(h2_display > 110) h2_display = 110;
+
+            // Asumsi skala: 1 pixel = 0.01 m²
+            const A1_val = h1_display * 0.01; 
+            const A2_val = h2_display * 0.01;
+
+            // --- Menghitung Selisih Tinggi Manometer (Δh) ---
+            const deltaP = Math.abs(P1_val - P2_val);
+            // Rumus: ΔP = ρ * g * Δh -> Δh = ΔP / (ρ * g)
+            // g diasumsikan 10 m/s²
+            const deltaH_meter = deltaP / (1000 * 10); 
+
+            // Tampilkan ke HTML
+            document.getElementById('valP1').innerText = (P1_val / 1000).toFixed(1) + " kPa";
+            document.getElementById('valP2').innerText = (P2_val / 1000).toFixed(1) + " kPa";
+            document.getElementById('valA1').innerText = A1_val.toFixed(4) + " m²";
+            document.getElementById('valA2').innerText = A2_val.toFixed(4) + " m²";
+            document.getElementById('valDeltaH').innerText = (deltaH_meter * 100).toFixed(2) + " cm";
+        }
+
+        document.getElementById('sliderV1').addEventListener('input', updateSimParams);
+        document.getElementById('sliderV2').addEventListener('input', updateSimParams);
+
+        function drawSimulation() {
+            simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+            
+            const cx = simCanvas.width / 2;
+            const cy = simCanvas.height / 2 + 20; 
+            
+            const K = 160; 
+            let h1 = K / v1_val; 
+            let h2 = K / v2_val;
+            
+            if(h1 < 25) h1 = 25; if(h1 > 110) h1 = 110;
+            if(h2 < 25) h2 = 25; if(h2 > 110) h2 = 110;
+
+            const transStart = cx - 120;
+            const transEnd = cx + 120;
+            
+            const topY1 = cy - h1/2;
+            const botY1 = cy + h1/2;
+            const topY2 = cy - h2/2;
+            const botY2 = cy + h2/2;
+
+            // ==========================================
+            // 1. GAMBAR PIPA HORIZONTAL
+            // ==========================================
+            simCtx.fillStyle = 'rgba(30, 41, 59, 0.4)'; 
+            
+            simCtx.beginPath();
+            simCtx.moveTo(0, topY1);
+            simCtx.lineTo(transStart, topY1);
+            simCtx.lineTo(transEnd, topY2);
+            simCtx.lineTo(simCanvas.width, topY2);
+            simCtx.lineTo(simCanvas.width, botY2);
+            simCtx.lineTo(transEnd, botY2);
+            simCtx.lineTo(transStart, botY1);
+            simCtx.lineTo(0, botY1);
+            simCtx.closePath();
+            simCtx.fill();
+
+            // Garis tepi pipa horizontal
+            simCtx.strokeStyle = '#64748b';
+            simCtx.lineWidth = 3;
+            simCtx.beginPath();
+            simCtx.moveTo(0, topY1);
+            simCtx.lineTo(transStart, topY1);
+            simCtx.lineTo(transEnd, topY2);
+            simCtx.lineTo(simCanvas.width, topY2);
+            simCtx.moveTo(0, botY1);
+            simCtx.lineTo(transStart, botY1);
+            simCtx.lineTo(transEnd, botY2);
+            simCtx.lineTo(simCanvas.width, botY2);
+            simCtx.stroke();
+
+            // ==========================================
+            // 2. GAMBAR PIPA VERTIKAL (MANOMETER) & ISINYA
+            // ==========================================
+            const pipeW = 16;
+            const pipeH = 120;
+            const p1X = cx - 160;
+            const p2X = cx + 160;
+            const pipeTopY = Math.min(topY1, topY2) - pipeH + 20; 
+            
+            const waterLevelY1 = pipeTopY + pipeH - ((P1_val / 100000) * pipeH);
+            const waterLevelY2 = pipeTopY + pipeH - ((P2_val / 100000) * pipeH);
+
+            function drawManometerPipe(xPos, topPipeY, bottomPipeY, waterY) {
+                // 1. Latar belakang transparan gelap
+                simCtx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+                simCtx.fillRect(xPos, topPipeY, pipeW, bottomPipeY - topPipeY);
+                
+                // 2. Isi dengan partikel/gelembung (bukan blok warna)
+                simCtx.fillStyle = '#7dd3fc';
+                simCtx.globalAlpha = 0.7; // Sedikit transparan agar terlihat seperti cairan
+                
+                // Looping untuk mengisi area dari waterY sampai bottomPipeY
+                // Kita gunakan jarak antar partikel 6px
+                for (let y = waterY + 3; y < bottomPipeY; y += 6) {
+                    for (let x = xPos + 4; x < xPos + pipeW - 3; x += 5) {
+                        // Variasi acak kecil agar terlihat natural
+                        let jitterX = (Math.random() - 0.5) * 1.5;
+                        let jitterY = (Math.random() - 0.5) * 1.5;
+                        let size = 1.0 + Math.random() * 1.5;
+                        
+                        simCtx.beginPath();
+                        simCtx.arc(x + jitterX, y + jitterY, size, 0, Math.PI * 2);
+                        simCtx.fill();
+                    }
+                }
+                simCtx.globalAlpha = 1.0; // Reset transparansi
+
+                // 3. Garis tepi pipa (Hanya Kiri dan Kanan)
+                simCtx.strokeStyle = '#cbd5e1';
+                simCtx.lineWidth = 2;
+                simCtx.beginPath();
+                simCtx.moveTo(xPos, topPipeY); 
+                simCtx.lineTo(xPos, bottomPipeY); 
+                simCtx.moveTo(xPos + pipeW, topPipeY); 
+                simCtx.lineTo(xPos + pipeW, bottomPipeY); 
+                simCtx.stroke();
+            }
+
+            // Gambar Manometer 1 & 2
+            drawManometerPipe(p1X, pipeTopY, topY1, waterLevelY1);
+            drawManometerPipe(p2X, pipeTopY, topY2, waterLevelY2);
+
+            // Label P1, P2, dan Udara
+            simCtx.fillStyle = '#e2e8f0';
+            simCtx.font = 'bold 12px sans-serif';
+            simCtx.textAlign = 'center';
+            simCtx.fillText('P₁', p1X + pipeW/2, pipeTopY - 10);
+            simCtx.fillText('P₂', p2X + pipeW/2, pipeTopY - 10);
+            
+            simCtx.fillStyle = '#64748b';
+            simCtx.font = '9px sans-serif';
+            simCtx.fillText('udara', p1X + pipeW/2, pipeTopY - 25);
+            simCtx.fillText('udara', p2X + pipeW/2, pipeTopY - 25);
+
+            // ==========================================
+            // 3. GARIS UKUR SELISIH KETINGGIAN (Δh)
+            // ==========================================
+            const centerX = (p1X + pipeW + p2X) / 2; 
+            const deltaY = Math.abs(waterLevelY1 - waterLevelY2);
+            
+            if (deltaY > 2) {
+                simCtx.strokeStyle = '#f59e0b'; 
+                simCtx.lineWidth = 1.5;
+                simCtx.setLineDash([5, 4]); 
+
+                // Garis Horizontal Atas
+                simCtx.beginPath();
+                simCtx.moveTo(p1X + pipeW, waterLevelY1);
+                simCtx.lineTo(centerX, waterLevelY1);
+                simCtx.stroke();
+
+                // Garis Horizontal Bawah
+                simCtx.beginPath();
+                simCtx.moveTo(p2X, waterLevelY2);
+                simCtx.lineTo(centerX, waterLevelY2);
+                simCtx.stroke();
+
+                // Garis Vertikal Penghubung
+                simCtx.beginPath();
+                simCtx.moveTo(centerX, waterLevelY1);
+                simCtx.lineTo(centerX, waterLevelY2);
+                simCtx.stroke();
+                simCtx.setLineDash([]); 
+
+                // Ujung pembatas (Panah)
+                simCtx.lineWidth = 2;
+                simCtx.beginPath();
+                simCtx.moveTo(centerX - 6, waterLevelY1);
+                simCtx.lineTo(centerX + 6, waterLevelY1);
+                simCtx.moveTo(centerX - 6, waterLevelY2);
+                simCtx.lineTo(centerX + 6, waterLevelY2);
+                simCtx.stroke();
+
+                // Label Δh
+                simCtx.fillStyle = '#fbbf24';
+                simCtx.font = 'bold 12px sans-serif';
+                simCtx.textAlign = 'center';
+                simCtx.fillText('Δh', centerX, (waterLevelY1 + waterLevelY2) / 2 + 4);
+            }
+
+            // ==========================================
+            // 4. ANIMASI PARTIKEL AIR (PIPA HORIZONTAL)
+            // ==========================================
+            let speedAnim1 = v1_val * 0.6; 
+            let speedAnim2 = v2_val * 0.6;
+
+            simCtx.fillStyle = '#7dd3fc'; 
+            
+            particles.forEach(p => {
+                if (p.x < transStart) {
+                    p.x += speedAnim1;
+                    if (p.y < topY1 + p.size || p.y > botY1 - p.size) {
+                        p.y = topY1 + p.size + Math.random() * (h1 - p.size*2);
+                    }
+                } else if (p.x > transEnd) {
+                    p.x += speedAnim2;
+                    if (p.y < topY2 + p.size || p.y > botY2 - p.size) {
+                        p.y = topY2 + p.size + Math.random() * (h2 - p.size*2);
+                    }
+                } else {
+                    p.x += (speedAnim1 + speedAnim2) / 2;
+                    let ratio = (p.x - transStart) / (transEnd - transStart);
+                    let currentTop = topY1 + (topY2 - topY1) * ratio;
+                    let currentBot = botY1 + (botY2 - botY1) * ratio;
+                    if (p.y < currentTop + p.size || p.y > currentBot - p.size) {
+                        p.y = currentTop + p.size + Math.random() * (currentBot - currentTop - p.size*2);
+                    }
+                }
+
+                if (p.x > simCanvas.width) {
+                    p.x = 0;
+                    p.y = topY1 + Math.random() * h1;
+                }
+                
+                simCtx.globalAlpha = p.alpha;
+                simCtx.beginPath();
+                simCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                simCtx.fill();
+            });
+            simCtx.globalAlpha = 1.0;
+
+            requestAnimationFrame(drawSimulation);
+        }
+
+        window.addEventListener('load', () => {
+            resizeSimCanvas();
+            updateSimParams();
+            drawSimulation();
+        });
+
+        window.addEventListener('resize', resizeSimCanvas);
+
+    </script>
+
+</body>
+</html>
