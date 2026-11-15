@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rekap Nilai LKPD – Fisika XI</title>
+<title>Dashboard Guru – Fisika XI</title>
 <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f3f4f6; color: #1f2937; padding: 20px; }
@@ -14,6 +14,13 @@
     h1 { font-size: 1.4rem; color: #111827; }
     .btn-keluar { background: #dc2626; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.9rem;}
     .btn-keluar:hover { background: #b91c1c; }
+
+    /* Navigasi Tab */
+    .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab-btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
+    .tab-btn.active { background: #0369a1; color: white; border: 1px solid #0369a1; }
+    .tab-btn.inactive { background: white; color: #0369a1; border: 1px solid #0369a1; }
+    .tab-btn:hover { opacity: 0.8; }
 
     /* Panel Filter */
     .filter-panel { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e7eb; display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; align-items: center; }
@@ -46,79 +53,201 @@
 
 <div class="container">
     <div class="header">
-        <h1>Rekap Nilai LKPD – Fisika XI</h1>
+        <h1>Dashboard Guru – Fisika XI</h1>
         <a href="index.html" class="btn-keluar">Keluar / Kembali ke Login</a>
     </div>
 
-    <!-- Panel Filter -->
-    <div class="filter-panel">
-        <div class="filter-group">
-            <label>Tampilan</label>
-            <select id="filter-tampilan" onchange="filterData()">
-                <option value="terbaik">Terbaik per siswa</option>
-                <option value="semua">Semua percobaan</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Kelas</label>
-            <select id="filter-kelas" onchange="filterData()">
-                <option value="Semua">Semua</option>
-                <option value="XI-A">XI-A</option>
-                <option value="XI-B">XI-B</option>
-                <option value="XI-C">XI-C</option>
-                <option value="XI-D">XI-D</option>
-                <option value="XI-E">XI-E</option>
-                <option value="XI-F">XI-F</option>
-            </select>
-        </div>
-        <input type="text" id="filter-cari" placeholder="Cari nama siswa..." oninput="filterData()">
-        <button class="btn-action" onclick="unduhCSV()">Unduh CSV</button>
-        <button class="btn-action" onclick="muatDataDariSheets()">Muat ulang data</button>
+    <!-- NAVIGASI TAB -->
+    <div class="tab-bar">
+        <button id="tab-btn-nilai" class="tab-btn active" onclick="gantiTab('nilai')">📊 Nilai LKPD</button>
+        <button id="tab-btn-absensi" class="tab-btn inactive" onclick="gantiTab('absensi')">📋 Data Absensi</button>
     </div>
 
-    <!-- Ringkasan -->
-    <div class="summary-box">
-        <strong>Total Data Masuk:</strong> <span id="total-data">Memuat...</span> &middot; 
-        <strong>Status Koneksi:</strong> <span id="status-koneksi">Menghubungkan...</span>
+    <!-- ================= KONTEN TAB NILAI (LAMA) ================= -->
+    <div id="tab-konten-nilai">
+        <!-- Panel Filter Nilai -->
+        <div class="filter-panel">
+            <div class="filter-group">
+                <label>Tampilan</label>
+                <select id="filter-tampilan" onchange="filterData()">
+                    <option value="terbaik">Terbaik per siswa</option>
+                    <option value="semua">Semua percobaan</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Kelas</label>
+                <select id="filter-kelas" onchange="filterData()">
+                    <option value="Semua">Semua</option>
+                    <option value="XI-A">XI-A</option>
+                    <option value="XI-B">XI-B</option>
+                    <option value="XI-C">XI-C</option>
+                    <option value="XI-D">XI-D</option>
+                    <option value="XI-E">XI-E</option>
+                    <option value="XI-F">XI-F</option>
+                </select>
+            </div>
+            <input type="text" id="filter-cari" placeholder="Cari nama siswa..." oninput="filterData()">
+            <button class="btn-action" onclick="unduhCSV()">Unduh CSV</button>
+            <button class="btn-action" onclick="muatDataDariSheets()">Muat ulang data</button>
+        </div>
+
+        <!-- Ringkasan Nilai -->
+        <div class="summary-box">
+            <strong>Total Data Masuk:</strong> <span id="total-data">Memuat...</span> &middot; 
+            <strong>Status Koneksi:</strong> <span id="status-koneksi">Menghubungkan...</span>
+        </div>
+
+        <!-- Tabel Nilai -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Materi / LKPD</th>
+                        <th>Waktu</th>
+                        <th>Pelanggaran</th>
+                        <th>Skor</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-data-siswa">
+                    <tr><td colspan="7" style="text-align:center; padding: 20px;">Memuat data dari Google Sheets...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 30px;">
+            Klik baris untuk melihat rincian. Nilai maksimal adalah 100. Sistem telah dilengkapi proteksi anti-curang.
+        </p>
     </div>
 
-    <!-- Tabel Utama -->
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Nama</th>
-                    <th>Kelas</th>
-                    <th>Materi / LKPD</th>
-                    <th>Waktu</th>
-                    <th>Pelanggaran</th>
-                    <th>Skor</th>
-                </tr>
-            </thead>
-            <tbody id="tabel-data-siswa">
-                <tr><td colspan="7" style="text-align:center; padding: 20px;">Memuat data dari Google Sheets...</td></tr>
-            </tbody>
-        </table>
+    <!-- ================= KONTEN TAB ABSENSI (BARU) ================= -->
+    <div id="tab-konten-absensi" style="display: none;">
+        
+        <!-- Filter Absensi -->
+        <div class="filter-panel">
+            <div class="filter-group">
+                <label>Kelas</label>
+                <select id="abs-filter-kelas" onchange="renderAbsensi()">
+                    <option value="Semua">Semua Kelas</option>
+                    <option value="XI-A">XI-A</option>
+                    <option value="XI-B">XI-B</option>
+                    <option value="XI-C">XI-C</option>
+                    <option value="XI-D">XI-D</option>
+                    <option value="XI-E">XI-E</option>
+                    <option value="XI-F">XI-F</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Keterangan</label>
+                <select id="abs-filter-ket" onchange="renderAbsensi()">
+                    <option value="Semua">Semua</option>
+                    <option value="Sakit">Sakit</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Alpa">Alpa</option>
+                    <option value="Dispensasi">Dispensasi</option>
+                    <option value="Bolos">Bolos</option>
+                </select>
+            </div>
+            <input type="text" id="abs-filter-cari" placeholder="Cari nama siswa..." oninput="renderAbsensi()">
+            <button class="btn-action" onclick="unduhAbsensiCSV()">Unduh CSV Absensi</button>
+            <button class="btn-action" onclick="muatAbsensi()">Muat ulang data</button>
+        </div>
+
+        <!-- Ringkasan Absensi -->
+        <div class="summary-box">
+            <strong>Total Kejadian:</strong> <span id="abs-total">-</span> &middot; 
+            <strong>Sakit:</strong> <span id="abs-sakit">-</span> &middot; 
+            <strong>Izin:</strong> <span id="abs-izin">-</span> &middot; 
+            <strong>Alpa:</strong> <span id="abs-alpa">-</span> &middot; 
+            <strong>Dispensasi:</strong> <span id="abs-dispensasi">-</span> &middot; 
+            <strong>Bolos:</strong> <span id="abs-bolos">-</span>
+        </div>
+
+        <!-- Tabel Rekap per Siswa -->
+        <h3 style="margin-bottom: 10px;">Rekap Ketidakhadiran per Siswa</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Sakit</th>
+                        <th>Izin</th>
+                        <th>Alpa</th>
+                        <th>Dispensasi</th>
+                        <th>Bolos</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-rekap-absensi">
+                    <tr><td colspan="9" style="text-align:center; padding:20px;">Memuat...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Riwayat Detail -->
+        <h3 style="margin-top: 24px; margin-bottom: 10px;">Riwayat Kejadian (Terbaru di Atas)</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tanggal</th>
+                        <th>Kelas</th>
+                        <th>Nama</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody id="tabel-riwayat-absensi">
+                </tbody>
+            </table>
+        </div>
     </div>
-    
-    <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 30px;">
-        Klik baris untuk melihat rincian. Nilai maksimal adalah 100. Sistem telah dilengkapi proteksi anti-curang.
-    </p>
+
 </div>
 
 <script>
     // ========================================================
-    // KONFIGURASI
+    // KONFIGURASI UTAMA (LINK SUDAH DIPERBAIKI HURUF I/l)
     // ========================================================
-    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec"; 
-    const PIN_GURU = "2026"; 
+    const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbx9EnP4KXzaCR7GLvSIbXSD5F6hEmCuBw1_kc4uxo7_MIO365ca5d7edYCQfkA1m3cM/exec"; 
+    const PIN_GURU = "FISIKA-2026"; 
     
-    let semuaDataSiswa = []; // Menyimpan data asli dari server
-    let dataTampil = [];     // Menyimpan data setelah difilter
+    let semuaDataSiswa = []; 
+    let dataTampil = [];     
+    let dataAbsensiMentah = [];
 
     // ========================================================
-    // FUNGSI UNTUK MENGAMBIL DATA DARI GOOGLE SHEETS
+    // FUNGSI GANTI TAB
+    // ========================================================
+    function gantiTab(tab) {
+        const btnNilai = document.getElementById('tab-btn-nilai');
+        const btnAbsensi = document.getElementById('tab-btn-absensi');
+        const kontenNilai = document.getElementById('tab-konten-nilai');
+        const kontenAbsensi = document.getElementById('tab-konten-absensi');
+
+        if (tab === 'nilai') {
+            btnNilai.className = 'tab-btn active';
+            btnAbsensi.className = 'tab-btn inactive';
+            kontenNilai.style.display = 'block';
+            kontenAbsensi.style.display = 'none';
+        } else {
+            btnAbsensi.className = 'tab-btn active';
+            btnNilai.className = 'tab-btn inactive';
+            kontenNilai.style.display = 'none';
+            kontenAbsensi.style.display = 'block';
+            
+            if (dataAbsensiMentah.length === 0) {
+                muatAbsensi();
+            }
+        }
+    }
+
+    // ========================================================
+    // LOGIKA NILAI LKPD (LAMA)
     // ========================================================
     async function muatDataDariSheets() {
         const tbody = document.getElementById('tabel-data-siswa');
@@ -132,52 +261,40 @@
             const result = await response.json();
 
             if (result.status !== 'ok') {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; padding: 20px;">Gagal: ${result.message || 'Akses ditolak (PIN salah)'}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; padding: 20px;">Gagal: ${result.message || 'Akses ditolak'}</td></tr>`;
                 summaryStatus.innerHTML = `<span style="color:red;">Koneksi Gagal.</span>`;
                 return;
             }
 
             semuaDataSiswa = result.data;
             summaryTotal.innerText = semuaDataSiswa.length + " data";
-            summaryStatus.innerHTML = `<span style="color:#16a34a;">Berhasil terhubung ke Google Sheets.</span>`;
+            summaryStatus.innerHTML = `<span style="color:#16a34a;">Berhasil terhubung.</span>`;
 
             if (semuaDataSiswa.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px;">Belum ada data siswa yang masuk.</td></tr>`;
                 return;
             }
-
-            // Setelah data didapat, jalankan filter (untuk pertama kali)
             filterData();
-
         } catch (error) {
             console.error("Gagal mengambil data:", error);
-            tbody.innerHTML = `
-                <tr><td colspan="7" style="text-align:center; color:red; padding: 20px;">Gagal memuat data. Cek koneksi internet atau pastikan Web App di Apps Script sudah di-deploy.</td></tr>
-            `;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red; padding: 20px;">Gagal memuat data. Cek koneksi internet.</td></tr>`;
             summaryStatus.innerHTML = `<span style="color:red;">Koneksi Error.</span>`;
         }
     }
 
-    // ========================================================
-    // FUNGSI FILTER & TAMPILAN TABEL
-    // ========================================================
     function filterData() {
         const kelasFilter = document.getElementById('filter-kelas').value;
         const cariFilter = document.getElementById('filter-cari').value.toLowerCase();
         const tbody = document.getElementById('tabel-data-siswa');
 
-        // 1. Filter berdasarkan dropdown kelas dan pencarian nama
         dataTampil = semuaDataSiswa.filter(siswa => {
             const nama = (siswa['NAMA'] || '').toLowerCase();
             const kelas = siswa['KELAS'] || '';
-
             const cocokKelas = (kelasFilter === 'Semua' || kelas === kelasFilter);
             const cocokCari = (nama.includes(cariFilter));
-
             return cocokKelas && cocokCari;
         });
 
-        // 2. Filter Tampilan "Terbaik per Siswa"
         const tampilanMode = document.getElementById('filter-tampilan').value;
         if (tampilanMode === 'terbaik') {
             const mapTerbaik = new Map();
@@ -191,14 +308,11 @@
             dataTampil = Array.from(mapTerbaik.values());
         }
 
-        // Urutkan data berdasarkan nama (A-Z) agar rapi
         dataTampil.sort((a, b) => (a['NAMA'] || '').localeCompare(b['NAMA'] || ''));
-
-        // 3. Render ke HTML
         tbody.innerHTML = '';
         
         if (dataTampil.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #6b7280;">Tidak ada data yang cocok dengan filter.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 20px; color: #6b7280;">Tidak ada data yang cocok.</td></tr>`;
             return;
         }
 
@@ -208,31 +322,22 @@
             const waktuMentah = siswa['WAKTU'] || '-';
             const materi = siswa['MATERI'] || 'LKPD';
             let pelanggaran = Number(siswa['PELANGGARAN']) || 0;
-            if (pelanggaran < 0) pelanggaran = 0; // Validasi UI
-
-            // PENGAMAN GANDA: Paksa skor maksimal 100
             let skor = Number(siswa['SKOR']) || 0;
+            
+            if (pelanggaran < 0) pelanggaran = 0;
             if (skor > 100) skor = 100;
             if (skor < 0) skor = 0;
             
-            // Format Tanggal
             let waktuRapi = waktuMentah;
             if (waktuMentah !== '-') {
                 const dateObj = new Date(waktuMentah);
                 if (!isNaN(dateObj)) {
-                    waktuRapi = dateObj.toLocaleString('id-ID', { 
-                        day: '2-digit', month: 'short', year: 'numeric', 
-                        hour: '2-digit', minute: '2-digit' 
-                    });
+                    waktuRapi = dateObj.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 }
             }
 
             const tr = document.createElement('tr');
-            tr.onclick = () => {
-                alert(`Rincian Nilai:\n\nNama: ${nama}\nKelas: ${kelas}\nMateri: ${materi}\nWaktu: ${waktuRapi}\nPelanggaran: ${pelanggaran}\nSkor Akhir: ${skor}`);
-            };
-
-            // Tampilkan warna merah jika ada pelanggaran
+            tr.onclick = () => alert(`Rincian Nilai:\n\nNama: ${nama}\nKelas: ${kelas}\nMateri: ${materi}\nWaktu: ${waktuRapi}\nPelanggaran: ${pelanggaran}\nSkor Akhir: ${skor}`);
             const warnaPelanggaran = pelanggaran > 0 ? 'color: #dc2626; font-weight: bold;' : 'color: #16a34a;';
 
             tr.innerHTML = `
@@ -248,45 +353,145 @@
         });
     }
 
-    // ========================================================
-    // FUNGSI UNDUH CSV (EXCEL)
-    // ========================================================
     function unduhCSV() {
-        if (dataTampil.length === 0) {
-            alert("Tidak ada data untuk diunduh.");
-            return;
-        }
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        // Header CSV
-        csvContent += "No,Nama,Kelas,Materi,Waktu,Pelanggaran,Skor\n";
-
-        // Isi CSV
+        if (dataTampil.length === 0) return alert("Tidak ada data untuk diunduh.");
+        let csvContent = "data:text/csv;charset=utf-8,No,Nama,Kelas,Materi,Waktu,Pelanggaran,Skor\n";
         dataTampil.forEach((siswa, index) => {
             const nama = siswa['NAMA'] || '-';
             const kelas = siswa['KELAS'] || '-';
             const materi = siswa['MATERI'] || 'LKPD';
             const waktu = siswa['WAKTU'] || '-';
             const pelanggaran = Number(siswa['PELANGGARAN']) || 0;
-            
             let skor = Number(siswa['SKOR']) || 0;
             if (skor > 100) skor = 100;
             if (skor < 0) skor = 0;
-            
             csvContent += `${index + 1},"${nama}","${kelas}","${materi}","${waktu}",${pelanggaran},${skor}\n`;
         });
-
-        const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
+        link.setAttribute("href", encodeURI(csvContent));
         link.setAttribute("download", "Rekap_Nilai_LKPD.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
+    // ========================================================
+    // LOGIKA ABSENSI (BARU)
+    // ========================================================
+    async function muatAbsensi() {
+        const tbody = document.getElementById('tabel-rekap-absensi');
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px;">Memuat data absensi...</td></tr>`;
+
+        try {
+            const res = await fetch(`${URL_GOOGLE_SCRIPT}?action=getAbsensi&pin=${PIN_GURU}`);
+            const result = await res.json();
+            
+            if (result.status !== 'ok') throw new Error(result.message || 'Gagal');
+            
+            dataAbsensiMentah = result.data;
+            renderAbsensi();
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:red; padding:20px;">Error: ${err.message}</td></tr>`;
+        }
+    }
+
+    function renderAbsensi() {
+        const filterKelas = document.getElementById('abs-filter-kelas').value;
+        const filterKet = document.getElementById('abs-filter-ket').value;
+        const cari = document.getElementById('abs-filter-cari').value.toLowerCase();
+
+        const filtered = dataAbsensiMentah.filter(r => {
+            const cocokKelas = (filterKelas === 'Semua' || r.kelas === filterKelas);
+            const cocokKet = (filterKet === 'Semua' || r.keterangan === filterKet);
+            const cocokCari = (r.nama || '').toLowerCase().includes(cari);
+            return cocokKelas && cocokKet && cocokCari;
+        });
+
+        const hitung = (ket) => filtered.filter(r => r.keterangan === ket).length;
+        document.getElementById('abs-total').innerText = filtered.length;
+        document.getElementById('abs-sakit').innerText = hitung('Sakit');
+        document.getElementById('abs-izin').innerText = hitung('Izin');
+        document.getElementById('abs-alpa').innerText = hitung('Alpa');
+        document.getElementById('abs-dispensasi').innerText = hitung('Dispensasi');
+        document.getElementById('abs-bolos').innerText = hitung('Bolos');
+
+        const mapSiswa = new Map();
+        filtered.forEach(r => {
+            const key = `${r.kelas}||${r.nama}`;
+            if (!mapSiswa.has(key)) {
+                mapSiswa.set(key, { nama: r.nama, kelas: r.kelas, Sakit: 0, Izin: 0, Alpa: 0, Dispensasi: 0, Bolos: 0 });
+            }
+            const siswa = mapSiswa.get(key);
+            if (siswa[r.keterangan] !== undefined) siswa[r.keterangan]++;
+        });
+
+        const rekap = Array.from(mapSiswa.values()).sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
+        const tbody = document.getElementById('tabel-rekap-absensi');
+        tbody.innerHTML = '';
+        
+        if (rekap.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px;">Tidak ada data yang cocok.</td></tr>`;
+        } else {
+            rekap.forEach((s, i) => {
+                const total = s.Sakit + s.Izin + s.Alpa + s.Dispensasi + s.Bolos;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${s.nama}</strong></td>
+                        <td>${s.kelas}</td>
+                        <td>${s.Sakit}</td>
+                        <td>${s.Izin}</td>
+                        <td>${s.Alpa}</td>
+                        <td>${s.Dispensasi}</td>
+                        <td>${s.Bolos}</td>
+                        <td class="text-red">${total}</td>
+                    </tr>`;
+            });
+        }
+
+        const riwayat = [...filtered].reverse(); 
+        const tbodyRiwayat = document.getElementById('tabel-riwayat-absensi');
+        tbodyRiwayat.innerHTML = '';
+        
+        if (riwayat.length === 0) {
+            tbodyRiwayat.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">Belum ada riwayat.</td></tr>`;
+        } else {
+            riwayat.forEach((r, i) => {
+                let tglTampil = r.tanggal;
+                if (tglTampil && tglTampil.includes('T')) tglTampil = tglTampil.split('T')[0];
+                tbodyRiwayat.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${tglTampil}</td>
+                        <td>${r.kelas}</td>
+                        <td>${r.nama}</td>
+                        <td>${r.keterangan}</td>
+                    </tr>`;
+            });
+        }
+    }
+
+    function unduhAbsensiCSV() {
+        const rows = document.querySelectorAll('#tabel-rekap-absensi tr');
+        if (rows.length === 0 || rows[0].querySelectorAll('td').length !== 9) return alert('Tidak ada data.');
+        
+        let csv = 'No,Nama,Kelas,Sakit,Izin,Alpa,Dispensasi,Bolos,Total\n';
+        rows.forEach((tr, i) => {
+            const td = tr.querySelectorAll('td');
+            if (td.length === 9) {
+                csv += `${i+1},"${td[1].innerText}","${td[2].innerText}",${td[3].innerText},${td[4].innerText},${td[5].innerText},${td[6].innerText},${td[7].innerText},${td[8].innerText}\n`;
+            }
+        });
+        const link = document.createElement('a');
+        link.href = encodeURI('data:text/csv;charset=utf-8,' + csv);
+        link.download = 'Rekap_Absensi.csv';
+        link.click();
+    }
+
     // Panggil fungsi saat halaman selesai dimuat
-    window.onload = muatDataDariSheets;
+    window.onload = function() {
+        muatDataDariSheets(); // Muat data nilai saat pertama buka
+    };
 </script>
 </body>
 </html>

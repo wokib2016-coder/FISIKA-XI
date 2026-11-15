@@ -302,7 +302,7 @@
                         </div>
 
                         <div id="form-guru" class="form-group full-width" style="display: none;">
-                            <div class="form-group"><label>PIN Guru</label><input type="password" id="pin-guru" placeholder="PIN (Default: 2026)"></div>
+                            <div class="form-group"><label>PIN Guru</label><input type="password" id="pin-guru" placeholder="Ketik PIN Guru..."></div>
                             <p style="font-size: 0.8rem; color: #ef4444;" id="pesan-error-guru"></p>
                         </div>
                     </div>
@@ -382,6 +382,9 @@
 
     </div>
     <script>
+        // ================= KONFIGURASI =================
+        const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbx9EnP4KXzaCR7GLvSIbXSD5F6hEmCuBw1_kc4uxo7_MIO365ca5d7edYCQfkA1m3cM/exec";
+
         // ================= DATA KONTEN =================
         const dataSemester = {
             s1: {
@@ -480,7 +483,6 @@
         function loginOperator() {
             // Terima input "XIA" atau "XI-A" → normalisasi ke "XI-A"
             let token = document.getElementById('token-operator').value.trim().toUpperCase();
-            // Jika user ketik "XIA", ubah jadi "XI-A"
             if (/^XI[A-F]$/.test(token)) {
                 token = 'XI-' + token.charAt(2);
             }
@@ -500,13 +502,40 @@
             const peran = document.getElementById('peran').value;
 
             if (peran === 'guru') {
-                const pin = document.getElementById('pin-guru').value;
-                if (pin === '2026') {
-                    alert("Login Guru Berhasil! Anda akan diarahkan ke Dashboard.");
-                    window.location.href = "dashboard-guru.html";
-                } else {
-                    document.getElementById('pesan-error-guru').innerText = "PIN Salah! Silakan coba lagi.";
+                const pin = document.getElementById('pin-guru').value.trim();
+                
+                if (!pin) {
+                    document.getElementById('pesan-error-guru').innerText = "Silakan masukkan PIN!";
+                    return;
                 }
+
+                // Tampilkan efek loading di tombol
+                const btnSemester = document.querySelector('.semester-buttons .btn-semester');
+                const originalText = btnSemester.innerHTML;
+                btnSemester.innerHTML = "Memeriksa...";
+
+                // Panggil Apps Script untuk cek PIN
+                fetch(`${URL_WEB_APP}?action=cekLogin&pin=${encodeURIComponent(pin)}`)
+                    .then(res => res.json())
+                    .then(result => {
+                        if (result.status === 'ok' && result.peran === 'guru') {
+                            alert(`Login Guru Berhasil!\nSelamat datang, ${result.nama}.`);
+                            
+                            // Simpan PIN ke browser agar dibaca oleh dashboard-guru.html
+                            localStorage.setItem('pin_guru_aktif', pin);
+                            
+                            // Arahkan ke dashboard
+                            window.location.href = "dashboard-guru.html";
+                        } else {
+                            document.getElementById('pesan-error-guru').innerText = "PIN Salah atau tidak terdaftar!";
+                            btnSemester.innerHTML = originalText;
+                        }
+                    })
+                    .catch(err => {
+                        document.getElementById('pesan-error-guru').innerText = "Koneksi error. Cek internet.";
+                        btnSemester.innerHTML = originalText;
+                    });
+                return; 
             } else {
                 // Logika untuk Siswa
                 const nama = document.getElementById('nama').value.trim();
