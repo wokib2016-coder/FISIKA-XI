@@ -211,10 +211,11 @@
 
 <script>
     // ========================================================
-    // KONFIGURASI UTAMA (LINK SUDAH DIPERBAIKI HURUF I/l)
+    // KONFIGURASI UTAMA (SUDAH DIPERBAIKI TOTAL)
     // ========================================================
+    // Link URL sudah sesuai. PIN_GURU sekarang membaca dari halaman login.
     const URL_GOOGLE_SCRIPT = "https://script.google.com/macros/s/AKfycbx9EnP4KXzaCR7GLvSIbXSD5F6hEmCuBw1_kc4uxo7_MIO365ca5d7edYCQfkA1m3cM/exec"; 
-    const PIN_GURU = "FISIKA-2026"; 
+    const PIN_GURU = localStorage.getItem('pin_guru_aktif') || "FISIKA-WOKIB"; 
     
     let semuaDataSiswa = []; 
     let dataTampil = [];     
