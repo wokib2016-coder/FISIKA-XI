@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD Viskositas & Gejala Kapilaritas - Interaktif</title>
+    <style>
+        :root {
+            --dark-green: #1a3c34;
+            --accent-yellow: #f2c94c;
+            --bg-light: #f8faf9;
+            --border-color: #d1d5db;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --light-green: #e6f4ea;
+            --red: #dc2626;
+            --green-text: #15803d;
+            --red-text: #b91c1c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; overflow-x: hidden; }
+
+        .header { background-color: var(--dark-green); color: white; padding: 30px 15px; text-align: left; position: relative; }
+        .header-content { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; font-size: 0.9rem; font-weight: 600; }
+        .header-left, .header-right { display: flex; flex-direction: column; }
+        .header-right { text-align: right; }
+        .gold-text { color: var(--accent-yellow); text-decoration: underline; text-decoration-color: rgba(255,255,255,0.9); text-underline-offset: 4px; text-decoration-thickness: 2px; }
+        .cyan-text { color: #38bdf8; margin-top: 4px; font-size: 0.85rem; font-weight: 500; }
+        .header h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+        .header h1 span { color: var(--accent-yellow); }
+        .header p { font-size: 0.9rem; color: #d1d5db; margin-bottom: 4px; }
+        .header .tagline-gold { font-size: 0.95rem; font-weight: 700; font-style: italic; color: var(--accent-yellow); margin-top: 10px; letter-spacing: 0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.35); }
+
+        .nav-tabs { display: flex; justify-content: flex-start; background-color: white; border-bottom: 1px solid var(--border-color); padding: 10px 15px; overflow-x: auto; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .nav-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { background: none; border: 2px solid transparent; padding: 8px 16px; font-size: 0.95rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 20px; margin-right: 8px; transition: all 0.3s; text-decoration: none; flex-shrink: 0; }
+        .tab-btn:hover, .tab-btn.active { background-color: var(--light-green); color: var(--dark-green); border-color: #34d399; }
+
+        .container { max-width: 800px; margin: 20px auto 40px auto; padding: 0 15px; }
+        .section-target { scroll-margin-top: 80px; padding-top: 5px; margin-bottom: 25px; }
+        .card { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); word-wrap: break-word; }
+        .card h2 { font-size: 1.3rem; margin-bottom: 12px; color: var(--text-dark); }
+        .card p { margin-bottom: 12px; color: #4b5563; font-size: 0.95rem; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; width: 100%; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-group label { font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; }
+        .form-group input, .form-group select { width: 100% !important; padding: 10px 12px; border: 1px solid #93c5fd; border-radius: 6px; font-size: 0.95rem; outline: none; background-color: white; }
+        .rekap-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin-top: 5px; width: 100%; }
+        .rekap-box h3 { font-size: 1rem; color: var(--dark-green); margin-bottom: 8px; }
+        #daftar-teman-kelompok { list-style-type: decimal; padding-left: 20px; color: var(--text-dark); font-size: 0.95rem; }
+        #daftar-teman-kelompok li { padding: 3px 0; font-weight: 500; }
+
+        .badge { display: inline-block; background-color: var(--light-green); color: #047857; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 12px; }
+        .options { display: flex; gap: 8px; flex-direction: column; margin-bottom: 15px; }
+        .option-btn { background: white; border: 2px solid var(--text-dark); padding: 10px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; font-size: 0.9rem; width: 100%; }
+        .option-btn:hover { background-color: #f3f4f6; }
+        .option-btn.selected-correct { border-color: var(--green-text); background-color: var(--light-green); color: var(--green-text); }
+        .option-btn.selected-wrong { border-color: var(--red); background-color: #fee2e2; color: var(--red-text); }
+
+        .feedback-box { display: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 15px; }
+        .feedback-box.correct { background-color: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
+        .feedback-box.wrong { background-color: #fef3c7; border-left: 4px solid #f59e0b; color: #92400e; }
+        .feedback-box.error { background-color: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+        .info-box { background-color: var(--light-green); border-left: 4px solid #10b981; padding: 12px; border-radius: 4px; font-size: 0.9rem; color: #065f46; margin-bottom: 15px; }
+
+        .guide-box { background-color: #f0fdf4; border: 1px solid #bbf7d0; border-left: 5px solid #10b981; border-radius: 6px; padding: 15px; margin-bottom: 20px; }
+        .guide-box h4 { color: #065f46; margin-bottom: 8px; font-size: 1rem; }
+        .guide-box ol, .guide-box ul { margin-left: 20px; font-size: 0.9rem; color: #334155; }
+        .guide-box li { margin-bottom: 6px; }
+
+        textarea { width: 100% !important; min-height: 90px; padding: 12px; border: 1px solid #93c5fd; border-radius: 8px; font-size: 0.95rem; font-family: inherit; resize: vertical; outline: none; background-color: white; }
+        textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+        .question-block { margin-top: 20px; }
+        .question-block p { font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-dark); }
+
+        .evidence-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 12px; margin-top: 10px; margin-bottom: 15px; }
+        .evidence-box label { font-size: 0.85rem; font-weight: 600; color: #475569; display: block; margin-bottom: 4px; }
+        .evidence-input-row { display: flex; gap: 10px; flex-direction: column; margin-bottom: 8px; }
+        .file-upload-input, .url-video-input { width: 100%; padding: 8px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; background: white; }
+        .preview-container { margin-top: 8px; display: none; max-width: 220px; position: relative; }
+        .preview-container img { width: 100%; border-radius: 6px; border: 1px solid #94a3b8; }
+
+        .table-responsive { width: 100%; overflow-x: auto; margin-bottom: 15px; }
+        table { width: 100%; min-width: 550px; border-collapse: collapse; font-size: 0.85rem; }
+        th, td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--light-green); color: var(--dark-green); font-weight: 600; }
+        tr:nth-child(even) { background-color: #f9fafb; }
+        .table-input { width: 80px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; }
+        .table-input-cell { width: 60px; padding: 6px; border: 1px solid #93c5fd; border-radius: 4px; text-align: center; font-size: 0.9rem; background-color: #f8fafc; }
+
+        .action-buttons { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 12px; flex-direction: column; }
+        .btn { width: 100%; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; text-align: center; }
+        .btn-outline { background: white; border: 2px solid var(--text-dark); color: var(--text-dark); }
+        .btn-primary { background: white; border: 2px solid var(--dark-green); color: var(--dark-green); font-weight: bold; }
+        .btn-primary:hover { background: var(--light-green); }
+
+        .grading-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 15px; margin-top: 15px; margin-bottom: 15px; }
+        .grading-box h3 { font-size: 1rem; color: #92400e; margin-bottom: 6px; }
+
+        .calc-btn { padding: 10px; font-size: 1rem; font-weight: bold; border: none; border-radius: 4px; background: #475569; color: white; cursor: pointer; transition: 0.1s; }
+        .calc-btn:hover { background: #64748b; }
+        .calc-btn:active { transform: scale(0.95); }
+
+        #teacher-panel { display: none; background: #1e293b; color: white; padding: 25px; border-radius: 12px; margin-top: 30px; }
+        #teacher-panel h2 { color: var(--accent-yellow); margin-bottom: 15px; }
+
+        #soal-container, #soal-container * { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        #soal-container { position: relative; }
+        #wm-soal { position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: rgba(220,38,38,0.12); transform: rotate(-25deg); white-space: nowrap; z-index: 5; }
+
+        .pg-options { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+        .pg-option {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px;
+            background: #fff; font-size: 0.9rem; cursor: pointer; transition: 0.15s;
+        }
+        .pg-option:hover { background: #f1f5f9; }
+        .pg-option input[type="radio"] { width: auto; margin: 0; cursor: pointer; }
+        .pg-option.selected { border-color: #10b981; background: #ecfdf5; }
+        .pg-option .pg-letter { font-weight: bold; min-width: 18px; }
+
+        .simulation-area { background-color: #f0f9ff; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #bae6fd; position: relative; }
+
+        .sim-tabs { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .sim-tab-btn { flex: 1; min-width: 140px; background: white; border: 2px solid #cbd5e1; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; color: #475569; }
+        .sim-tab-btn.active { background: var(--dark-green); color: white; border-color: var(--dark-green); }
+
+        .scene { position: relative; width: 100%; height: 480px; background: #111827; border-radius: 8px; overflow: hidden; margin-bottom: 15px; }
+        canvas { display: block; width: 100%; height: 100%; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .panel { background: rgba(255,255,255,0.8); border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 12px; }
+        .panel h3 { margin: 0 0 8px; font-size: 0.9rem; color: var(--dark-green); border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .row label { flex: 0 0 100px; font-size: 0.8rem; color: #475569; }
+        .row input[type="range"] { flex: 1; accent-color: #059669; cursor: pointer; }
+        .row .val { flex: 0 0 60px; text-align: right; font-size: 0.8rem; color: #0369a1; font-weight: bold; }
+        .row select { padding: 4px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 0.8rem; }
+
+        .result-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 0.85rem; margin-bottom: 15px; }
+        .result-panel h4 { margin: 0 0 8px; color: #15803d; font-size: 0.9rem; text-align: center; }
+        .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; }
+        .result-card .title { font-weight: bold; font-size: 0.8rem; display: block; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 4px; }
+        .result-card.c1 .title { color: #ef4444; }
+        .result-card.c2 .title { color: #3b82f6; }
+        .result-card.c3 .title { color: #10b981; }
+        .result-card .kv { display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 0.75rem; color: #475569; }
+        .result-card .kv span:last-child { color: #0f172a; font-weight: bold; }
+        .result-summary { text-align: center; font-size: 0.8rem; margin-bottom: 8px; color: #475569; }
+        .result-summary b { color: #15803d; }
+
+        .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+        .btn-reset { background: #f59e0b; color: white; }
+
+        .result-item { background: white; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px; text-align: center; }
+        .result-item .label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
+        .result-item .value { font-size: 1rem; font-weight: bold; color: #0369a1; }
+        .result-item .value.red { color: #dc2626; }
+
+        .graph-wrap { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px; margin-top: 10px; }
+        .graph-title { font-size: 0.8rem; font-weight: 600; color: #cbd5e1; margin-bottom: 6px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; }
+
+        .table-btn-row { display: flex; gap: 10px; margin-bottom: 15px; }
+
+        /* Navigasi soal time challenge (sama seperti ws1-ws9) */
+        .nav-soal-wrap { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+        .nav-soal-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 2px solid #cbd5e1; background: #fff;
+            font-weight: bold; font-size: 0.95rem; cursor: pointer;
+            color: #1f2937; transition: all 0.2s;
+        }
+        .nav-soal-btn:hover { border-color: #0ea5e9; }
+        .nav-soal-btn.active { background: #0ea5e9; color: #fff; border-color: #0ea5e9; box-shadow: 0 2px 6px rgba(14,165,233,0.4); }
+        .nav-soal-btn.answered { background: #dcfce7; color: #166534; border-color: #22c55e; }
+        .nav-soal-btn.answered.active { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+        .soal-nav-info { font-size: 0.85rem; color: #64748b; margin-left: auto; font-weight: 600; }
+        .soal-single-wrap { position: relative; min-height: 240px; padding: 10px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; }
+
+        @media (min-width: 600px) {
+            .form-grid { grid-template-columns: 1fr 1fr; }
+            .result-grid { grid-template-columns: repeat(3, 1fr); }
+            .options, .action-buttons { flex-direction: row; }
+            .btn { width: auto; }
+            .header { padding: 40px 20px; }
+            .header h1 { font-size: 2.5rem; }
+            .container { padding: 0 20px; }
+            .card { padding: 30px; }
+            .evidence-input-row { flex-direction: row; }
+        }
+
+        @media print {
+            .nav-tabs, .action-buttons, .options, .btn, .feedback-box, .evidence-box input[type="file"], .evidence-box input[type="url"], #teacher-login-section, .no-print, .guide-box, #challenge-start-box, #challenge-area, .calc-btn, #cheat-modal, #audit-modal, .controls, .scene, .result-panel, .table-btn-row, #teacher-panel, .sim-tabs { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 20px; page-break-inside: avoid; }
+            body { background-color: white; }
+            input, select, textarea { border: none !important; background: transparent !important; }
+            .table-input { border: none !important; font-weight: bold; }
+        }
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); } }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <span class="gold-text">Wokib</span>
+                <span class="cyan-text">Deep Learning</span>
+            </div>
+            <div class="header-right">
+                <span class="gold-text">2026</span>
+                <span class="cyan-text">STEM</span>
+            </div>
+        </div>
+        <h1>Viscosity & Capillary Action, <span>Why Do Liquids Climb and Flow Slowly?</span></h1>
+        <p>Worksheet - 10 · Mechanics: Fluids — Viscosity and Capillarity</p>
+        <p>Physics XI - Phase F</p>
+        <p class="tagline-gold">Let's master the concepts, understand the context, and prove the truth</p>
+    </header>
+    <nav class="nav-tabs">
+        <a href="#langkah1" class="tab-btn active">1. Problem</a>
+        <a href="#langkah2" class="tab-btn">2. Simulation</a>
+        <a href="#langkah3" class="tab-btn">3. Experiment</a>
+        <a href="#langkah4" class="tab-btn">4. Analysis</a>
+        <a href="#langkah5" class="tab-btn">5. Reflection</a>
+        <a href="#langkah6" class="tab-btn">6. Challenge</a>
+    </nav>
+
+    <div class="container" id="konten-lkpd">
+
+        <div class="card section-target" id="identitas">
+            <h2>Identity</h2>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Student Name</label>
+                    <input type="text" id="input-nama" placeholder="Type your full name here..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Class</label>
+                    <select id="select-kelas" onchange="updateIdentitas()">
+                        <option value="">-- Select Class --</option>
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input type="text" id="input-sekolah" placeholder="Type school name..." oninput="updateIdentitas()">
+                </div>
+                <div class="form-group">
+                    <label>Group</label>
+                    <select id="select-kelompok" onchange="updateIdentitas()">
+                        <option value="">-- Select Group --</option>
+                        <option value="Kelompok 1">Group 1</option>
+                        <option value="Kelompok 2">Group 2</option>
+                        <option value="Kelompok 3">Group 3</option>
+                        <option value="Kelompok 4">Group 4</option>
+                        <option value="Kelompok 5">Group 5</option>
+                        <option value="Kelompok 6">Group 6</option>
+                        <option value="Kelompok 7">Group 7</option>
+                        <option value="Kelompok 8">Group 8</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="input-tanggal" onchange="updateIdentitas()">
+                </div>
+                <div class="form-group full-width">
+                    <div class="rekap-box">
+                        <h3 id="judul-rekap-kelompok">Group Members List ...</h3>
+                        <ol id="daftar-teman-kelompok">
+                            <li style="color: var(--text-muted); list-style: none; margin-left: -20px;">(Please fill in Student Name, Class, and Group first)</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 1: PROBLEM ================= -->
+        <div id="langkah1" class="section-target">
+            <div class="card">
+                <span class="badge">Part 1 · Problem</span>
+                <h2>Misteri Cairan yang Merambat & Mengalir Lambat</h2>
+                <p>Perhatikan dua peristiwa berikut: (1) Madu yang dituang dari sendok mengalir jauh lebih lambat daripada air. (2) Ketika ujung pipa sempit dimasukkan ke dalam air, air naik ke atas pipa — tetapi jika dimasukkan ke dalam raksa, permukaan raksa justru turun.</p>
+                <p><strong>Your Prediction:</strong> Mengapa cairan kental lebih lambat mengalir, dan mengapa cairan dapat naik/turun di pipa sempit?</p>
+
+                <div class="options">
+                    <button class="option-btn" id="opt-viskos" onclick="cekPrediksi('viskos')">Karena cairan memiliki kekentalan (viskositas) dan gaya adhesi-kohesi terhadap dinding pipa</button>
+                    <button class="option-btn" id="opt-massa" onclick="cekPrediksi('massa')">Karena massa cairan bertambah ketika berada di pipa sempit</button>
+                    <button class="option-btn" id="opt-grav" onclick="cekPrediksi('grav')">Karena gravitasi bumi berbeda di dalam pipa sempit</button>
+                </div>
+                <div id="feedback-box" class="feedback-box"></div>
+                <div class="info-box">
+                    <strong>Tujuan:</strong> memahami konsep viskositas (Hukum Stokes), kecepatan terminal, tegangan permukaan, sudut kontak, dan gejala kapilaritas (Rumus Jurin).
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 2: SIMULATION ================= -->
+        <div id="langkah2" class="section-target">
+            <div class="card">
+                <span class="badge">Part 2 · Simulation</span>
+                <h2>Eksplorasi Viskositas & Kapilaritas</h2>
+                <p>Pilih salah satu simulasi di bawah. Pada mode Viskositas, kamu akan melihat <strong>dua tabung berdampingan</strong>. Kamu bisa mengatur jenis fluida, radius bola, dan viskositas di <strong>masing-masing tabung</strong> untuk membandingkannya secara langsung! Pada mode Kapilaritas, kamu akan melihat <strong>dua pipa kapiler dengan diameter berbeda</strong> tercelup dalam satu bejana cairan.</p>
+
+                <div class="simulation-area">
+                    <div class="sim-tabs">
+                        <button class="sim-tab-btn active" id="simTabVisc" onclick="switchSimTab('visc')">🧪 Viskositas (Stokes)</button>
+                        <button class="sim-tab-btn" id="simTabCap" onclick="switchSimTab('cap')">💧 Kapilaritas (Jurin)</button>
+                    </div>
+                    <div class="scene" id="scene"><canvas id="simCanvas" width="800" height="480"></canvas></div>
+                    <div class="btn-row" style="margin-top:0;margin-bottom:15px;">
+                        <button class="btn btn-primary" onclick="togglePause()" id="btn-pause" style="background:#3b82f6;color:white;border:none;padding:10px 20px;">⏸️ Pause</button>
+                        <button class="btn btn-reset" onclick="resetSimulation()" style="padding:10px 20px;">↺ Reset Simulasi</button>
+                    </div>
+
+                    <!-- PANEL VISKOSITAS (DUAL TABUNG) -->
+                    <div id="panel-visc">
+                        <div class="controls" style="grid-template-columns: 1fr 1fr;">
+                            <!-- PANEL KIRI -->
+                            <div class="panel" style="border-top: 4px solid #38bdf8;">
+                                <h3>⚙️ Tabung Kiri</h3>
+                                <div class="row" style="flex-direction:column;align-items:stretch;margin-bottom:8px;">
+                                    <select id="fluidSelect1" style="width:100%;">
+                                        <option value="1000,0.001" data-color="rgba(14,165,233,0.5)">Air (η=0.001)</option>
+                                        <option value="900,0.5" data-color="rgba(234,179,8,0.5)">Oli (η=0.5)</option>
+                                        <option value="1260,1.4" data-color="rgba(168,85,247,0.5)">Gliserin (η=1.4)</option>
+                                        <option value="1420,10" data-color="rgba(180,83,9,0.6)">Madu (η=10)</option>
+                                    </select>
+                                </div>
+                                <div class="row"><label>Radius bola</label><input type="range" id="radiusSlider1" min="0.002" max="0.02" step="0.001" value="0.01"><span class="val" id="radiusVal1">1.0 cm</span></div>
+                                <div class="row"><label>ρ bola (kg/m³)</label><input type="range" id="rhoBolaSlider1" min="1000" max="8000" step="100" value="2500"><span class="val" id="rhoBolaVal1">2500</span></div>
+                                <div class="row"><label>η fluida (Pa·s)</label><input type="range" id="etaSlider1" min="0.001" max="15" step="0.001" value="0.001"><span class="val" id="etaVal1">0.001</span></div>
+                            </div>
+
+                            <!-- PANEL KANAN -->
+                            <div class="panel" style="border-top: 4px solid #fb923c;">
+                                <h3>⚙️ Tabung Kanan</h3>
+                                <div class="row" style="flex-direction:column;align-items:stretch;margin-bottom:8px;">
+                                    <select id="fluidSelect2" style="width:100%;">
+                                        <option value="1000,0.001" data-color="rgba(14,165,233,0.5)">Air (η=0.001)</option>
+                                        <option value="900,0.5" data-color="rgba(234,179,8,0.5)" selected>Oli (η=0.5)</option>
+                                        <option value="1260,1.4" data-color="rgba(168,85,247,0.5)">Gliserin (η=1.4)</option>
+                                        <option value="1420,10" data-color="rgba(180,83,9,0.6)">Madu (η=10)</option>
+                                    </select>
+                                </div>
+                                <div class="row"><label>Radius bola</label><input type="range" id="radiusSlider2" min="0.002" max="0.02" step="0.001" value="0.01"><span class="val" id="radiusVal2">1.0 cm</span></div>
+                                <div class="row"><label>ρ bola (kg/m³)</label><input type="range" id="rhoBolaSlider2" min="1000" max="8000" step="100" value="2500"><span class="val" id="rhoBolaVal2">2500</span></div>
+                                <div class="row"><label>η fluida (Pa·s)</label><input type="range" id="etaSlider2" min="0.001" max="15" step="0.001" value="0.5"><span class="val" id="etaVal2">0.50</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PANEL KAPILARITAS (DUA PIPA) -->
+                    <div id="panel-cap" style="display:none;">
+                        <div class="controls">
+                            <div class="panel">
+                                <h3>⚙️ Kontrol Pipa Kapiler</h3>
+                                <div class="row"><label>r pipa kiri (mm)</label><input type="range" id="rPipa1Slider" min="0.1" max="2" step="0.05" value="0.3"><span class="val" id="rPipa1Val">0.30 mm</span></div>
+                                <div class="row"><label>r pipa kanan (mm)</label><input type="range" id="rPipa2Slider" min="0.1" max="2" step="0.05" value="1.0"><span class="val" id="rPipa2Val">1.00 mm</span></div>
+                                <div class="row"><label>γ (N/m)</label><input type="range" id="gammaSlider" min="0.01" max="0.5" step="0.001" value="0.072"><span class="val" id="gammaVal">0.072</span></div>
+                                <div class="row"><label>θ (°)</label><input type="range" id="thetaSlider" min="0" max="180" step="1" value="0"><span class="val" id="thetaVal">0°</span></div>
+                            </div>
+                            <div class="panel">
+                                <h3>💧 Jenis Cairan</h3>
+                                <div class="row" style="flex-direction:column;align-items:stretch;">
+                                    <select id="capLiquidSelect" style="width:100%;">
+                                        <option value="1000,0.072,0" data-color="rgba(14,165,233,0.5)">Air (ρ=1000, γ=0.072, θ=0°)</option>
+                                        <option value="790,0.022,0" data-color="rgba(234,179,8,0.4)">Alkohol (ρ=790, γ=0.022, θ=0°)</option>
+                                        <option value="13600,0.48,140" data-color="rgba(148,163,184,0.7)">Raksa (ρ=13600, γ=0.48, θ=140°)</option>
+                                        <option value="1260,0.063,30" data-color="rgba(168,85,247,0.4)">Gliserin (ρ=1260, γ=0.063, θ=30°)</option>
+                                    </select>
+                                </div>
+                                <div class="info-box" style="margin-top:10px;margin-bottom:0;font-size:.8rem;"><b>Rumus Jurin:</b> h = 2γ cos θ / (ρ g r)<br>θ &lt; 90° → naik (meniskus cekung)<br>θ &gt; 90° → turun (meniskus cembung)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="graph-wrap">
+                        <div class="graph-title"><span id="graphTitle">Grafik Kecepatan Bola vs Waktu</span><span style="font-size:.7rem;color:#38bdf8;">Garis putus = kecepatan terminal</span></div>
+                        <canvas id="graphCanvas" width="560" height="150" style="background:#0f172a;border-radius:6px;"></canvas>
+                    </div>
+                    <div class="result-panel" id="resultPanel"><div id="resultText" style="text-align:center;">Atur parameter untuk memulai simulasi.</div></div>
+                </div>
+
+                <div class="info-box" id="info-sim">💡 Tips: Kamu bisa membandingkan Air (Tabung Kiri) vs Madu (Tabung Kanan). Perhatikan bahwa kecepatan dihitung akurat secara fisika, namun pergerakan di layar diperlambat agar bisa diamati dengan mata.</div>
+
+                <div class="question-block">
+                    <p>Question 1. Berdasarkan simulasi dua tabung, jelaskan mengapa kecepatan bola dalam fluida kental akhirnya mencapai nilai konstan (kecepatan terminal) dan mengapa nilainya berbeda antar fluida?</p>
+                    <textarea class="ans-field" id="ans-q1" placeholder="Tulis jawabanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 2. Berdasarkan simulasi kapilaritas, jelaskan mengapa ketinggian cairan di pipa kiri (sempit) lebih tinggi dibandingkan pipa kanan (lebar)! Kaitkan dengan rumus Jurin.</p>
+                    <textarea class="ans-field" id="ans-q2" placeholder="Tulis jawabanmu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 3: EXPERIMENT ================= -->
+        <div id="langkah3" class="section-target">
+            <div class="card">
+                <span class="badge">Part 3 · Experiment</span>
+                <h2>Uji dengan Data Eksperimen</h2>
+                <p>Lakukan percobaan nyata atau gunakan data simulasi. Masukkan data ke tabel untuk menghitung koefisien viskositas (η) dan tinggi kapiler (h).</p>
+
+                <div class="guide-box">
+                    <h4>🛠️ Panduan Eksperimen A: Viskositas (Stokes)</h4>
+                    <ol>
+                        <li>Siapkan tabung berisi fluida (air/oli/gliserin/madu) dengan ketinggian tertentu.</li>
+                        <li>Jatuhkan bola kecil (kelereng/manik) ke dalam fluida.</li>
+                        <li>Catat <strong>waktu (t)</strong> bola menempuh jarak tertentu (misal 0,3 m) dan <strong>jarak (s)</strong>.</li>
+                        <li>Hitung kecepatan terminal: v<sub>t</sub> = s / t.</li>
+                        <li>Hitung koefisien viskositas: η = 2r²(ρ<sub>b</sub> − ρ<sub>f</sub>)g / (9v<sub>t</sub>).</li>
+                    </ol>
+                </div>
+
+                <div class="table-btn-row">
+                    <button class="btn btn-primary" style="flex:1;padding:8px;" onclick="isiDataContoh()">Isi Contoh</button>
+                    <button class="btn btn-primary" style="flex:1;padding:8px;" onclick="kosongkanData()">Kosongkan</button>
+                </div>
+
+                <h3 style="font-size:1rem;margin-bottom:8px;color:var(--dark-green);">Tabel A — Viskositas (Stokes)</h3>
+                <div class="table-responsive">
+                    <table id="tabel-viskos" style="table-layout:fixed;">
+                        <thead>
+                            <tr>
+                                <th style="width:16%;">Fluida</th>
+                                <th style="width:14%;">r bola (m)</th>
+                                <th style="width:14%;">ρ<sub>b</sub></th>
+                                <th style="width:14%;">ρ<sub>f</sub></th>
+                                <th style="width:14%;">v<sub>t</sub> (m/s)</th>
+                                <th style="width:14%;">η (Pa·s)<br>Otomatis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="table-input input-fluida" value="Oli" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-r" value="0.01" step="0.001"></td>
+                                <td><input type="number" class="table-input input-rhob" value="2500" step="10"></td>
+                                <td><input type="number" class="table-input input-rhof" value="900" step="10"></td>
+                                <td><input type="number" class="table-input input-vt" value="0.5" step="0.01"></td>
+                                <td class="eta-cell" style="font-weight:bold;color:#0369a1;">–</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-fluida" value="Gliserin" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-r" value="0.008" step="0.001"></td>
+                                <td><input type="number" class="table-input input-rhob" value="2500" step="10"></td>
+                                <td><input type="number" class="table-input input-rhof" value="1260" step="10"></td>
+                                <td><input type="number" class="table-input input-vt" value="0.15" step="0.01"></td>
+                                <td class="eta-cell" style="font-weight:bold;color:#0369a1;">–</td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-fluida" value="Madu" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-r" value="0.005" step="0.001"></td>
+                                <td><input type="number" class="table-input input-rhob" value="2500" step="10"></td>
+                                <td><input type="number" class="table-input input-rhof" value="1420" step="10"></td>
+                                <td><input type="number" class="table-input input-vt" value="0.05" step="0.01"></td>
+                                <td class="eta-cell" style="font-weight:bold;color:#0369a1;">–</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="guide-box" style="margin-top:20px;">
+                    <h4>🛠️ Panduan Eksperimen B: Kapilaritas pada Kain (Efek Surfaktan Detergen)</h4>
+                    <ol>
+                        <li>Siapkan <strong>4 potong kain</strong> dengan jenis dan ukuran yang sama (misal: kain katun atau kain perca).</li>
+                        <li>Siapkan <strong>4 wadah</strong> berisi air (100 ml). Rancang variabelnya sebagai berikut:
+                            <ul>
+                                <li>Wadah 1: Air murni (Kontrol).</li>
+                                <li>Wadah 2: Air + 5 ml Detergen Merek A.</li>
+                                <li>Wadah 3: Air + 5 ml Detergen Merek B (beda merek, konsentrasi sama).</li>
+                                <li>Wadah 4: Air + 15 ml Detergen Merek A (beda konsentrasi, merek sama).</li>
+                            </ul>
+                        </li>
+                        <li>Celupkan ujung bawah setiap kain ke dalam wadah yang berbeda selama waktu yang sama (misal 5 menit).</li>
+                        <li>Amati dan ukur <strong>tinggi meresapnya cairan (h)</strong> pada masing-masing kain menggunakan penggaris.</li>
+                        <li>Bandingkan hasilnya. Apakah perbedaan merek detergen (kandungan surfaktan) dan perbedaan konsentrasi mempengaruhi tinggi resapan pada kain? Catat hasilnya di Tabel B.</li>
+                    </ol>
+                </div>
+
+                <h3 style="font-size:1rem;margin-bottom:8px;color:var(--dark-green);">Tabel B — Kapilaritas pada Kain</h3>
+                <div class="table-responsive">
+                    <table id="tabel-kapiler" style="table-layout:fixed;">
+                        <thead>
+                            <tr>
+                                <th style="width:24%;">Sampel Kain & Cairan</th>
+                                <th style="width:20%;">Konsentrasi (ml/100ml)</th>
+                                <th style="width:28%;">Tinggi Resapan / h (cm)</th>
+                                <th style="width:28%;">Keterangan (Merek/Surfaktan)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" class="table-input input-cairan" value="Kain 1" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-konsentrasi" value="0" step="1"></td>
+                                <td><input type="number" class="table-input input-hukur" value="2.5" step="0.1"></td>
+                                <td><input type="text" class="table-input input-merek" value="Air Murni (Kontrol)" style="width:100%;"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-cairan" value="Kain 2" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-konsentrasi" value="5" step="1"></td>
+                                <td><input type="number" class="table-input input-hukur" value="3.8" step="0.1"></td>
+                                <td><input type="text" class="table-input input-merek" value="Detergen Merek A" style="width:100%;"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-cairan" value="Kain 3" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-konsentrasi" value="5" step="1"></td>
+                                <td><input type="number" class="table-input input-hukur" value="3.2" step="0.1"></td>
+                                <td><input type="text" class="table-input input-merek" value="Detergen Merek B" style="width:100%;"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" class="table-input input-cairan" value="Kain 4" style="width:100%;"></td>
+                                <td><input type="number" class="table-input input-konsentrasi" value="15" step="1"></td>
+                                <td><input type="number" class="table-input input-hukur" value="4.5" step="0.1"></td>
+                                <td><input type="text" class="table-input input-merek" value="Detergen Merek A" style="width:100%;"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 3. Berdasarkan Tabel A, bagaimana hubungan antara koefisien viskositas (η) dengan kecepatan terminal (v<sub>t</sub>)? Jelaskan menggunakan Hukum Stokes!</p>
+                    <textarea class="ans-field" id="ans-q3" placeholder="Tulis analisismu..."></textarea>
+                </div>
+                <div class="question-block">
+                    <p>Question 4. Berdasarkan Tabel B, bandingkan Kain 2 dan Kain 3 (konsentrasi sama, merek beda). Mengapa tinggi resapan bisa berbeda? Kaitkan dengan kandungan surfaktan yang menurunkan tegangan permukaan air!</p>
+                    <textarea class="ans-field" id="ans-q4" placeholder="Tulis analisismu..."></textarea>
+                </div>
+
+                <div class="evidence-box">
+                    <div class="evidence-input-row">
+                        <div style="flex:1;">
+                            <label>Upload Screenshot / Foto Eksperimen: <span style="color: var(--red); font-weight: bold;">(Wajib / Dinilai)</span></label>
+                            <input type="file" id="upload-bukti" accept="image/*" class="file-upload-input" onchange="previewImage(this)">
+                        </div>
+                        <div style="flex:1;">
+                            <label>Tautan Video Pendukung (Opsional):</label>
+                            <input type="url" placeholder="https://bit.ly/video-kamu" class="url-video-input">
+                        </div>
+                    </div>
+                    <div class="preview-container"><img src="" alt="Pratinjau Foto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 4: ANALYSIS ================= -->
+        <div id="langkah4" class="section-target">
+            <div class="card">
+                <span class="badge">Part 4 · Analysis</span>
+                <h2>Hubungan Parameter dengan Gejala Fisis</h2>
+                <p>Geser slider untuk melihat bagaimana perubahan parameter mempengaruhi kecepatan terminal (Stokes) dan tinggi kapiler (Jurin).</p>
+
+                <div class="form-grid" style="margin-bottom:15px;">
+                    <div class="form-group full-width">
+                        <label>Radius bola (r): <span id="label-rAnalisis">0.010 m</span></label>
+                        <input type="range" id="slider-rAnalisis" min="0.002" max="0.02" value="0.01" step="0.001" style="accent-color:#059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Viskositas fluida (η): <span id="label-etaAnalisis">1.00 Pa·s</span></label>
+                        <input type="range" id="slider-etaAnalisis" min="0.001" max="15" value="1" step="0.001" style="accent-color:#059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Tegangan permukaan (γ): <span id="label-gammaAnalisis">0.072 N/m</span></label>
+                        <input type="range" id="slider-gammaAnalisis" min="0.01" max="0.5" value="0.072" step="0.001" style="accent-color:#059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Sudut kontak (θ): <span id="label-thetaAnalisis">0°</span></label>
+                        <input type="range" id="slider-thetaAnalisis" min="0" max="180" value="0" step="1" style="accent-color:#059669;">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Jari-jari pipa kapiler (r): <span id="label-rpipaAnalisis">0.50 mm</span></label>
+                        <input type="range" id="slider-rpipaAnalisis" min="0.1" max="2" value="0.5" step="0.05" style="accent-color:#059669;">
+                    </div>
+                </div>
+
+                <div class="result-grid" style="grid-template-columns:1fr 1fr;">
+                    <div class="result-item"><div class="label">Kecepatan Terminal v<sub>t</sub></div><div class="value" id="out-vt">0.00 m/s</div></div>
+                    <div class="result-item"><div class="label">Gaya Stokes F<sub>s</sub></div><div class="value" id="out-fs">0.00 N</div></div>
+                    <div class="result-item"><div class="label">Tinggi Kapiler h</div><div class="value red" id="out-h">0.00 mm</div></div>
+                    <div class="result-item"><div class="label">Arah Meniskus</div><div class="value" id="out-arah">Cekung</div></div>
+                </div>
+                <p style="font-size:.8rem;color:#6b7280;margin-top:-5px;">Catatan: bola ρ<sub>b</sub> = 2500 kg/m³, fluida ρ<sub>f</sub> = 1000 kg/m³, g = 10 m/s².</p>
+
+                <div class="question-block">
+                    <p>Question 5. Berdasarkan grafik/slider, jelaskan pengaruh viskositas (η) dan radius bola (r) terhadap kecepatan terminal (v<sub>t</sub>).</p>
+                    <textarea class="ans-field" id="ans-q5" placeholder="Tulis analisismu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 6. Mengapa pipa kapiler yang lebih sempit menghasilkan kenaikan cairan yang lebih tinggi? Jelaskan dengan rumus h = 2γcosθ / (ρgr).</p>
+                    <textarea class="ans-field" id="ans-q6" placeholder="Tulis analisismu..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PART 5: REFLECTION ================= -->
+        <div id="langkah5" class="section-target">
+            <div class="card">
+                <span class="badge">Part 5 · Reflection</span>
+                <h2>Refleksi Konsep</h2>
+
+                <div class="question-block">
+                    <p>Question 7. Sebuah bola berjari-jari 1 cm jatuh dalam oli dengan kecepatan terminal 0,5 m/s. Jika η oli = 0,5 Pa·s, berapa gaya gesek Stokes yang dialami bola? (N, gunakan π = 3,14)</p>
+                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:15px;flex-direction:column;">
+                        <input type="number" id="input-jawaban-refleksi" placeholder="... N" step="0.0001" style="width:100%;padding:10px;border:1px solid #93c5fd;border-radius:6px;">
+                        <button class="btn btn-primary" style="width:100%;padding:10px;border-radius:8px;" onclick="cekRefleksi()">Cek jawaban</button>
+                    </div>
+                    <div id="feedback-refleksi" class="feedback-box"></div>
+                    <div class="info-box" style="font-size:.85rem;">Petunjuk: F<sub>s</sub> = 6πηrv. Substitusi r = 0,01 m, v = 0,5 m/s, η = 0,5 Pa·s, π = 3,14.</div>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 8. Jelaskan mengapa cairan kental (misalnya madu) lebih sulit dituang dibanding air, padahal keduanya sama-sama fluida.</p>
+                    <textarea class="ans-field" id="ans-q8" placeholder="Tulis penjelasanmu..."></textarea>
+                </div>
+
+                <div class="question-block">
+                    <p>Question 9. Tulis kesimpulanmu dalam tiga kalimat tentang viskositas dan gejala kapilaritas.</p>
+                    <textarea class="ans-field" id="ans-q9" placeholder="Tulis kesimpulanmu..."></textarea>
+                </div>
+
+                <div class="grading-box">
+                    <h3>Automated System Evaluation</h3>
+                    <p>Total Score: <strong id="val-score">0</strong> / 100</p>
+                    <p>Predicate: <strong id="val-predicate" style="color:#b45309;">Needs Improvement</strong></p>
+                </div>
+                <div id="report-curang" style="display:none;padding:10px;background:#fee2e2;border:1px solid #ef4444;border-radius:6px;margin-top:10px;color:#b91c1c;font-weight:bold;margin-bottom:15px;"></div>
+            </div>
+        </div>
+
+        <!-- ================= PART 6: CHALLENGE ================= -->
+        <div id="langkah6" class="section-target">
+            <div class="card">
+                <span class="badge" style="background-color:#fee2e2;color:#b91c1c;">Part 6 · Time Challenge</span>
+                <h2>🔥 Mode Tantangan (HOTS)</h2>
+                <p>Uji pemahamanmu! Anda akan diberi <strong>4 soal acak</strong> (3 Pilihan Ganda + 1 Isian) seputar viskositas & kapilaritas. Waktu pengerjaan <strong>8 menit</strong>. Anda dilengkapi kalkulator ilmiah di layar.</p>
+                <p style="font-size:.85rem;color:#b91c1c;"><strong>⚠️ Perhatian:</strong> Soal dirender sebagai gambar dan dilindungi watermark. Copy / screenshot / pindah tab / membuka aplikasi lain akan dicatat sebagai pelanggaran dan memotong nilai.</p>
+
+                <div id="challenge-start-box" style="text-align:center;padding:20px;">
+                    <button class="btn btn-primary" onclick="mulaiTantangan()" style="font-size:1.2rem;padding:15px 30px;background:var(--dark-green);color:white;">▶ Mulai Tantangan</button>
+                    <div style="margin-top:10px;font-size:.85rem;color:var(--text-muted);">Sistem akan memantau jika Anda membuka tab lain. <strong>Tantangan hanya bisa dikerjakan sekali.</strong></div>
+                </div>
+
+                <div id="challenge-area" style="display:none;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:15px;background:#f8fafc;padding:10px;border-radius:8px;border:1px solid #cbd5e1;">
+                        <div><strong>Waktu:</strong> <span id="timer-display" style="font-family:monospace;font-size:1.2rem;color:var(--red);font-weight:bold;">08:00</span></div>
+                        <div><strong>Peringatan Curang:</strong> <span id="cheat-count" style="color:var(--red);font-weight:bold;">0</span></div>
+                    </div>
+                    <div id="soal-container" style="margin-bottom:15px;"></div>
+                    <div style="background:#1e293b;padding:10px;border-radius:8px;margin-bottom:15px;">
+                        <input type="text" id="calc-display" readonly style="width:100%;padding:10px;font-size:1.2rem;text-align:right;background:#f8fafc;border:none;border-radius:4px;margin-bottom:8px;">
+                        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;">
+                            <button class="calc-btn" onclick="calcInput('sin')" style="background:#8b5cf6;">sin</button>
+                            <button class="calc-btn" onclick="calcInput('cos')" style="background:#3b82f6;">cos</button>
+                            <button class="calc-btn" onclick="calcInput('tan')" style="background:#0ea5e9;">tan</button>
+                            <button class="calc-btn" onclick="calcInput('(')" style="background:#64748b;">(</button>
+                            <button class="calc-btn" onclick="calcInput(')')" style="background:#64748b;">)</button>
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn" onclick="calcInput('/')" style="background:#f59e0b;">÷</button>
+                            <button class="calc-btn" onclick="calcClear()" style="background:#ef4444;">C</button>
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn" onclick="calcInput('*')" style="background:#f59e0b;">×</button>
+                            <button class="calc-btn" onclick="calcInput('-')" style="background:#f59e0b;">-</button>
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn" onclick="calcInput('+')" style="background:#f59e0b;">+</button>
+                            <button class="calc-btn" onclick="calcSolve()" style="background:#10b981;grid-row:span 2;font-size:1.2rem;">=</button>
+                            <button class="calc-btn" onclick="calcInput('0')" style="grid-column:span 2;">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="selesaiTantangan()" style="width:100%;">Kumpulkan Jawaban Tantangan</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= CETAK & PENILAIAN ================= -->
+        <div class="section-target">
+            <div class="card">
+                <h2>Cetak hasil kerja</h2>
+                <p>Pastikan identitasmu sudah lengkap terisi sebelum mencetak atau mengirim tugas.</p>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="prosesCetakPDF()">Cetak / simpan PDF</button>
+                    <button class="btn btn-primary" onclick="prosesUnduhWord()">Unduh Word (.docx)</button>
+                    <button class="btn btn-primary" onclick="simpanTugasKeSistem(event)">Kumpulkan Tugas</button>
+                </div>
+                <div id="pesan-validasi" class="feedback-box error" style="display:none;">Mohon lengkapi Student Name, Class, dan Group terlebih dahulu di bagian identity.</div>
+                <p class="no-print" style="font-size:.85rem;color:var(--text-muted);margin-top:20px;line-height:1.5;">Konsep STEM: Science (Stokes & Jurin), Technology (sensor & video eksperimen), Engineering (desain pipa kapiler & pelumas), Mathematics (aljabar & perbandingan).</p>
+            </div>
+
+            <div class="card" id="teacher-login-section">
+                <h2>Teacher Portal (Login)</h2>
+                <p>Masukkan PIN Guru untuk melihat rekap nilai seluruh siswa per kelas.</p>
+                <div style="display:flex;gap:10px;margin-top:10px;flex-direction:column;">
+                    <input type="password" id="input-pin-guru" placeholder="Masukkan PIN (Default: 2026)" style="padding:10px;border:1px solid var(--border-color);border-radius:6px;">
+                    <button class="btn btn-primary" onclick="bukaPanelGuru()">Login Guru</button>
+                </div>
+            </div>
+
+            <div id="teacher-panel">
+                <h2>Dashboard Rekap Nilai Siswa</h2>
+                <div style="margin-bottom:15px;">
+                    <label style="margin-right:10px;">Pilih Kelas:</label>
+                    <select id="filter-kelas-guru" onchange="muatRekapGuru()" style="padding:6px 10px;border-radius:6px;">
+                        <option value="XI-A">XI-A</option>
+                        <option value="XI-B">XI-B</option>
+                        <option value="XI-C">XI-C</option>
+                        <option value="XI-D">XI-D</option>
+                        <option value="XI-E">XI-E</option>
+                        <option value="XI-F">XI-F</option>
+                    </select>
+                    <button class="btn btn-outline" style="margin-left:10px;color:white;border-color:white;" onclick="tutupPanelGuru()">Tutup Panel</button>
+                    <button class="btn btn-primary" style="margin-left:10px;background:#10b981;color:white;border:none;" onclick="cetakRekapGuru()">🖨️ Cetak Rekap Nilai</button>
+                </div>
+                <div class="table-responsive">
+                    <table style="color:white;border-color:#475569;">
+                        <thead>
+                            <tr style="background-color:#334155;">
+                                <th>No</th><th>Student Name</th><th>Group</th><th>Score</th>
+                                <th>Predicate</th><th>Pelanggaran</th><th>Date</th><th>Log</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabel-rekap-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= MODAL CHEAT ================= -->
+    <div id="cheat-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;justify-content:center;align-items:center;text-align:center;padding:20px;backdrop-filter:blur(5px);">
+        <div style="background:#fee2e2;border:4px dashed #dc2626;border-radius:16px;padding:30px;max-width:500px;width:100%;box-shadow:0 10px 25px rgba(0,0,0,0.5);animation:shake 0.5s;">
+            <div style="font-size:4rem;margin-bottom:10px;">🚨</div>
+            <h2 style="color:#b91c1c;font-size:1.8rem;margin-bottom:10px;font-weight:800;">PERINGATAN KECURANGAN!</h2>
+            <p style="font-size:1.2rem;color:#1f2937;margin-bottom:5px;">Halo, <strong id="modal-nama-siswa" style="color:#dc2626;font-size:1.4rem;">Siswa</strong>!</p>
+            <p id="modal-alasan" style="font-size:1rem;color:#4b5563;margin-bottom:15px;">Sistem mendeteksi Anda melakukan aktivitas terlarang.</p>
+            <div style="background:#fef2f2;border:1px solid #f87171;border-radius:8px;padding:15px;margin-bottom:20px;">
+                <p style="font-size:0.9rem;color:#991b1b;font-weight:bold;">TOTAL PELANGGARAN ANDA:</p>
+                <p style="font-size:3rem;color:#b91c1c;font-weight:900;line-height:1;" id="modal-total-curang">0</p>
+                <p style="font-size:0.8rem;color:#991b1b;margin-top:5px;">Nilai Anda dipotong otomatis 10 poin per pelanggaran.</p>
+            </div>
+            <button onclick="tutupModalDanGantiSoal()" style="background:#dc2626;color:white;border:none;padding:12px 30px;font-size:1.1rem;font-weight:bold;border-radius:8px;cursor:pointer;width:100%;transition:0.2s;">Tutup & Kembali Ujian (Soal Diganti!)</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL AUDIT ================= -->
+    <div id="audit-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10001;justify-content:center;align-items:center;padding:20px;backdrop-filter:blur(5px);">
+        <div style="background:white;border:4px solid #1e293b;border-radius:12px;padding:24px;max-width:720px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 10px 25px rgba(0,0,0,0.5);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                <h2 style="color:#1e293b;font-size:1.3rem;">📋 Audit Log Pelanggaran</h2>
+                <button onclick="document.getElementById('audit-modal').style.display='none'" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;">✕</button>
+            </div>
+            <p id="audit-header" style="font-size:0.9rem;color:#475569;margin-bottom:12px;"></p>
+            <div class="table-responsive">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#e2e8f0;">
+                            <th style="padding:8px;border:1px solid #cbd5e1;">No</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Waktu</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Jenis</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Detail</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;">Soal ID</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+    </style>

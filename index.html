@@ -316,9 +316,16 @@
                         <p>Akses Khusus Operator Kelas</p>
                         <button type="button" class="btn-operator" onclick="toggleFormOperator()">🔑 Masuk Operator Absensi</button>
                         
-                        <!-- Form Input Token (Tersembunyi) -->
+                        <!-- Form Input Operator (Tersembunyi) -->
                         <div id="form-operator-dropdown">
+                            
+                            <!-- KOLOM KETIK MANUAL: KIRIM KE (TANPA PLACEHOLDER) -->
                             <div class="form-group" style="margin-top: 10px; text-align: left;">
+                                <label>Kirim Ke:</label>
+                                <input type="text" id="input-tujuan-guru" style="width:100%; padding: 8px; border-radius:6px; border:1px solid #cbd5e1;">
+                            </div>
+
+                            <div class="form-group" style="margin-top: 5px; text-align: left;">
                                 <label>Token Kelas</label>
                                 <input type="text" id="token-operator" placeholder="Contoh: XIA atau XI-A" style="width:100%; padding: 8px; border-radius:6px; border:1px solid #cbd5e1;">
                                 <p style="font-size: 0.75rem; color: #ef4444; margin-top: 5px; text-align:left;" id="pesan-error-operator"></p>
@@ -396,7 +403,6 @@
                     <p>Menganalisis hubungan gerak dan gaya serta pemanfaatannya untuk menjelaskan fenomena alam, desain, atau rekayasa struktur. Membuat karya yang menunjukkan penerapan hukum fluida dalam kehidupan sehari-hari.</p>
                     <h3>Silakan pilih materi di menu sebelah kiri.</h3>
                 `,
-                // STRUKTUR MATERI BERTINGKAT
                 materi: [
                     {
                         tipe: "kategori",
@@ -481,7 +487,7 @@
         }
 
         function loginOperator() {
-            // Terima input "XIA" atau "XI-A" → normalisasi ke "XI-A"
+            // 1. Ambil token kelas
             let token = document.getElementById('token-operator').value.trim().toUpperCase();
             if (/^XI[A-F]$/.test(token)) {
                 token = 'XI-' + token.charAt(2);
@@ -490,8 +496,27 @@
             const kelasValid = ["XI-A", "XI-B", "XI-C", "XI-D", "XI-E", "XI-F"];
             
             if (kelasValid.includes(token)) {
-                alert(`Login Operator Berhasil! Membuka form absensi untuk kelas ${token}.`);
+                
+                // 2. Ambil ketikan tujuan dari operator
+                const ketikanTujuan = document.getElementById('input-tujuan-guru').value.trim().toLowerCase();
+                let pinTujuan = "";
+                
+                // 3. Terjemahkan ketikan menjadi PIN Sistem
+                if (ketikanTujuan.includes('wokib')) {
+                    pinTujuan = "SISWA-WOKIB";
+                } else if (ketikanTujuan.includes('dewi')) {
+                    pinTujuan = "SISWA-DEWI";
+                } else {
+                    // Jika tidak cocok, tampilkan error dan hentikan proses
+                    document.getElementById('pesan-error-operator').innerText = "Tujuan tidak valid! Ketik 'Guru Wokib' atau 'Guru Dewi'.";
+                    return;
+                }
+
+                // 4. Simpan ke memori
+                localStorage.setItem('pin_guru_tujuan_absensi', pinTujuan);
                 localStorage.setItem('kelas_operator', token);
+                
+                alert(`Login Operator Berhasil!\nKelas: ${token}\nDikirim ke: ${pinTujuan}`);
                 window.location.href = "form-absensi.html";
             } else {
                 document.getElementById('pesan-error-operator').innerText = "Token Kelas Tidak Valid! (Contoh: XIA atau XI-A)";

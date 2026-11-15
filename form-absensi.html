@@ -53,7 +53,6 @@
 
     <div id="pesan"></div>
 </div>
-
 <script>
     /* ==========================================================
        1. VALIDASI KELAS OPERATOR (XI-A s.d. XI-F)
@@ -73,7 +72,7 @@
             localStorage.setItem('kelas_operator', kelasOperator);
         } else {
             alert("❌ Kelas tidak valid. Silakan login ulang dari halaman operator.");
-            window.location.href = 'index.html'; // sesuaikan dengan nama file login
+            window.location.href = 'index.html';
             throw new Error("Kelas tidak valid");
         }
     }
@@ -81,11 +80,9 @@
     document.getElementById('info-kelas').innerText = `Kelas: ${kelasOperator}`;
 
     /* ==========================================================
-       2. URL WEB APP GOOGLE APPS SCRIPT
-       (disamakan dengan ws8.html, ws9.html, ws10.html, ws11.html,
-        dan dashboard-guru.html)
+       2. URL WEB APP GOOGLE APPS SCRIPT (SUDAH DISAMAKAN)
        ========================================================== */
-    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbwoSy_Hsn0kCqvczTNaiBnx1Mmt7a4Qf2OHWGPm9yOvNgHMQI2ZHCTKLUeC06g8qeCm/exec";
+    const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbx9EnP4KXzaCR7GLvSIbXSD5F6hEmCuBw1_kc4uxo7_MIO365ca5d7edYCQfkA1m3cM/exec";
 
     /* ==========================================================
        3. SET DEFAULT TANGGAL = HARI INI
@@ -123,7 +120,13 @@
         btn.innerText = "Menyimpan...";
         pesan.innerText = "";
 
+        // ========================================================
+        // AMBIL PIN TUJUAN YANG DIKETIK OPERATOR DI INDEX.HTML
+        // ========================================================
+        const pinGuruTujuan = localStorage.getItem('pin_guru_tujuan_absensi') || 'SISWA-WOKIB';
+
         const data = {
+            pin: pinGuruTujuan, // <-- DATA PIN DIKIRIM KE SINI
             tanggal: tanggal,
             kelas: kelasOperator,
             nama: nama,
@@ -133,7 +136,6 @@
         try {
             const response = await fetch(URL_WEB_APP, {
                 method: 'POST',
-                // Gunakan text/plain agar tidak memicu preflight CORS
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(data)
             });
